@@ -483,7 +483,7 @@ function tick(){if(tm.mode==='free'){tm.t++;paint();return}tm.t--;paint();if(tm.
 function setMode(k){clearInterval(tm.iv);tm.run=false;tm.mode=k;tm.ph='fokus';tm.dur=(k==='count'?25:S.set.pomo)*60;tm.t=k==='free'?0:tm.dur}
 function vMood(){const m=S.mood[TD()]||{};
   return `<h1>Mood & Energi</h1><div class="c" style="margin-top:12px"><h2>Bagaimana perasaanmu hari ini?</h2><div class="mo">${EM.map((e,i)=>`<button class="${m.m===i+1?'on':''}" data-a="mo" data-v="${i+1}" aria-label="Mood ${i+1}">${e}</button>`).join('')}</div><h2 style="margin-top:14px">Tingkat energi: ${m.e||'-'}/5</h2><input type="range" min="1" max="5" value="${m.e||3}" data-a="en" aria-label="Energi"><textarea data-a="mn" placeholder="Catatan singkat tentang harimu…" style="margin-top:10px">${esc(m.n||'')}</textarea></div>
-  <div class="c"><h2>7 hari terakhir</h2><div class="bars">${l7().map(d=>{const x=S.mood[d];return `<div><span>${x?EM[x.m-1]:''}</span><i style="height:${x?x.m*18:0}px"></i>${dn(d)}</div>`}).join('')}</div></div>`;
+  ${moodProg()}<div class="c"><h2>7 hari terakhir</h2><div class="bars">${l7().map(d=>{const x=S.mood[d];return `<div><span>${x?EM[x.m-1]:''}</span><i style="height:${x?x.m*18:0}px"></i>${dn(d)}</div>`}).join('')}</div></div>`;
 }
 function vSet(){const s=S.set;return `<h1>Pengaturan</h1><div class="c" style="margin-top:12px"><div class="f"><label>Namamu<input data-a="sf" data-k="name" value="${esc(s.name)}"></label><label>Pomodoro (menit)<input type="number" min="1" data-a="sf" data-k="pomo" value="${s.pomo}"></label><label>Istirahat (menit)<input type="number" min="1" data-a="sf" data-k="brk" value="${s.brk}"></label><label>Target fokus/hari (menit)<input type="number" min="10" data-a="sf" data-k="tgt" value="${s.tgt}"></label></div><div class="tabs"><button class="b" data-a="th">Tema: ${s.theme==='dark'?'Gelap 🌙':'Terang ☀️'}</button></div></div>
   ${acctCard()}${rmCard()}<div class="c"><h2>Data</h2><div class="tabs"><button class="b s" data-a="ex">Ekspor JSON</button><label class="b s" style="cursor:pointer">Impor JSON<input type="file" accept=".json" data-a="im" hidden></label><button class="b s" style="color:var(--rd)" data-a="rs">Hapus semua data</button></div><p class="mu">${window.FN&&window.FN.email?'Data tersimpan di akunmu (cloud) dan di-cache di browser ini.':'Semua data tersimpan di browser ini (local storage).'} Ekspor secara berkala sebagai cadangan.</p></div>`}
@@ -541,9 +541,9 @@ const SH=[{id:'bow',e:'🎀',n:'Pita',c:30,t:'hd'},{id:'flw',e:'🌸',n:'Bunga',
  {id:'bok',e:'📚',n:'Buku',c:25,t:'sd'},{id:'bln',e:'🎈',n:'Balon',c:35,t:'sd'},{id:'bag',e:'🎒',n:'Tas Belajar',c:50,t:'sd'},{id:'stc',e:'✨',n:'Aura Bintang',c:80,t:'sd'},
  {id:'room',e:'🏠',n:'Kamar Cozy',c:0,t:'hab'},{id:'gar',e:'🌳',n:'Taman',c:50,t:'hab'},{id:'sak',e:'🌸',n:'Sakura',c:90,t:'hab'},{id:'bea',e:'🏖️',n:'Pantai',c:110,t:'hab'},{id:'gal',e:'🌌',n:'Galaksi',c:160,t:'hab'}];
 const pLv=p=>Math.floor(Math.sqrt(p.xp/30))+1,pStage=l=>l<3?['Bayi',.85]:l<5?['Anak',1]:l<8?['Remaja',1.15]:['Dewasa',1.3];
-function petTick(){const p=S.pet;if(!p)return;const h=(Date.now()-p.last)/36e5;if(h>0){p.full=Math.max(0,p.full-h*3);p.joy=Math.max(0,p.joy-h*2.5);p.last=Date.now()}}
+function petTick(){const p=S.pet;if(!p)return;const h=(Date.now()-p.last)/36e5;if(h>0){p.full=Math.max(0,p.full-h*3);p.joy=Math.max(0,p.joy-h*2.5);if(p.hp==null)p.hp=100;if(p.full<20||p.joy<20)p.hp=Math.max(0,p.hp-h*3);else if(p.full>45&&p.joy>45)p.hp=Math.min(100,p.hp+h*4);p.last=Date.now()}}
 function petPlus(xp,joy){const p=S.pet;if(!p)return;petTick();p.xp+=xp;p.joy=Math.min(100,p.joy+joy)}
-function petMood(p){const n=esc(p.name),h=new Date().getHours(),td=tdTasks(),pend=td.filter(x=>x.st!=='selesai').length;
+function petMood(p){const n=esc(p.name),h=new Date().getHours(),td=tdTasks(),pend=td.filter(x=>x.st!=='selesai').length;const nm0=esc((S.set.name||'').split(' ')[0]||'kamu');if(p.hp!=null&&p.hp<30)return['🤒',n+': Aku kurang enak badan… tapi ada '+nm0+' di dekatku, aku tenang 🥺 Beri aku sayur & air ya.'];if(p.full>70&&p.joy>70&&new Date().getMinutes()%3===0)return['🥰',n+': Aku sayang '+nm0+'! Senang banget dekat denganmu 💕'];
   if(p.full<25)return['😢',n+': Aku lapar… tolong beri makan ya 🍖'];
   if(p.joy<25)return['🥺',n+': Aku kesepian… ayo main! 🎾'];
   if(h>=22||h<5)return['😴','Zzz… sudah malam. Istirahat yang cukup ya 🌙'];
@@ -802,12 +802,12 @@ function rmCard(){const s=S.set,on=s.rmOn!==false,[ic,tx]=notifSt();
   <p class="mu" style="margin:0 0 8px">${ic} ${tx}</p>
   <div class="f"><label>Ingatkan sebelum jadwal<select data-a="rmset" data-k="rmLead" aria-label="Waktu pengingat">${[[0,'Tepat waktu saja'],[5,'5 menit sebelumnya'],[10,'10 menit sebelumnya'],[15,'15 menit sebelumnya'],[30,'30 menit sebelumnya'],[60,'1 jam sebelumnya']].map(([v,l])=>`<option value="${v}" ${(+s.rmLead||0)===v?'selected':''}>${l}</option>`).join('')}</select></label>
   <label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmSnd" ${s.rmSnd!==false?'checked':''}> 🔊 Bunyi</label><label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmVib" ${s.rmVib!==false?'checked':''}> 📳 Getar (HP)</label></div>
-  <h3 style="margin:12px 0 6px">Pengingat harian</h3><div class="f"><label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmAmOn" ${s.rmAmOn?'checked':''}> ☀️ Rencanakan hari</label><input type="time" data-a="rmset" data-k="rmAm" value="${s.rmAm||'07:30'}" aria-label="Jam pengingat pagi" style="flex:0 1 120px"><label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmPmOn" ${s.rmPmOn?'checked':''}> 🌙 Refleksi malam</label><input type="time" data-a="rmset" data-k="rmPm" value="${s.rmPm||'20:30'}" aria-label="Jam pengingat malam" style="flex:0 1 120px"></div>
+  ${alCtl()}<h3 style="margin:12px 0 6px">Pengingat harian</h3><div class="f"><label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmAmOn" ${s.rmAmOn?'checked':''}> ☀️ Rencanakan hari</label><input type="time" data-a="rmset" data-k="rmAm" value="${s.rmAm||'07:30'}" aria-label="Jam pengingat pagi" style="flex:0 1 120px"><label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmPmOn" ${s.rmPmOn?'checked':''}> 🌙 Refleksi malam</label><input type="time" data-a="rmset" data-k="rmPm" value="${s.rmPm||'20:30'}" aria-label="Jam pengingat malam" style="flex:0 1 120px"></div>
   <p class="mu" style="margin:8px 0 0">Tiap tugas bisa punya pengingat sendiri lewat kolom 🔔 saat menambah tugas atau di ✏️ Edit. Bisa ditunda 5 menit langsung dari pop-up pengingat.</p></div>`}
 function rmBeep(){try{const c=actx(),t=c.currentTime;[0,.28,.56].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i===2?1175:880;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.22,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+.24);o.start(t+d);o.stop(t+d+.26)})}catch(e){}}
 function rmTitle(){if(!document.querySelector('.rmi'))document.title=TTL}
-function rmFire(o){if(S.set.rmSnd!==false)rmBeep();if(S.set.rmVib!==false)try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
-  try{if('Notification' in window&&Notification.permission==='granted'){const n=new Notification(o.title,{body:o.body,tag:o.key||'focusnest'});n.onclick=()=>{try{window.focus();n.close()}catch(e){}}}}catch(e){}
+function rmFire(o){if(!fnDev())return;try{const L=petLine(o);if(L)o.body=L+' · '+o.body}catch(e){}if(S.set.rmSnd!==false)rmBeep();if(S.set.rmVib!==false)try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
+  try{if('Notification' in window&&Notification.permission==='granted'){fnNotify(o)}}catch(e){}
   const box=$('#rmb');if(box){const d=document.createElement('div');d.className='rmi';d.innerHTML=`<div><b>${esc(o.title)}</b><div class="mu">${esc(o.body)}</div></div><div class="f" style="justify-content:flex-end">${o.tid?`<button class="b s sm n" data-a="rmsnz" data-i="${o.tid}">Tunda 5 mnt</button>`:''}<button class="b sm n" data-a="rmok">Oke 👍</button></div>`;box.appendChild(d)}
   document.title='⏰ '+o.title}
 function askNotif(){try{if(!('Notification' in window)){toast('Browser tidak mendukung notifikasi sistem — pengingat tetap tampil di aplikasi 🙂');return}
@@ -817,10 +817,31 @@ function remind(){const st=S.set;if(st.rmOn===false)return;const now=Date.now(),
     const lead=t.rm!==undefined&&t.rm!==''?+t.rm:(+st.rmLead||0);
     if(t.snz&&now>=t.snz){t.snz=0;sv();rmFire({title:'⏰ '+t.t,body:'Pengingat tertunda · jadwal '+t.time,tid:t.id,key:'s'+t.id});return}
     if(lead>0){const a=ms-lead*6e4;if(now>=a&&now<ms&&t.nfa!==ms){t.nfa=ms;sv();rmFire({title:'⏳ '+lead+' menit lagi: '+t.t,body:'Mulai pukul '+t.time+'. Siapkan dirimu!',tid:t.id,key:'a'+t.id})}}
-    if(now>=ms&&now<=ms+45*6e4&&t.nfb!==ms){t.nfb=ms;t.nfa=ms;sv();rmFire({title:'⏰ Waktunya: '+t.t,body:'Jadwal '+t.time+(t.tj?' · 💡 '+t.tj:''),tid:t.id,key:'b'+t.id})}});
+    if(t.est>=10){const en=ms+t.est*6e4;if(now>=en-5*6e4&&now<en&&t.nfe!==en){t.nfe=en;sv();rmFire({title:'🏁 Hampir selesai: '+t.t,body:'Sisa ±5 menit dari estimasimu ('+t.est+' mnt).',tid:t.id,key:'e'+t.id})}}if(now>=ms&&now<=ms+45*6e4&&t.nfb!==ms){t.nfb=ms;t.nfa=ms;sv();rmFire({title:'⏰ Waktunya: '+t.t,body:'Jadwal '+t.time+(t.tj?' · 💡 '+t.tj:''),tid:t.id,key:'b'+t.id})}});
   const n=new Date(),mins=n.getHours()*60+n.getMinutes(),pm=s=>{const p=String(s||'').split(':').map(Number);return isNaN(p[0])?null:p[0]*60+(p[1]||0)};
   if(st.rmAmOn){const a=pm(st.rmAm||'07:30');if(a!=null&&mins>=a&&mins<a+60&&st.rmAmD!==T0){st.rmAmD=T0;sv();const c=tdTasks().filter(x=>x.st!=='selesai').length;rmFire({title:'☀️ Rencanakan harimu',body:c?'Ada '+c+' tugas hari ini. Mulai dari yang 🔴 prioritas ya!':'Belum ada tugas hari ini. Yuk susun 1–3 prioritas!',key:'am'})}}
   if(st.rmPmOn){const a=pm(st.rmPm||'20:30');if(a!=null&&mins>=a&&mins<a+60&&st.rmPmD!==T0){st.rmPmD=T0;sv();const l=tdTasks();rmFire({title:'🌙 Waktunya refleksi',body:l.filter(x=>x.st==='selesai').length+'/'+l.length+' tugas selesai hari ini. Catat mood & refleksi singkatmu.',key:'pm'})}}}
+/* ===== v2: alarm kustom, pet, progres mood ===== */
+const TONES={bell:['Lonceng',[880,1175,1568],'sine'],digi:['Digital',[1000,1000,1400],'square'],soft:['Lembut',[523,659,784],'triangle'],chime:['Chime',[784,988,1319],'sine']};
+function rmBeep(){try{const c=actx(),t=c.currentTime,T=TONES[S.set.atone]||TONES.bell,v=S.set.avol==null?.6:+S.set.avol;[0,.3,.6].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type=T[2];o.frequency.value=T[1][i];o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.6*v,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+.26);o.start(t+d);o.stop(t+d+.28)})}catch(e){}}
+function fnDev(){const d=localStorage.getItem('fn_dev')||'all',m=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);return!((d==='desktop'&&m)||(d==='mobile'&&!m))}
+function fnNotify(o){const op={body:o.body,tag:o.key||'focusnest',vibrate:[200,100,200],requireInteraction:true,renotify:true},plain=()=>{try{new Notification(o.title,op)}catch(e){}};if(!navigator.serviceWorker){plain();return}navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(o.title,op):plain()).catch(plain)}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+function petLine(o){const p=S.pet;if(!p||!o.tid)return'';const t=S.tasks.find(x=>x.id===o.tid);if(!t)return'';const n=(S.set.name||'').split(' ')[0]||'sahabat',g=S.goals.find(x=>x.id===t.gid),gn=g&&(g.t||g.n||g.name||g.title),k=(o.key||'')[0],gt=gn?' demi goal “'+gn+'”':'';
+ return p.name+': '+(k==='a'?'Sebentar lagi “'+t.t+'”, '+n+'! Tarik napas, kamu pasti bisa 💪':k==='e'?'Tinggal sedikit lagi, '+n+'! Selesaikan “'+t.t+'”'+gt+' ya, kamu hebat ✨':'Ayo mulai “'+t.t+'”, '+n+gt+'! Aku menemanimu 🥰')}
+function alCtl(){const s=S.set,dv=localStorage.getItem('fn_dev')||'all';return `<h3 style="margin:12px 0 6px">🔔 Nada & volume alarm</h3><div class="f"><label>Nada dering<select data-fn="tone">${Object.entries(TONES).map(([k,v])=>`<option value="${k}" ${(s.atone||'bell')===k?'selected':''}>${v[0]}</option>`).join('')}</select></label><label>Volume<input type="range" min="0" max="1" step="0.1" value="${s.avol==null?.6:s.avol}" data-fn="vol"></label><label>Aktif di perangkat ini<select data-fn="dev">${[['all','HP & Desktop'],['desktop','Hanya Desktop'],['mobile','Hanya HP']].map(([k,l])=>`<option value="${k}" ${dv===k?'selected':''}>${l}</option>`).join('')}</select></label><button class="b s" data-fn="prev">▶ Dengar</button></div>`}
+const FOODS=[['🍎','Apel',4,15,2,3],['🍚','Nasi',8,30,3,2],['🍗','Ayam',14,45,6,3],['🥦','Sayur sehat',6,20,0,12],['🍰','Kue',12,10,22,-2],['💧','Air putih',2,8,0,4],['🧃','Jus buah',6,12,6,5]];
+function openFood(){const p=S.pet;if(!p)return;petTick();let o=document.getElementById('fd');if(o)o.remove();o=document.createElement('div');o.id='fd';o.setAttribute('style','position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px');
+ o.innerHTML='<div class="c" style="max-width:420px;width:100%;max-height:85vh;overflow:auto"><h2>🍽️ Beli makanan untuk '+esc(p.name)+'</h2><p class="mu">Poinmu: ⭐ '+S.pts+'</p>'+FOODS.map((f,i)=>'<button class="b s" data-fi="'+i+'" style="display:block;width:100%;margin:6px 0;text-align:left">'+f[0]+' '+f[1]+' — '+f[2]+'⭐ <span class="mu">(kenyang +'+f[3]+(f[4]?', senang +'+f[4]:'')+(f[5]>0?', sehat +'+f[5]:'')+')</span></button>').join('')+'<button class="b n" data-fi="x" style="margin-top:8px">Tutup</button></div>';
+ o.addEventListener('click',e=>{const t=e.target.closest('[data-fi]');if(!t){if(e.target===o)o.remove();return}if(t.dataset.fi==='x'){o.remove();return}const f=FOODS[+t.dataset.fi];if(p.full>=98){toast(p.name+' sudah kenyang 😋');return}if(S.pts<f[2]){toast('Poin belum cukup (butuh '+f[2]+' ⭐)');return}spend(f[2],f[1]+' untuk '+p.name);p.full=Math.min(100,p.full+f[3]);p.joy=Math.min(100,Math.max(0,p.joy+f[4]));p.hp=Math.min(100,Math.max(0,(p.hp==null?100:p.hp)+f[5]));p.xp+=2;sv();render();toast(f[0]+' Nyam nyam! '+p.name+' senang 😋');o.remove()});document.body.appendChild(o)}
+let MPR='w';const ld=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function moodProg(){const N={d:1,w:7,m:30,y:365}[MPR],now=new Date(),ds=[];for(let i=N-1;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);ds.push(ld(d))}
+ const es=ds.map(d=>[d,S.mood[d]]).filter(x=>x[1]&&x[1].m),av=k=>es.length?(es.reduce((a,x)=>a+(x[1][k]||0),0)/es.length).toFixed(1):'–';let bars;
+ if(MPR==='y'){const g={};es.forEach(([d,x])=>{(g[d.slice(0,7)]=g[d.slice(0,7)]||[]).push(x.m)});bars=Object.entries(g).map(([k,v])=>[k.slice(5),v.reduce((a,b)=>a+b,0)/v.length])}else bars=es.map(([d,x])=>[d.slice(8),x.m]);
+ const nt=es.filter(x=>x[1].n).slice(-10).reverse();
+ return `<div class="c"><h2>📈 Progres mood</h2><div class="tabs">${[['d','Harian'],['w','Mingguan'],['m','Bulanan'],['y','Tahunan']].map(([k,l])=>`<button class="b ${MPR===k?'':'s'} sm" data-fn="mpr" data-v="${k}">${l}</button>`).join('')}</div><p class="mu">Rata-rata mood <b>${av('m')}/5</b> · energi <b>${av('e')}/5</b> · ${es.length} hari tercatat</p><div class="bars" style="overflow-x:auto">${bars.map(([l,v])=>`<div><span>${EM[Math.round(v)-1]||''}</span><i style="height:${v*18}px"></i>${l}</div>`).join('')||'<p class="mu">Belum ada data.</p>'}</div>${nt.length?'<h3>📝 Catatan suasana</h3>'+nt.map(([d,x])=>`<p class="mu" style="margin:4px 0"><b>${d}</b> ${EM[x.m-1]||''} ${esc(x.n)}</p>`).join(''):''}</div>`}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-fn]');if(!t)return;if(t.dataset.fn==='mpr'){MPR=t.dataset.v;render()}else if(t.dataset.fn==='prev')rmBeep()});
+document.addEventListener('change',e=>{const t=e.target.closest('[data-fn]');if(!t)return;const k=t.dataset.fn;if(k==='tone'){S.set.atone=t.value;sv();rmBeep()}else if(k==='vol'){S.set.avol=+t.value;sv();rmBeep()}else if(k==='dev'){localStorage.setItem('fn_dev',t.value);toast('Tersimpan untuk perangkat ini ✅')}});
 setInterval(remind,10000);setTimeout(remind,2500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){remind();rmTitle()}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&gdo){gdo=false;render();return}
@@ -876,7 +897,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
   else if(a==='rmok'){const it=b.closest('.rmi');it&&it.remove();rmTitle();return}
   else if(a==='rmsnz'){if(T){T.snz=Date.now()+5*6e4;sv()}const it=b.closest('.rmi');it&&it.remove();rmTitle();toast('Diingatkan lagi 5 menit ⏳');return}
   else if(a==='adopt'){const k=SP[+D.k];if(!k)return;S.pet={sp:k[0],name:(gv('pnm')||'Mochi').slice(0,16),full:80,joy:80,xp:0,last:Date.now(),own:['room'],hab:'room',hd:'',sd:''};gain(30,'Hadiah adopsi');burst(b,'🎉✨🐾❤️',18);toast('🐾 '+S.pet.name+' bergabung denganmu! +30 poin',1)}
-  else if(a==='feed'){const p=S.pet;if(!p)return;petTick();if(p.full>=98){toast(p.name+' sudah kenyang 😋');return}if(S.pts<8){toast('Poin belum cukup (butuh 8 ⭐). Selesaikan tugas dulu ya!');return}spend(8,'Makanan '+p.name);p.full=Math.min(100,p.full+30);p.joy=Math.min(100,p.joy+3);p.xp+=3;pfx='eat';setTimeout(()=>pfx='',1800);burst(b,'🍖❤️😋');toast('Nyam nyam! 😋')}
+  else if(a==='feed'){openFood();return}else if(a==='feed_old'){const p=S.pet;if(!p)return;petTick();if(p.full>=98){toast(p.name+' sudah kenyang 😋');return}if(S.pts<8){toast('Poin belum cukup (butuh 8 ⭐). Selesaikan tugas dulu ya!');return}spend(8,'Makanan '+p.name);p.full=Math.min(100,p.full+30);p.joy=Math.min(100,p.joy+3);p.xp+=3;pfx='eat';setTimeout(()=>pfx='',1800);burst(b,'🍖❤️😋');toast('Nyam nyam! 😋')}
   else if(a==='play'){const p=S.pet;if(!p)return;petTick();if(p.full<10){toast(p.name+' terlalu lapar buat main 🥺');return}if(p.joy>=98){toast(p.name+' sudah super senang 💖');return}p.joy=Math.min(100,p.joy+20);p.full=Math.max(0,p.full-5);p.xp+=2;pfx='play';setTimeout(()=>pfx='',2300);burst(b,'🎾💖⭐')}
   else if(a==='pp'){const p=S.pet;if(!p)return;p.joy=Math.min(100,p.joy+2);burst(b,'❤️💖💕',6);updPet();sv();return}
   else if(a==='shop'){const p=S.pet,x=SH.find(z=>z.id===D.k);if(!p||!x)return;p.own=p.own||['room'];
@@ -1165,7 +1186,7 @@ const FN = window.FN, OV = document.getElementById('lgn'), $q = s => OV.querySel
 const lock = on => ['#side', '#app'].forEach(s => { const e = document.querySelector(s); if (e) e.inert = !!on; });
 const showForm = () => { OV.hidden = false; OV.classList.remove('ld'); lock(true); };
 const showLoad = () => { OV.hidden = false; OV.classList.add('ld'); lock(true); };
-const hideOV = () => { OV.hidden = true; lock(false); };
+const hideOV = () => { OV.hidden = true; lock(false); const b = document.getElementById('blk'); if (b) b.remove(); };
 
 const MSG = {
   'auth/invalid-email': 'Format email belum benar.',
@@ -1183,11 +1204,26 @@ const MSG = {
   'auth/account-exists-with-different-credential': 'Email ini sudah terdaftar dengan cara masuk yang lain.'
 };
 const errMsg = e => MSG[e && e.code] || 'Terjadi kesalahan. Coba lagi ya.';
+/* ===== Gerbang member (hanya email yang sudah bayar) ===== */
+// GANTI dengan link landing page Scalev kamu:
+const BUY_URL = 'https://kiarahanari.myscalev.com/p/focusnest';
+function showBlock(title, body, buttons) {
+  OV.hidden = true; lock(true);
+  let b = document.getElementById('blk');
+  if (!b) { b = document.createElement('div'); b.id = 'blk'; document.body.appendChild(b); }
+  b.setAttribute('style', 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:#eef1f7;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif');
+  const esc2 = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  b.innerHTML = '<div style="max-width:420px;width:100%;background:#fff;color:#1f2937;border-radius:16px;padding:28px;box-shadow:0 10px 40px rgba(0,0,0,.12);text-align:center">' +
+    '<div style="font-size:40px">🔒</div><h2 style="margin:8px 0 6px;font-size:20px">' + esc2(title) + '</h2>' +
+    '<p style="margin:0 0 18px;line-height:1.5;color:#4b5563">' + esc2(body) + '</p>' +
+    buttons.map((x, i) => '<button data-i="' + i + '" style="display:block;width:100%;margin:8px 0 0;padding:12px;border-radius:10px;border:' + (x.primary ? '0' : '1px solid #cbd5e1') + ';background:' + (x.primary ? '#4f46e5' : '#fff') + ';color:' + (x.primary ? '#fff' : '#1f2937') + ';font-size:15px;cursor:pointer">' + esc2(x.label) + '</button>').join('') + '</div>';
+  b.querySelectorAll('button').forEach(el => el.addEventListener('click', () => buttons[+el.dataset.i].fn()));
+}
 const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.focus || []).length);
 
 (async () => {
   let resolved = false;
-  const failOpen = (why, e) => { console.warn('[FocusNest] ' + why + ' Memakai localStorage saja.'); if (e) console.error(e); hideOV(); };
+  const failOpen = (why, e) => { console.warn('[FocusNest] ' + why); if (e) console.error(e); showBlock('Aplikasi belum bisa dimuat', 'Koneksi lambat atau bermasalah. Muat ulang halaman untuk mencoba lagi.', [{ label: 'Muat ulang', primary: true, fn: () => location.reload() }]); };
 
   if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY') { failOpen('firebaseConfig belum diisi.'); return; }
   setTimeout(() => { if (!resolved) failOpen('Firebase terlalu lama dimuat.'); }, 12000);
@@ -1208,7 +1244,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       if (dead || !ref) return Promise.resolve();
       clearTimeout(timer); timer = null;
       const S = FN.get(), json = JSON.stringify(S);
-      if (json.length > 900000) console.warn('[FocusNest] Data mendekati batas 1 MB per dokumen Firestore.');
+      if (json.length > 800000) FN.toast('⚠️ Data hampir penuh (' + Math.round(json.length/1024) + ' KB). Hapus catatan/tugas lama yang selesai.');
       inflight++;
       last = F.setDoc(ref, { userId: ref.id, state: json, clientTs: S.ts || Date.now(), updatedAt: F.serverTimestamp() })
         .then(() => { failed = false; })
@@ -1243,7 +1279,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       try { localStorage.setItem('focusnest_uid', user.uid); } catch (e) {}
       ready = true;
       FN.email = user.email || user.displayName || 'akunmu';
-      FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 1200); };
+      FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 15000); };
       FN.reset = async () => { dead = true; clearTimeout(timer); await F.deleteDoc(ref); };
       FN.logout = async () => {
         if (timer) push();
@@ -1257,6 +1293,35 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       const flush = () => { if (timer) push(); };
       document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
       window.addEventListener('pagehide', flush);
+
+      /* ---------- Panel admin member (hanya jika email ada di admins/{email}) ---------- */
+      try {
+        const em = (user.email || '').toLowerCase();
+        if ((await F.getDoc(F.doc(db, 'admins', em))).exists()) {
+          const bt = document.createElement('button');
+          bt.textContent = '🛡️ Admin'; bt.setAttribute('style', 'position:fixed;right:12px;bottom:84px;z-index:9998;padding:8px 12px;border-radius:20px;border:0;background:#4F7CF0;color:#fff;font-weight:700;cursor:pointer');
+          document.body.appendChild(bt);
+          bt.onclick = async () => {
+            let o = document.getElementById('adm'); if (o) o.remove();
+            o = document.createElement('div'); o.id = 'adm';
+            o.setAttribute('style', 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:14px');
+            const E2 = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+            const draw = async () => {
+              const qs = await F.getDocs(F.collection(db, 'members')), rows = [];
+              qs.forEach(d => rows.push([d.id, d.data().active === true]));
+              o.innerHTML = '<div class="c" style="max-width:480px;width:100%;max-height:85vh;overflow:auto"><h2>🛡️ Kelola member (' + rows.length + ')</h2>' +
+                '<div class="f"><input id="ame" type="email" placeholder="email member baru"><button class="b n" id="aad">Tambah</button></div>' +
+                rows.map(([e, a]) => '<div class="tk"><div><b>' + E2(e) + '</b> <span class="tag">' + (a ? 'aktif' : 'nonaktif') + '</span></div><button class="b s sm" data-t="' + E2(e) + '" data-v="' + (a ? 0 : 1) + '">' + (a ? 'Nonaktifkan' : 'Aktifkan') + '</button><button class="b x sm" data-d="' + E2(e) + '">Hapus</button></div>').join('') +
+                '<button class="b" id="acl" style="margin-top:10px">Tutup</button></div>';
+              o.querySelector('#acl').onclick = () => o.remove();
+              o.querySelector('#aad').onclick = async () => { const v = o.querySelector('#ame').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(v)) { alert('Format email salah'); return; } await F.setDoc(F.doc(db, 'members', v), { active: true, addedAt: F.serverTimestamp() }); draw(); };
+              o.querySelectorAll('[data-t]').forEach(b => b.onclick = async () => { await F.setDoc(F.doc(db, 'members', b.dataset.t), { active: b.dataset.v === '1' }, { merge: true }); draw(); });
+              o.querySelectorAll('[data-d]').forEach(b => b.onclick = async () => { if (confirm('Hapus ' + b.dataset.d + '?')) { await F.deleteDoc(F.doc(db, 'members', b.dataset.d)); draw(); } });
+            };
+            document.body.appendChild(o); draw();
+          };
+        }
+      } catch (e) { console.warn('[FocusNest] admin check', e); }
       if (user.displayName) FN.prefill(user.displayName.split(' ')[0]);
     }
 
@@ -1294,7 +1359,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       busy(true);
       try {
         if (mode === 'reset') { await A.sendPasswordResetEmail(auth, em); msg('Tautan reset sudah dikirim. Cek inbox dan folder spam email-mu.', true); }
-        else if (mode === 'register') await A.createUserWithEmailAndPassword(auth, em, pw);
+        else if (mode === 'register') { const cr = await A.createUserWithEmailAndPassword(auth, em, pw); try { await A.sendEmailVerification(cr.user); } catch (e) {} }
         else await A.signInWithEmailAndPassword(auth, em, pw);
       } catch (x) { msg(errMsg(x)); }
       finally { busy(false); }
@@ -1316,9 +1381,27 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
     /* ---------- Status login ---------- */
     A.onAuthStateChanged(auth, async user => {
       resolved = true;
-      if (!user) { showForm(); return; }
+      if (!user) { if (window.__blk) return; showForm(); return; }
       if (user.isAnonymous) { await A.signOut(auth); return; }      // sesi anonim dari versi lama → minta login
       showLoad();
+      const logoutBtn = { label: 'Keluar / ganti akun', fn: async () => { try { await A.signOut(auth); } catch (e) {} location.reload(); } };
+      const retryBtn = { label: 'Cek lagi', primary: true, fn: () => location.reload() };
+      const buyBtn = BUY_URL.indexOf('GANTI-') === -1 ? [{ label: 'Beli akses FocusNest', primary: true, fn: () => { location.href = BUY_URL; } }] : [];
+      if (!user.emailVerified) {
+        showBlock('Email belum terverifikasi', 'Masuk dengan Google, atau klik "Lupa kata sandi" di halaman masuk untuk mengatur kata sandi lewat email yang kamu pakai saat checkout.', [{ label: 'Kirim ulang email verifikasi', primary: true, fn: async () => { try { await A.sendEmailVerification(user); alert('Email verifikasi dikirim. Cek inbox/spam.'); } catch (e) { alert('Tunggu sebentar lalu coba lagi.'); } } }, { label: 'Sudah verifikasi — cek lagi', fn: async () => { try { await user.reload(); } catch (e) {} location.reload(); } }, logoutBtn]); return;
+      }
+      let ok = false;
+      try {
+        const m = await F.getDoc(F.doc(db, 'members', (user.email || '').toLowerCase()));
+        ok = m.exists() && m.data().active === true;
+      } catch (e) {
+        console.error('[FocusNest] Gagal cek member:', e);
+        showBlock('Gagal memeriksa status member', 'Cek koneksi internetmu lalu coba lagi.', [retryBtn, logoutBtn]); return;
+      }
+      if (!ok) {
+        window.__blk = 1; try { await user.delete(); } catch (e) { try { await A.signOut(auth); } catch (e2) {} }   // non-member: akun dihapus & dikeluarkan
+        showBlock('Email ini belum terdaftar sebagai member', 'Akses FocusNest khusus member. Kamu masuk sebagai ' + user.email + '. Gunakan email yang sama dengan saat checkout. Baru bayar? Tunggu 1-2 menit lalu tekan "Cek lagi".', buyBtn.concat([{ label: 'Cek lagi', fn: () => location.reload() }, logoutBtn])); return;
+      }
       try { await start(user); } catch (e) { console.error('[FocusNest] Gagal memulai sesi:', e); }
       hideOV();
     });
