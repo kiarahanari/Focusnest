@@ -1781,16 +1781,17 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
             o.setAttribute('style', 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:14px');
             const E2 = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
             const draw = async () => {
-              const qs = await F.getDocs(F.collection(db, 'members')), rows = [];
+              let qs; try { qs = await F.getDocs(F.collection(db, 'members')); } catch (e) { alert('Gagal membaca daftar member: ' + (e.code || e.message) + '\n\nPeriksa Firestore Rules dan pastikan dokumen admins/' + em + ' ada.'); o.remove(); return; }
+              const rows = [];
               qs.forEach(d => rows.push([d.id, d.data().active === true]));
               o.innerHTML = '<div class="c" style="max-width:480px;width:100%;max-height:85vh;overflow:auto"><h2>🛡️ Kelola member (' + rows.length + ')</h2>' +
                 '<div class="f"><input id="ame" type="email" placeholder="email member baru"><button class="b n" id="aad">Tambah</button></div>' +
                 rows.map(([e, a]) => '<div class="tk"><div><b>' + E2(e) + '</b> <span class="tag">' + (a ? 'aktif' : 'nonaktif') + '</span></div><button class="b s sm" data-t="' + E2(e) + '" data-v="' + (a ? 0 : 1) + '">' + (a ? 'Nonaktifkan' : 'Aktifkan') + '</button><button class="b x sm" data-d="' + E2(e) + '">Hapus</button></div>').join('') +
                 '<button class="b" id="acl" style="margin-top:10px">Tutup</button></div>';
               o.querySelector('#acl').onclick = () => o.remove();
-              o.querySelector('#aad').onclick = async () => { const v = o.querySelector('#ame').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(v)) { alert('Format email salah'); return; } await F.setDoc(F.doc(db, 'members', v), { active: true, addedAt: F.serverTimestamp() }); draw(); };
-              o.querySelectorAll('[data-t]').forEach(b => b.onclick = async () => { await F.setDoc(F.doc(db, 'members', b.dataset.t), { active: b.dataset.v === '1' }, { merge: true }); draw(); });
-              o.querySelectorAll('[data-d]').forEach(b => b.onclick = async () => { if (confirm('Hapus ' + b.dataset.d + '?')) { await F.deleteDoc(F.doc(db, 'members', b.dataset.d)); draw(); } });
+              o.querySelector('#aad').onclick = async () => { const v = o.querySelector('#ame').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(v)) { alert('Format email salah'); return; } try { await F.setDoc(F.doc(db, 'members', v), { active: true, addedAt: F.serverTimestamp() }); } catch (e) { alert('Gagal menambah member: ' + (e.code || e.message) + (e.code === 'permission-denied' ? '\n\nRules menolak. Pastikan Rules terbaru sudah dipublish dan dokumen admins/' + em + ' ada.' : '')); return; } draw(); };
+              o.querySelectorAll('[data-t]').forEach(b => b.onclick = async () => { try { await F.setDoc(F.doc(db, 'members', b.dataset.t), { active: b.dataset.v === '1' }, { merge: true }); } catch (e) { alert('Gagal mengubah: ' + (e.code || e.message)); return; } draw(); });
+              o.querySelectorAll('[data-d]').forEach(b => b.onclick = async () => { if (confirm('Hapus ' + b.dataset.d + '?')) { try { await F.deleteDoc(F.doc(db, 'members', b.dataset.d)); } catch (e) { alert('Gagal menghapus: ' + (e.code || e.message)); return; } draw(); } });
             };
             document.body.appendChild(o); draw();
           };
@@ -1874,7 +1875,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       }
       if (!ok) {
         window.__blk = 1; try { await user.delete(); } catch (e) { try { await A.signOut(auth); } catch (e2) {} }   // non-member: akun dihapus & dikeluarkan
-        showBlock('Email ini belum terdaftar sebagai member', 'Akses FocusNest khusus member. Kamu masuk sebagai ' + user.email + '. Gunakan email yang sama dengan saat checkout. Baru bayar? Tunggu 1-2 menit lalu tekan "Cek lagi".', buyBtn.concat([{ label: 'Cek lagi', fn: () => location.reload() }, logoutBtn])); return;
+        showBlock('Email ini belum terdaftar sebagai member', 'Akses FocusNest khusus member. Kamu masuk sebagai ' + user.email + '. Dokumen yang dicari: members/' + (user.email || '').toLowerCase() + ' dengan field active = true (boolean). Gunakan email yang sama dengan saat checkout. Baru bayar? Tunggu 1-2 menit lalu tekan "Cek lagi".', buyBtn.concat([{ label: 'Cek lagi', fn: () => location.reload() }, logoutBtn])); return;
       }
       try { await start(user); } catch (e) { console.error('[FocusNest] Gagal memulai sesi:', e); }
       hideOV();
