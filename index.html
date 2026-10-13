@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>FocusNest — Plan · Focus · Grow · Achieve</title>
-<!-- build: v8 -->
+<!-- build: v9 -->
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -780,7 +780,7 @@ function guideHTML(){const st=guideSteps(),n=st.filter(x=>x[2]).length,box=(h,b)
   +box('✅ Langkah awal',st.map(([e,t,ok,k,b])=>`<div class="tk ${ok?'dn':''}"><span>${ok?'✅':e}</span><div><b>${t}</b></div>${ok?'':`<button class="b s sm" data-a="pg" data-k="${k}">${b}</button>`}</div>`).join(''))
   +box('🧭 Cara kerja FocusNest',`<div class="gfl"><span>🎯 Goal</span>›<span>📅 Jadwal tugas</span>›<span>✅ Tugas</span>›<span>⏱️ Fokus</span>›<span>⭐ Poin & Pet</span>›<span>📈 Review</span></div><ul class="gl2"><li><b>Goals</b>: tulis tujuan besar + alasan + target terukur + deadline.</li><li><b>Jadwal tugas</b>: di tiap goal, tentukan aktivitas, hari & jam — otomatis jadi tugas harian.</li><li><b>Tugas</b>: beri jam, kategori, prioritas, kesulitan & pengingat 🔔. Selesai = dapat poin.</li><li><b>Fokus</b>: Pomodoro + musik latar pilihanmu.</li><li><b>Mood & Progres</b>: cek energi, konsistensi, dan tulis refleksi tiap minggu.</li></ul>`)
   +box('🗓️ Rutinitas harian 3 langkah',`<ul class="gl2"><li>☀️ <b>Pagi (2 menit)</b>: buka Beranda, pilih maksimal 3 tugas 🔴 prioritas, cek mood.</li><li>🌤️ <b>Siang</b>: kerjakan dengan Pomodoro di Fokus. Mulai dari yang paling penting.</li><li>🌙 <b>Malam (2 menit)</b>: centang yang selesai, pindahkan sisa tugas ke besok, catat refleksi singkat.</li></ul>`)
-  +box('🧩 Punya banyak goals & rencana?',`<ul class="gl2"><li>Fokus maksimal <b>3 goal aktif</b> sekaligus. Sisanya simpan dulu.</li><li>Seimbangkan <b>kategori</b> (Karir, Akademik, Kesehatan, dll). Kelola kategori di halaman Tugas → 🏷️.</li><li>Rumus <b>1-3-5</b> per hari: 1 tugas besar, 3 sedang, 5 kecil.</li><li>Tugas besar? Pecah jadi <b>checklist</b> kecil di ✏️ Edit.</li><li>Kewalahan? <b>Pindahkan tanggalnya</b>, jangan langsung dihapus. Total estimasi realistis: maksimal ±6 jam efektif per hari.</li></ul>`)
+  +box('🧩 Punya banyak goals & rencana?',`<ul class="gl2"><li>Fokus maksimal <b>3 goal aktif</b> sekaligus. Sisanya simpan dulu.</li><li>Seimbangkan <b>kategori</b> (Karir, Akademik, Kesehatan, dll). Kelola kategori di halaman Goals → 🏷️.</li><li>Rumus <b>1-3-5</b> per hari: 1 tugas besar, 3 sedang, 5 kecil.</li><li>Tugas besar? Pecah jadi <b>checklist</b> kecil di ✏️ Edit.</li><li>Kewalahan? <b>Pindahkan tanggalnya</b>, jangan langsung dihapus. Total estimasi realistis: maksimal ±6 jam efektif per hari.</li></ul>`)
   +box('⭐ Prioritas vs Kesulitan',`<p class="mu" style="margin:0">🔴 Tinggi = penting & mendesak · 🟡 Sedang = penting tapi tidak mendesak · 🟢 Rendah = boleh ditunda.</p><p class="mu" style="margin:8px 0 0">Kerjakan tugas Sulit saat energimu tinggi (lihat Mood). Tugas Mudah cocok untuk hari berenergi rendah.</p>`)
   +box('⏰ Pengingat & musik',`<ul class="gl2"><li>Beri <b>jam</b> pada tugas agar diingatkan. Atur waktu (mis. 10 menit sebelumnya), bunyi, dan notifikasi di <b>Atur → Pengingat</b>.</li><li>Pengingat aktif selama FocusNest terbuka di tab browser (boleh di latar belakang).</li><li>Di <b>Fokus</b>, pilih musik latar langsung dari daftar musik, volumenya sama dengan halaman Musik.</li></ul>`)
   +`<button class="b" data-a="gclose">Mengerti, mulai! 🚀</button>`}
@@ -1177,7 +1177,6 @@ const DW=['Min','Sen','Sel','Rab','Kam','Jum','Sab'],gz=id=>{const e=document.ge
 const addD=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)},dow=d=>new Date(d+'T12:00:00').getDay();
 const E=esc,PL=['Tahunan','Bulanan','Mingguan'];window.zPlay=function(a,b){return zPlay(a,b)};
 function init(){S.rt=S.rt||[];S.plan=S.plan||[];S.al=S.al||[]}
-const TPL=[['🚶 Jalan pagi',30,'06:00','Kesehatan'],['💧 Minum air 8 gelas',0,'','Kesehatan'],['📖 Baca 15 menit',15,'20:00','Pengembangan diri'],['🏋️ Olahraga',30,'17:00','Kesehatan'],['📚 Belajar rutin',60,'19:00','Akademik'],['😴 Tidur tepat waktu',0,'22:00','Kesehatan']];
 function mkTask(r,d){return{id:uid(),t:r.t,cat:r.cat||'Pengembangan diri',pri:'Sedang',dif:'Sedang',gid:'',mid:'',tj:r.goal?'Rutinitas untuk goal: '+((S.plan.find(g=>g.id===r.goal)||{}).t||''):'Kebiasaan harian',cl:[],due:d,time:r.time||'',est:+r.min||0,st:'belum mulai',act:0,rid:r.id,hb:r.goal?0:1}}
 function ensureRt(){init();let ch=0;[TD(),addD(TD(),1)].forEach(d=>S.rt.forEach(r=>{if(r.on!==false&&(r.days||[0,1,2,3,4,5,6]).includes(dow(d))&&d>=(r.start||d)&&!S.tasks.some(t=>t.rid===r.id&&t.due===d)){S.tasks.push(mkTask(r,d));ch=1}}));if(ch)sv()}
 const cur=g=>(g.log||[]).reduce((a,x)=>a+x.v,0)+S.tasks.filter(t=>t.st==='selesai'&&t.rid&&S.rt.some(r=>r.id===t.rid&&r.goal===g.id)).reduce((a,t)=>a+(+S.rt.find(r=>r.id===t.rid).v||1),0);
@@ -1189,10 +1188,6 @@ return`<div class="${lv?'zc':''}"><div class="c"><div class="f" style="flex-wrap
 V.plan=()=>{init();const top=S.plan.filter(g=>!g.pid||!S.plan.some(x=>x.id===g.pid));
 return`<h1>Rencana 🎯</h1><div class="c" style="margin-top:12px"><h2>🧭 Cara kerja (4 langkah)</h2><ol class="mu" style="padding-left:18px;margin:6px 0"><li><b>Goal Tahunan</b> (SMART): spesifik, ada angka target, realistis, penting buatmu, ada batas waktu.</li><li><b>Pecah</b> ke Bulanan → Mingguan (tombol ✂️ membagi target otomatis).</li><li><b>Tugas harian rutin</b> 🔁: tugas yang diulang tiap hari (mis. belajar 60 mnt). Otomatis muncul di Tugas & menambah progres saat dicentang.</li><li><b>Cek jalur</b>: kartu goal menunjukkan sesuai jalur atau tertinggal. Milestone boleh selesai, goal baru tercapai bila angka target terpenuhi.</li></ol></div>
 <div class="c"><h2>➕ Goal baru</h2><div class="f"><select id="z-lv">${PL.map(x=>`<option>${x}</option>`).join('')}</select><select id="z-pid"><option value="">Tanpa induk</option>${S.plan.filter(x=>x.lvl!=='Mingguan').map(x=>`<option value="${x.id}">${x.lvl}: ${E(x.t)}</option>`).join('')}</select><input id="z-t" placeholder="S – Spesifik: contoh Lulus ujian SKD" style="flex:2 1 200px"></div><div class="f" style="margin-top:8px"><input id="z-sp" placeholder="R – Kenapa penting? / A – kenapa realistis?" style="flex:2 1 200px"><input id="z-tg" type="number" min="1" placeholder="M – Target angka (mis. 100)"><input id="z-un" placeholder="Satuan (jam, sesi, soal)"><input id="z-d" type="date" title="T – Batas waktu"><button class="b n" data-z="gadd">Simpan</button></div></div>${top.length?top.map(g=>gCard(g)).join(''):'<div class="c mu">Belum ada goal. Contoh: Tahunan “Lulus SKD” target 300 jam belajar.</div>'}`};
-function hbTpl(i){const t=TPL[i];S.rt.push({id:uid(),t:t[0],min:t[1],time:t[2],cat:t[3],days:[0,1,2,3,4,5,6],on:true,v:1,kind:'habit',goal:'',start:TD()});(window.ensureRt2||ensureRt)()}
-V.habit=()=>{init();const l7=[6,5,4,3,2,1,0].map(i=>addD(TD(),-i));
-return`<h1>Kebiasaan 🔁</h1><div class="c" style="margin-top:12px"><h2>⚡ Tugas simpel (klik untuk jadikan kebiasaan)</h2><p class="mu">Setelah ditambah, semua bisa diedit di bawah dan otomatis diduplikasi ke hari berikutnya.</p>${TPL.map((t,i)=>`<button class="zchip" data-z="tpl" data-i="${i}">${t[0]}</button>`).join('')}<div class="f" style="margin-top:8px"><input id="z-ht" placeholder="Kebiasaan sendiri…"><input id="z-hm" type="number" min="0" placeholder="menit" style="flex:0 1 90px"><input id="z-hh" type="time"><button class="b n" data-z="hadd">Tambah</button></div></div>${S.rt.length?S.rt.map(r=>{let sk=0;for(let i=0;i<60;i++){const d=addD(TD(),-i);if(!(r.days||[]).includes(dow(d))||d<(r.start||d))continue;if(S.tasks.some(t=>t.rid===r.id&&t.due===d&&t.st==='selesai'))sk++;else if(i>0)break}
-return`<div class="c"><div class="f"><input data-zf="${r.id}" data-k="t" value="${E(r.t)}" style="flex:2 1 160px"><input data-zf="${r.id}" data-k="time" type="time" value="${r.time||''}" style="flex:0 1 110px"><input data-zf="${r.id}" data-k="min" type="number" min="0" value="${r.min||0}" style="flex:0 1 80px" title="menit"><select data-zf="${r.id}" data-k="goal"><option value="">Tanpa goal</option>${S.plan.map(g=>`<option value="${g.id}" ${g.id===r.goal?'selected':''}>${E(g.t)}</option>`).join('')}</select></div><div class="f zdays" style="margin-top:6px">${DW.map((d,i)=>`<button class="${(r.days||[]).includes(i)?'on':''}" data-z="day" data-i="${r.id}" data-d="${i}">${d[0]}</button>`).join('')}<span class="zd">${l7.map(d=>{const sc=(r.days||[]).includes(dow(d)),dn=S.tasks.some(t=>t.rid===r.id&&t.due===d&&t.st==='selesai');return`<i class="${dn?'ok':sc?'mis':''}" title="${d}">${DW[dow(d)][0]}</i>`}).join('')}</span><span class="mu">🔥 ${sk} hari</span><button class="b s sm" data-z="ron" data-i="${r.id}">${r.on===false?'▶ Aktifkan':'⏸ Jeda'}</button><button class="b x" data-z="rdel" data-i="${r.id}">🗑</button></div></div>`}).join(''):''}`};
 /* ---------- Alarm ---------- */
 const ZT=window.ZT={sync:['🔗 Ikuti nada pengingat','sine',[880,1175,1568],.3],bell:['🔔 Lonceng','sine',[880,1175,1568],.3],digi:['📟 Digital','square',[1000,0,1000,0,1400,0],.15],siren:['🚨 Sirine','sawtooth','s'],harp:['🎼 Harpa','triangle',[523,659,784,1047,784,659],.25],radar:['📡 Radar','sine',[1200,0,0,0],.2],bird:['🐦 Kicau','sine','b'],arcade:['🎮 Arkade','square',[659,784,988,1319,988,784],.12],gong:['🛎️ Gong','sine',[196,0,0,0,0],.5],soft:['🌙 Lembut','triangle',[523,659,784,659],.45],morn:['🌅 Pagi ceria','triangle',[784,988,1175,1568,1175,988],.2],pulse:['💓 Detak','square',[440,0,440,0,0,0],.22],wave:['🌊 Gelombang','sine',[330,392,494,587,494,392],.35]};
 let ZR=null;function zStop(){if(ZR){clearInterval(ZR.iv);clearTimeout(ZR.to)}ZR=null;const o=document.getElementById('zring');if(o)o.remove()}
@@ -1216,8 +1211,6 @@ function hero(){const p=S.pet,h=$('.hero');if(!p||!h||h.querySelector('.mhero'))
 function enh(){init();
 if(pg==='dash')hero();
 if(pg==='focus'){const h=$('#app h1');if(h&&!$('#app .mclk'))h.insertAdjacentHTML('afterend','<div class="mclk"></div>')}
-document.querySelectorAll('#app [data-a="et"]').forEach(b=>{if(b.previousElementSibling&&b.previousElementSibling.dataset&&b.previousElementSibling.dataset.z==='hab')return;const i=b.dataset.i;b.insertAdjacentHTML('beforebegin',`<button class="b x sm" data-z="dup" data-i="${i}" title="Duplikat tugas" aria-label="Duplikat">⧉</button><button class="b x sm" data-z="hab" data-i="${i}" title="Jadikan kebiasaan harian" aria-label="Jadikan kebiasaan">🔁</button>`)});
-if(pg==='tasks'&&!$('#ztp'))$('#app h1').insertAdjacentHTML('afterend',`<div class="c" id="ztp"><b>⚡ Tugas simpel:</b> ${TPL.map((t,i)=>`<button class="zchip" data-z="qt" data-i="${i}">${t[0]}</button>`).join('')}<p class="mu" style="margin:4px 0 0">Klik untuk menambah ke hari ini (bisa diedit ✏️). Tombol ⧉ menduplikat, 🔁 menjadikannya kebiasaan harian.</p></div>`);
 if(pg==='prog'&&!$('#zpd'))$('#app').insertAdjacentHTML('beforeend',`<div class="c" id="zpd"><h2>📄 Unduh PDF</h2><div class="f"><select id="z-pk"><option value="semua">Semua</option><option value="progres">Progres</option><option value="review">Review</option><option value="mood">Mood & Energi</option></select><select id="z-pn"><option value="7">7 hari</option><option value="30" selected>30 hari</option><option value="90">90 hari</option></select><button class="b" data-z="pdf">Unduh PDF</button></div><p class="mu">Di jendela cetak pilih “Simpan sebagai PDF”.</p></div>`)}
 const _rd=render;render=function(){(window.ensureRt2||ensureRt)();_rd();enh()};
 const _pm=petMini;petMini=function(){return S.pet?'':_pm()};
@@ -1228,15 +1221,7 @@ setInterval(()=>{mclk();zTick()},1000);
 /* ---------- Aksi ---------- */
 const sr=m=>{sv();render();if(m)toast(m)};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-z]');if(!b)return;init();const z=b.dataset.z,i=b.dataset.i,T=S.tasks.find(x=>x.id===i),G=S.plan.find(x=>x.id===i);
-if(z==='dup'&&T){const d=prompt('Duplikat ke tanggal (YYYY-MM-DD):',addD(T.due||TD(),1));if(!d||!/^\d{4}-\d\d-\d\d$/.test(d))return;const c=JSON.parse(JSON.stringify(T));Object.assign(c,{id:uid(),due:d,st:'belum mulai',doneAt:null,rw:0,act:0,nfa:0,nfb:0,nfe:0,snz:0,rid:''});c.t=T.t;(c.cl||[]).forEach(x=>{x.id=uid();x.d=false});S.tasks.push(c);edt=c.id;sr('Tugas diduplikat ke '+d+' — silakan edit ✏️')}
-else if(z==='hab'&&T){S.rt.push({id:uid(),t:T.t,min:T.est||0,time:T.time||'',cat:T.cat,days:[0,1,2,3,4,5,6],on:true,v:1,kind:'habit',goal:'',start:addD(T.due||TD(),1)});sr('Jadi kebiasaan harian 🔁 (atur di menu Kebiasaan)')}
-else if(z==='qt'){const t=TPL[+i];S.tasks.push(mkTask({t:t[0],min:t[1],time:t[2],cat:t[3],id:''},TD()));sr('Ditambahkan ke hari ini');if(confirm('Jadikan kebiasaan harian juga?'))hbTpl(+i),sr()}
-else if(z==='tpl'){hbTpl(+i);sr('Kebiasaan ditambahkan')}
-else if(z==='hadd'){const t=gz('z-ht');if(!t)return;S.rt.push({id:uid(),t,min:+gz('z-hm')||0,time:gz('z-hh'),cat:'Pengembangan diri',days:[0,1,2,3,4,5,6],on:true,v:1,kind:'habit',goal:'',start:TD()});sr('Kebiasaan ditambahkan')}
-else if(z==='day'){const r=S.rt.find(x=>x.id===i),d=+b.dataset.d;r.days=r.days||[0,1,2,3,4,5,6];r.days=r.days.includes(d)?r.days.filter(x=>x!==d):r.days.concat(d);sr()}
-else if(z==='ron'){const r=S.rt.find(x=>x.id===i);r.on=r.on===false;sr()}
-else if(z==='rdel'){if(confirm('Hapus kebiasaan ini? (tugas yang sudah dibuat tetap ada)')){S.rt=S.rt.filter(x=>x.id!==i);sr()}}
-else if(z==='gadd'){const t=gz('z-t');if(!t){toast('Isi nama goal dulu');return}S.plan.push({id:uid(),lvl:gz('z-lv'),pid:gz('z-pid'),t,sp:gz('z-sp'),tgt:+gz('z-tg')||0,unit:gz('z-un'),due:gz('z-d'),s0:TD(),log:[]});sr('Goal tersimpan 🎯')}
+if(z==='gadd'){const t=gz('z-t');if(!t){toast('Isi nama goal dulu');return}S.plan.push({id:uid(),lvl:gz('z-lv'),pid:gz('z-pid'),t,sp:gz('z-sp'),tgt:+gz('z-tg')||0,unit:gz('z-un'),due:gz('z-d'),s0:TD(),log:[]});sr('Goal tersimpan 🎯')}
 else if(z==='gdel'&&G){if(confirm('Hapus goal beserta turunannya?')){const rm=x=>{S.plan.filter(k=>k.pid===x).forEach(k=>rm(k.id));S.plan=S.plan.filter(k=>k.id!==x);S.rt.forEach(r=>{if(r.goal===x)r.goal=''})};rm(i);sr()}}
 else if(z==='glog'&&G){const v=parseFloat(prompt('Tambah progres berapa '+(G.unit||'')+'?','1'));if(v){G.log=G.log||[];G.log.push({d:TD(),v});sr('Progres dicatat ✅')}}
 else if(z==='grt'&&G){const t=prompt('Nama tugas harian (mis. Belajar latihan soal):');if(!t)return;const m=+prompt('Durasi per hari (menit):','60')||0,tm=prompt('Jam mulai (HH:MM, kosongkan jika bebas):','19:00')||'',v=parseFloat(prompt('Kontribusi per sesi selesai ('+(G.unit||'satuan')+'):','1'))||1;S.rt.push({id:uid(),t,min:m,time:tm,cat:'Akademik',days:[0,1,2,3,4,5,6],on:true,v,goal:G.id,start:TD()});sr('Tugas harian rutin dibuat 🔁')}
@@ -1302,7 +1287,7 @@ const nxt=r=>{const T=TD();for(let i=0;i<=400;i++){const d=addD(T,i);if(occ(r,d)
 
 /* ---------- form ---------- */
 const gForm=g=>{g=g||{};const ty=g.type||'short';return `<div class="c gform" style="border-color:var(--ac)"><h2>${g.id?'✏️ Edit goal':'🎯 Langkah 1 — Goal utama'}</h2>
-<div class="f"><select id="g-ty" aria-label="Jenis goal"><option value="short" ${ty==='short'?'selected':''}>⚡ Jangka pendek — ada target tanggal</option><option value="long" ${ty==='long'?'selected':''}>🌳 Jangka panjang — proses, tanpa tenggat pasti</option></select><select id="g-cat" aria-label="Kategori">${opt(CAT,g.cat)}</select></div>
+<div class="f"><select id="g-cat" aria-label="Kategori">${opt(CAT,g.cat)}</select></div>
 <input id="g-t" style="margin-top:8px" placeholder="Goal utama — mis. Lulus tes SKD" value="${E(g.t||'')}" aria-label="Goal">
 <div class="f" style="margin-top:8px"><label class="mu">Tenggat / tanggal tes <small>(kosongkan jika belum tahu)</small><input id="g-due" type="date" value="${g.due||''}"></label><label class="mu">Target progress <small>(jumlah sesi selesai)</small><input id="g-tg" type="number" min="0" value="${g.tgt||''}"></label></div>
 <div class="f" style="margin-top:10px"><button class="b n" data-n="gsave" data-i="${g.id||''}">${g.id?'Simpan perubahan':'Simpan & lanjut atur rencana ›'}</button><button class="b s n" data-n="gx">Batal</button></div></div>`};
@@ -1319,30 +1304,20 @@ window.fnRep=s=>{const f=s.closest('.pform');f.querySelectorAll('[data-r]').forE
 function gCard(g){const pl=S.rt.filter(r=>r.goal===g.id),pc=gPct(g),dn=S.tasks.filter(t=>t.gid===g.id&&t.st==='selesai').length,
  left=g.due?Math.ceil((new Date(g.due+'T12:00')-new Date(TD()+'T12:00'))/864e5):null,sm=smart(g,pl),miss=sm.find(x=>!x[2]);
  const log=S.tasks.filter(t=>t.gid===g.id&&t.st==='selesai').reduce((a,t)=>{const r=t.rid&&S.rt.find(x=>x.id===t.rid);return a+(r&&+r.v>0?+r.v:1)},0);
- return `<div class="c"><div class="f" style="flex-wrap:nowrap;align-items:flex-start"><div style="flex:1;min-width:0"><h2 style="margin:0">${g.fin?'🏁 ':''}${E(g.t)}</h2><span class="tag">${g.type==='long'?'🌳 Jangka panjang':'⚡ Jangka pendek'}</span><span class="tag">${E(g.cat||'')}</span>${g.due?`<span class="mu">📅 ${fmtD(g.due,{day:'numeric',month:'short',year:'numeric'})}${left!=null&&!g.fin?(left>=0?' · sisa '+left+' hari':' · lewat '+(-left)+' hari'):''}</span>`:'<span class="mu">♾️ tanpa tenggat</span>'}</div><button class="b x n" data-n="gedit" data-i="${g.id}" aria-label="Edit goal" title="Edit goal">✏️</button><button class="b x n" data-n="gdel" data-i="${g.id}" aria-label="Hapus goal" title="Hapus goal">🗑</button></div>
+ return `<div class="c"><div class="f" style="flex-wrap:nowrap;align-items:flex-start"><div style="flex:1;min-width:0"><h2 style="margin:0">${g.fin?'🏁 ':''}${E(g.t)}</h2><span class="tag">${E(g.cat||'')}</span>${g.due?`<span class="mu">📅 ${fmtD(g.due,{day:'numeric',month:'short',year:'numeric'})}${left!=null&&!g.fin?(left>=0?' · sisa '+left+' hari':' · lewat '+(-left)+' hari'):''}</span>`:'<span class="mu">♾️ tanpa tenggat</span>'}</div><button class="b x n" data-n="gedit" data-i="${g.id}" aria-label="Edit goal" title="Edit goal">✏️</button><button class="b x n" data-n="gdel" data-i="${g.id}" aria-label="Hapus goal" title="Hapus goal">🗑</button></div>
  ${g.why?`<p class="mu" style="margin:6px 0 0">💛 ${E(g.why)}</p>`:''}${g.measure?`<p class="mu" style="margin:2px 0 0">📏 ${E(g.measure)}</p>`:''}
  <div class="bar"><i style="width:${pc}%"></i></div><p class="mu" style="margin:0"><b>${pc}%</b> · ✅ ${dn} sesi/tugas selesai${g.tgt>0?` · ${Math.round((log)*10)/10}/${g.tgt} ${E(g.unit||'')}`:''}${!g.due&&!g.tgt?' · <i>konsistensi 14 hari terakhir</i>':''}</p>
- <div class="f" style="margin:6px 0;gap:4px">${sm.map(x=>`<span class="tag" title="${x[1]}${x[2]?' ✔':' — '+x[3]}" style="${x[2]?'':'opacity:.4'}">${x[0]}${x[2]?'✔':''}</span>`).join('')}${miss&&!g.fin?`<span class="mu" style="flex:1 1 200px">💡 ${miss[3]}</span>`:''}</div>
  <h3 style="margin:10px 0 4px">📅 Jadwal tugas <span class="mu">(${pl.length})</span></h3>
- ${pl.length?pl.map(r=>`<div class="tk"><div><b>${E(r.t)}</b>${r.on===false?' <span class="tag">⏸ jeda</span>':''}<br><span class="mu">🔁 ${rd(r)}${r.time?' · ⏰ '+r.time:''}${r.min?' · '+r.min+' mnt':''} · berikutnya: ${nxt(r)}</span></div><button class="b x sm" data-n="pon" data-i="${r.id}" title="${r.on===false?'Aktifkan':'Jeda'}">${r.on===false?'▶':'⏸'}</button><button class="b x sm" data-n="pedit" data-i="${r.id}" title="Edit">✏️</button><button class="b x sm" data-n="pdel" data-i="${r.id}" title="Hapus">🗑</button></div>`).join(''):'<p class="mu" style="margin:0">Belum ada rencana. Tambahkan jadwal belajar/latihanmu 👇</p>'}
+ ${pl.length?pl.map(r=>`<div class="tk"><div><b>${E(r.t)}</b><br><span class="mu">🔁 ${rd(r)}${r.time?' · ⏰ '+r.time:''}${r.min?' · '+r.min+' mnt':''} · berikutnya: ${nxt(r)}</span></div><button class="b x sm" data-n="pedit" data-i="${r.id}" title="Edit">✏️</button><button class="b x sm" data-n="pdel" data-i="${r.id}" title="Hapus">🗑</button></div>`).join(''):'<p class="mu" style="margin:0">Belum ada rencana. Tambahkan jadwal belajar/latihanmu 👇</p>'}
  ${pf&&pf.g===g.id?pForm(g.id,pf.id&&S.rt.find(r=>r.id===pf.id)):''}
  <div class="tabs" style="margin-bottom:0"><button class="b s sm" data-n="padd" data-i="${g.id}">＋ Rencana jadwal</button><button class="b s sm" data-n="gtask" data-i="${g.id}">＋ Tugas sekali</button><button class="b s sm" data-n="gfin" data-i="${g.id}">${g.fin?'↩ Buka lagi':'🏁 Tandai tercapai'}</button></div></div>`}
 
-V.goals=function(){mig();const gs=S.goals.filter(g=>gtab==='all'||g.type===gtab),n=k=>S.goals.filter(g=>k==='all'||g.type===k).length;
+V.goals=function(){mig();const gs=S.goals;
  return `<h1>Goals 🎯</h1>
- <details class="c" style="margin-top:12px" ${S.goals.length?'':'open'}><summary style="cursor:pointer"><b>🧭 Cara kerja — 3 langkah mudah</b></summary><ol class="mu" style="padding-left:18px;margin:8px 0 0"><li><b>Goal utama</b>: pilih jangka pendek (ada tanggal) atau jangka panjang (proses terus-menerus).</li><li><b>Rencana jadwal</b>: tentukan aktivitas, hari & jam — harian, hari tertentu, bulanan, tahunan, atau sekali saja.</li><li><b>Otomatis jadi tugas</b> di Tugas, Kalender & Tahunan. Centang tugas → progres goal naik.</li></ol><p class="mu" style="margin:8px 0 0">Contoh: Goal <i>Lulus SKD</i> → rencana <i>TIU</i> (Sen, Rab), <i>TWK</i> (Sel, Kam), <i>TKP</i> (Jum), <i>TOEFL</i> (Sab), <i>Speaking</i> (Min).</p></details>
- ${gf?gForm(gf==='new'?null:S.goals.find(g=>g.id===gf)):`<div class="f" style="margin-bottom:12px"><button class="b" data-n="gnew" style="flex:0 0 auto">＋ Goal baru</button><div class="tabs" style="margin:0">${[['all','Semua'],['short','⚡ Pendek'],['long','🌳 Panjang']].map(([k,l])=>`<button class="b ${gtab===k?'':'s'} sm" data-n="gtab" data-k="${k}">${l} (${n(k)})</button>`).join('')}</div></div>`}
+ <details class="c" style="margin-top:12px" ${S.goals.length?'':'open'}><summary style="cursor:pointer"><b>🧭 Cara kerja — 3 langkah mudah</b></summary><ol class="mu" style="padding-left:18px;margin:8px 0 0"><li><b>Goal utama</b>: tulis goal, tenggat (boleh kosong) dan target.</li><li><b>Rencana jadwal</b>: tentukan aktivitas, hari & jam — harian, hari tertentu, bulanan, tahunan, atau sekali saja.</li><li><b>Otomatis jadi tugas</b> di Tugas, Kalender & Tahunan. Centang tugas → progres goal naik.</li></ol><p class="mu" style="margin:8px 0 0">Contoh: Goal <i>Lulus SKD</i> → rencana <i>TIU</i> (Sen, Rab), <i>TWK</i> (Sel, Kam), <i>TKP</i> (Jum), <i>TOEFL</i> (Sab), <i>Speaking</i> (Min).</p></details>
+ ${gf?gForm(gf==='new'?null:S.goals.find(g=>g.id===gf)):`<div class="f" style="margin-bottom:12px"><button class="b" data-n="gnew" style="flex:0 0 auto">＋ Goal baru</button></div>`}
  ${gs.length?gs.map(gCard).join(''):(gf?'':`<div class="c mu">Belum ada goal${gtab==='all'?'':' di kategori ini'}. Klik <b>＋ Goal baru</b> untuk mulai. Tips: 1–3 goal aktif sudah cukup.</div>`)}`};
 V.plan=V.goals;
-
-/* ---------- kebiasaan (simpel, tanpa prioritas/kesulitan) ---------- */
-const HT=[['🚶 Jalan pagi',30,'06:00'],['💧 Minum air 8 gelas',0,''],['📖 Baca 15 menit',15,'20:00'],['🏋️ Olahraga',30,'17:00'],['🛏️ Tidur tepat waktu',0,'22:00'],['🧘 Meditasi 5 menit',5,'']];
-V.habit=function(){mig();const T=TD(),hs=S.rt.filter(isHab),ts=S.tasks.filter(t=>t.hb&&(t.due||T)===T).sort(byTime),d=ts.filter(t=>t.st==='selesai').length,l7=[6,5,4,3,2,1,0].map(i=>addD(T,-i));
- return `<h1>Kebiasaan 🔁</h1><p class="mu">Kegiatan simpel yang diulang. Cukup dicentang — tanpa prioritas & tingkat kesulitan. Progresnya terpisah dari tugas.</p>
- <div class="c"><h2>Hari ini <span class="mu">${d}/${ts.length}</span></h2><div class="bar pf"><i style="width:${ts.length?Math.round(d/ts.length*100):0}%"></i></div>${ts.length?ts.map(t=>`<div class="tk ${t.st==='selesai'?'dn':''}"><input type="checkbox" aria-label="Selesai" data-a="tg" data-i="${t.id}" ${t.st==='selesai'?'checked':''}><div><b>${E(t.t)}</b>${t.time?` <span class="mu">⏰ ${t.time}</span>`:''}</div></div>`).join(''):'<p class="mu">Belum ada kebiasaan terjadwal hari ini.</p>'}</div>
- <div class="c"><h2>➕ Tugas simpel buatanmu</h2><div class="f" style="margin-top:8px"><input id="z-ht" placeholder="Kebiasaan sendiri…"><input id="z-hh" type="time" style="flex:0 1 110px"><button class="b n" data-z="hadd">Tambah</button></div></div>
- ${hs.map(r=>{let sk=0;for(let i=0;i<60;i++){const x=addD(T,-i);if(!occ(r,x)&&r.rep!=='day'&&!(r.days||[]).includes(new Date(x+'T12:00').getDay()))continue;if(x<(r.start||x))continue;if(S.tasks.some(t=>t.rid===r.id&&t.due===x&&t.st==='selesai'))sk++;else if(i>0)break}
- return `<div class="c"><div class="f"><input data-zf="${r.id}" data-k="t" value="${E(r.t)}" style="flex:2 1 160px"><input data-zf="${r.id}" data-k="time" type="time" value="${r.time||''}" style="flex:0 1 110px"></div><div class="f zdays" style="margin-top:6px">${ORD.map(i=>`<button class="${(r.days||[]).includes(i)?'on':''}" data-z="day" data-i="${r.id}" data-d="${i}" title="${DN[i]}">${DN[i][0]}</button>`).join('')}<span class="zd">${l7.map(x=>{const sc=(r.days||[]).includes(new Date(x+'T12:00').getDay()),dn=S.tasks.some(t=>t.rid===r.id&&t.due===x&&t.st==='selesai');return`<i class="${dn?'ok':sc?'mis':''}" title="${x}">${DN[new Date(x+'T12:00').getDay()][0]}</i>`}).join('')}</span><span class="mu">🔥 ${sk} hari</span><button class="b s sm" data-z="ron" data-i="${r.id}">${r.on===false?'▶ Aktifkan':'⏸ Jeda'}</button><button class="b x" data-z="rdel" data-i="${r.id}">🗑</button></div></div>`}).join('')}`};
 
 /* ---------- beranda, tugas, progres, kalender ---------- */
 window.dashHab=function(){mig();const T=TD(),hs=S.tasks.filter(t=>t.hb&&(t.due||T)===T).sort(byTime),d=hs.filter(t=>t.st==='selesai').length,gs=S.goals.filter(g=>!g.fin).slice(0,3);
@@ -1352,7 +1327,7 @@ window.dashHab=function(){mig();const T=TD(),hs=S.tasks.filter(t=>t.hb&&(t.due||
 (()=>{const o=V.prog;V.prog=()=>{const h=o(),R=pRange(),b=R.b<TD()?R.b:TD(),ts=S.tasks.filter(t=>t.hb&&inR(tDay(t),R.a,b)),dn=ts.filter(t=>t.st==='selesai').length,hs=S.rt.filter(isHab);
  return h+`<div class="c"><h2>🔁 Progres tugas rutin</h2><p><b>${dn}/${ts.length}</b> selesai · ${ts.length?Math.round(dn/ts.length*100):0}%</p><div class="bar pf"><i style="width:${ts.length?Math.round(dn/ts.length*100):0}%"></i></div>${hs.map(r=>{const x=ts.filter(t=>t.rid===r.id),y=x.filter(t=>t.st==='selesai').length;return x.length?`<p class="mu" style="margin:6px 0 0">${E(r.t)} — ${y}/${x.length}</p><div class="bar pf"><i style="width:${Math.round(y/x.length*100)}%"></i></div>`:''}).join('')}</div>`}})();
 (()=>{const o=V.cal;V.cal=()=>{const h=o(),dl=S.goals.filter(g=>g.due===cs&&!g.fin);return h+(dl.length?`<div class="c"><h2>🎯 Tenggat goal</h2>${dl.map(g=>`<p style="margin:4px 0"><b>${E(g.t)}</b> <span class="mu">${gp(g)}%</span></p>`).join('')}</div>`:'')}})();
-const _tg=tags;tags=function(t,ed,sm){if(t.rid||t.hb){const g=!sm&&t.gid&&gT(t.gid);return `<span class="tag pt" title="Poin saat selesai">✨ +${t.rw||ptsOf(t)}</span>`+(t.hb?'<span class="tag">🔁 kebiasaan</span>':'')+(g?`<span class="tag gl" title="Goal terkait">🎯 ${esc(g.t)}</span>`:'')}return _tg(t,ed,sm)};
+const _tg=tags;tags=function(t,ed,sm){if(t.rid||t.hb){const g=!sm&&t.gid&&gT(t.gid);return `<span class="tag pt" title="Poin saat selesai">✨ +${t.rw||ptsOf(t)}</span>`+(g?`<span class="tag gl" title="Goal terkait">🎯 ${esc(g.t)}</span>`:'')}return _tg(t,ed,sm)};
 const _dw=drawer;drawer=function(){_dw.apply(this,arguments);try{const T=edt&&S.tasks.find(x=>x.id===edt);if(T&&T.rid)document.querySelectorAll('#dr [data-k="pri"],#dr [data-k="dif"]').forEach(e=>{(e.closest('label')||e).style.display='none'})}catch(x){}};
 
 /* ---------- navigasi ---------- */
@@ -1365,8 +1340,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b
  else if(n==='gx'){gf=null;pf=null;render()}
  else if(n==='gtab'){gtab=b.dataset.k;render()}
  else if(n==='tf'){tf=b.dataset.k;render()}
- else if(n==='gsave'){const t=gv('g-t');if(!t){toast('Isi nama goal dulu');return}const ty=gv('g-ty')||'short',o={t,type:ty,cat:gv('g-cat'),why:gv('g-why'),measure:gv('g-ms'),due:gv('g-due'),tgt:+gv('g-tg')||0,unit:gv('g-un')};
-  if(ty==='short'&&!o.due)toast('Tip: isi tanggal target, atau pilih Jangka panjang jika belum tahu');
+ else if(n==='gsave'){const t=gv('g-t');if(!t){toast('Isi nama goal dulu');return}const ty=(G&&G.type)||'short',o={t,type:ty,cat:gv('g-cat'),why:gv('g-why'),measure:gv('g-ms'),due:gv('g-due'),tgt:+gv('g-tg')||0,unit:gv('g-un')};
   if(G){Object.assign(G,o);gf=null;ok('Goal diperbarui ✅')}else{const id=uid();S.goals.push({id,...o,log:[],s0:TD(),ms:[]});gf=null;pf={g:id,id:''};scr=true;ok('Goal tersimpan 🎯 — sekarang atur rencana jadwalnya')}}
  else if(n==='gdel'&&G){if(!confirm('Hapus goal ini beserta rencana jadwalnya?'))return;S.rt.filter(r=>r.goal===i).forEach(r=>{regen(r)});S.rt=S.rt.filter(r=>r.goal!==i);S.tasks.forEach(t=>{if(t.gid===i)t.gid=''});S.goals=S.goals.filter(x=>x.id!==i);ok('Goal dihapus')}
  else if(n==='gfin'&&G){G.fin=!G.fin;if(G.fin){try{gain(50,'Goal tercapai: '+G.t);if(S.pet)petPlus(10,10);burst(b,'🏆🎉✨',16)}catch(x){}toast('🏆 Goal tercapai! Kamu luar biasa!',true)}ok()}
@@ -1379,11 +1353,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b
   const o={t,rep,days:rep==='week'?dy:ALL.slice(),md:Math.min(31,Math.max(1,+gv('p-md')||1)),date:rep==='once'||rep==='year'?date:'',time:gv('p-tm'),min:+gv('p-mn')||0,end:fnEnd(),v:Math.max(.1,+gv('p-v')||1)},pid=b.dataset.p,r=pid&&S.rt.find(x=>x.id===pid);
   if(r){regen(r);Object.assign(r,o)}else S.rt.push({id:uid(),kind:'plan',goal:i,on:true,start:TD(),gen:{},cat:(S.goals.find(x=>x.id===i)||{}).cat,...o});pf=null;ok('Rencana tersimpan 📅 — tugas otomatis dibuat')}
  else if(n==='pdel'&&R){if(!confirm('Hapus rencana ini? Tugas mendatang yang belum dimulai ikut terhapus.'))return;regen(R);S.rt=S.rt.filter(x=>x.id!==i);ok('Rencana dihapus')}
- else if(n==='pon'&&R){R.on=R.on===false;if(R.on===false)regen(R);ok()}
- else if(n==='htpl'){const t=HT[+i];S.rt.push({id:uid(),kind:'habit',rep:'day',t:t[0],min:t[1],time:t[2],cat:'Kesehatan',days:ALL.slice(),on:true,v:1,goal:'',start:TD(),gen:{}});ok('Kebiasaan ditambahkan')}
 });
-document.addEventListener('click',e=>{const b=e.target.closest('[data-z="hadd"],[data-z="day"],[data-z="rdel"],[data-z="ron"]');if(!b)return;const id=b.dataset.i,z=b.dataset.z;setTimeout(()=>{try{const r=S.rt.find(x=>x.id===id);if(r&&(z==='day'||(z==='ron'&&r.on===false)))regen(r);if(z==='rdel'&&!r)S.tasks=S.tasks.filter(t=>!(t.rid===id&&(t.due||'')>=TD()&&t.st==='belum mulai'));S.rt.forEach(x=>{if(x.rep==='day'&&(x.days||[]).length<7)x.rep='week'});ensureRt2();sv();if(pg==='habit')render()}catch(x){}},30)});
-document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.zf;if(!id)return;setTimeout(()=>{try{const r=S.rt.find(x=>x.id===id);if(r){regen(r);ensureRt2();sv();render()}}catch(x){}},30)});
+
 
 /* ---------- Pet: pesan beragam, akrab & perhatian ---------- */
 const fill=(s,c)=>s.replace(/\{(\w+)\}/g,(m,k)=>c[k]!=null?c[k]:'');
@@ -1483,17 +1454,6 @@ const _rc=rmCard;rmCard=function(){let a=V.alarm?V.alarm():'';a=a.replace(/<h1>[
  return _rc().replace('⏰ Pengingat</h2>','⏰ Pengingat & Alarm</h2>')+`<div class="c"><h2>⏰ Alarm kustom</h2><p class="mu">Alarm dengan nama, jam, dan hari sendiri. Pilih “Ikuti nada pengingat” agar nadanya sama dengan pengingat tugas.</p>${a}</div>`};
 document.addEventListener('change',e=>{const t=e.target,k=t.dataset&&t.dataset.v8s;if(!k)return;S.set[k]=t.type==='range'||t.type==='number'?+t.value:t.value;sv();if(k==='rmTone'||k==='avol')rmBeep()});
 
-/* ---------- TUGAS = JADWAL (sekali / harian / mingguan / bulanan / tahunan), terhubung ke goal ---------- */
-addF=function(d){return `<div class="tfm">${S.goals.length?'':'<p class="mu" style="margin:0 0 8px">💡 Belum ada goal. Tentukan goal dulu agar tugasmu terarah. <button class="b s sm" data-a="pg" data-k="goals">Buat goal</button></p>'}
-<div class="f"><input id="nt" placeholder="Nama tugas…" style="flex:2 1 200px" aria-label="Tugas"><select id="ngl" aria-label="Goal terkait">${goalOpts('')}</select><select id="nc" aria-label="Kategori">${opt(CAT)}</select></div>
-<div class="f" style="margin-top:8px"><select id="nrp" onchange="v8Rep(this)" aria-label="Pengulangan"><option value="once">Sekali saja</option><option value="day">Setiap hari</option><option value="week">Hari tertentu</option><option value="month">Tiap bulan</option><option value="year">Tiap tahun</option></select><input id="nd" type="date" value="${d||TD()}" aria-label="Tanggal"><input id="ntm" type="time" aria-label="Jam"><input id="ne" type="number" min="0" placeholder="Durasi (mnt)" aria-label="Durasi"><select id="nrm" aria-label="Pengingat">${rmOpts('')}</select></div>
-<div class="f" data-r="week" style="margin-top:8px;display:none">${ORD.map(x=>`<label class="dyc"><input type="checkbox" class="tdy" value="${x}" ${x>0&&x<6?'checked':''}>${DN[x]}</label>`).join('')}</div>
-<div class="f" data-r="month,week,day,year" style="margin-top:8px;display:none"><label class="mu" data-r="month" style="display:none">Tanggal tiap bulan<input id="nmd" type="number" min="1" max="31" value="1"></label><label class="mu">Berlaku sampai (opsional)<input id="nun" type="date"></label></div>
-<div style="margin-top:8px"><button class="b" data-v8="tadd">＋ Tambah tugas</button></div></div>`};
-window.v8Rep=s=>{const f=s.closest('.tfm');f.querySelectorAll('[data-r]').forEach(e=>{e.style.display=e.dataset.r.split(',').includes(s.value)?'':'none'});const m=f.querySelector('label[data-r="month"]');if(m)m.style.display=s.value==='month'?'':'none'};
-const rdT=r=>r.rep==='day'?'Setiap hari':r.rep==='month'?'Tiap tgl '+(r.md||1):r.rep==='year'?'Tiap tahun '+(r.date||'').slice(5).split('-').reverse().join('/'):r.rep==='once'?(r.date||''):(r.days||[]).length===7?'Setiap hari':ORD.filter(d=>(r.days||[]).includes(d)).map(d=>DN[d]).join(', ');
-window.v8Rt=()=>{const rs=S.rt||[];return `<div class="c"><h2>🔁 Jadwal tugas rutin <span class="mu">(${rs.length})</span></h2>${rs.length?rs.map(r=>{const g=r.goal&&gT(r.goal);return `<div class="tk"><div><b>${E(r.t)}</b>${r.on===false?' <span class="tag">⏸ jeda</span>':''}${g?`<span class="tag gl">🎯 ${E(g.t)}</span>`:''}<br><span class="mu">🔁 ${rdT(r)}${r.time?' · ⏰ '+r.time:''}${r.min?' · '+r.min+' mnt':''}</span></div><button class="b x sm" data-n="pon" data-i="${r.id}" title="${r.on===false?'Aktifkan':'Jeda'}">${r.on===false?'▶':'⏸'}</button><button class="b x sm" data-n="pdel" data-i="${r.id}" title="Hapus">🗑</button></div>`}).join(''):'<p class="mu">Belum ada. Pilih “Hari tertentu / Setiap hari / …” pada form tugas, atau atur jadwal di Goals.</p>'}</div>`};
-
 /* ---------- jadwal harian / mingguan ---------- */
 let sm='day',wo=0;
 window.v8Sched=function(D0){const tb=`<div class="tabs"><button class="b ${sm==='day'?'':'s'} sm" data-v8="sm" data-k="day">🕐 Harian</button><button class="b ${sm==='week'?'':'s'} sm" data-v8="sm" data-k="week">🗓️ Mingguan</button></div>`;
@@ -1506,18 +1466,10 @@ window.v8Sched=function(D0){const tb=`<div class="tabs"><button class="b ${sm===
  h=h.replace(/<div class="tk[^"]*"><input type="checkbox"[\s\S]*?<\/div><\/div>/g,'');
  return h.replace('<textarea data-a="dnote"',`<div>${ts.map(lite).join('')}</div><div class="tabs"><button class="b sm" data-a="yd" data-d="${cs}">＋ Atur tugas tanggal ini</button></div><textarea data-a="dnote"`)}})();
 
-/* ---------- progres: tracker tugas ---------- */
-(()=>{const o=V.prog;V.prog=()=>{const R=pRange(),ts=S.tasks.filter(t=>inR(tDay(t),R.a,R.b)).sort(tsort),c=k=>ts.filter(t=>t.st===k).length;
- return o()+`<div class="c"><h2>📋 Tracker tugas <span class="mu">${R.lb}</span></h2><div class="f" style="gap:6px;margin-bottom:6px">${ST.map(k=>`<span class="tag">${k}: <b>${c(k)}</b></span>`).join('')}</div>${ts.length?ts.slice(0,60).map(t=>{const g=gT(t.gid);return `<div class="tk ${t.st==='selesai'?'dn':''}"><input type="checkbox" data-a="tg" data-i="${t.id}" ${t.st==='selesai'?'checked':''} aria-label="Selesai"><div><b>${E(t.t)}</b>${t.rid?' 🔁':''}<br><span class="mu">${shortD(tDay(t))}${t.time?' · '+t.time:''}${g?' · 🎯 '+E(g.t):''}</span></div><select data-a="st" data-i="${t.id}" aria-label="Status">${opt(ST,t.st)}</select></div>`}).join('')+(ts.length>60?`<p class="mu">+${ts.length-60} lainnya di halaman Tugas</p>`:''):'<p class="mu">Belum ada tugas di periode ini.</p>'}</div>`}})();
-
 /* ---------- aksi v8 ---------- */
 document.addEventListener('click',e=>{const b=e.target.closest('[data-v8]');if(!b)return;const k=b.dataset.v8,p=S.pet;
  if(k==='bath'&&p){petTick();p.cl=100;p.joy=Math.min(100,p.joy+8);p.hp=Math.min(100,(p.hp==null?100:p.hp)+3);p.xp+=2;pfx='bath';setTimeout(()=>{pfx='';render()},2300);burst(b,'🫧🛁✨');toast('🛁 '+p.name+' sekarang bersih & wangi!');sv();render()}
  else if(k==='nap'&&p){const on=p.nap>Date.now();p.nap=on?0:Date.now()+30*6e4;if(!on){p.joy=Math.min(100,p.joy+5);p.hp=Math.min(100,(p.hp==null?100:p.hp)+8)}toast(on?p.name+' dibangunkan ☀️':'😴 '+p.name+' tidur siang 30 menit');sv();render()}
- else if(k==='tadd'){const t=gv('nt');if(!t){$('#nt').focus();return}S.rt=S.rt||[];const rep=gv('nrp')||'once',gid=gv('ngl'),g=gT(gid),cat=gv('nc')||(g&&g.cat)||'Akademik',time=gv('ntm'),est=+gv('ne')||0,date=gv('nd')||TD(),days=[...document.querySelectorAll('.tdy:checked')].map(x=>+x.value);
-  if(rep==='once')S.tasks.push({id:uid(),t,cat,pri:'Sedang',dif:'Sedang',gid,mid:'',tj:'',cl:[],due:date,time,rm:gv('nrm'),est,st:'belum mulai',act:0});
-  else{if(rep==='week'&&!days.length){toast('Pilih minimal 1 hari');return}S.rt.push({id:uid(),kind:'plan',goal:gid,t,rep,days:rep==='week'?days:[0,1,2,3,4,5,6],md:Math.min(31,Math.max(1,+gv('nmd')||1)),date:rep==='year'?date:'',time,min:est,end:gv('nun'),v:1,on:true,start:TD(),cat,gen:{}});window.ensureRt2&&ensureRt2()}
-  sv();render();toast(rep==='once'?'Tugas ditambahkan ✅':'Jadwal tugas dibuat 🔁 — otomatis muncul di Tugas, Kalender & Tahunan')}
  else if(k==='sm'){sm=b.dataset.k;render()}
  else if(k==='wo'){wo=+b.dataset.v?wo+ +b.dataset.v:0;render()}
  else if(k==='gduex'){const G=S.goals.find(x=>x.id===b.dataset.i);if(G){G.due='';sv();render();toast('Tenggat dihapus — goal jadi tanpa batas waktu')}}});
@@ -1526,6 +1478,143 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||t.dataset
 /* ---------- setelah render: tenggat goal bisa diubah/dihapus, buang tugas simpel ---------- */
 const _rr=render;render=function(){_rr();try{document.querySelectorAll('#app [data-n="gedit"]').forEach(bt=>{const c=bt.closest('.c'),G=S.goals.find(x=>x.id===bt.dataset.i);if(!c||!G||c.querySelector('.dlr'))return;const r=document.createElement('div');r.className='f dlr';r.innerHTML=`<label class="mu" style="flex:0 1 200px">📅 Tenggat goal<input type="date" value="${G.due||''}" data-v8="gdue" data-i="${G.id}" aria-label="Tenggat goal"></label>${G.due?`<button class="b s sm n" data-v8="gduex" data-i="${G.id}">✕ Hapus tenggat</button>`:'<span class="mu">Kosong = tanpa tenggat</span>'}`;const bar=c.querySelector('.bar');if(bar)bar.parentNode.insertBefore(r,bar)});
  const z=document.getElementById('ztp');if(z)z.remove()}catch(x){}};
+render();
+})();
+</script>
+<script>
+/* ===== v9: Tugas dirapikan · Tracker tugas · Pet siang/malam · Jadwal tanpa batas ===== */
+(()=>{
+const E=esc,DN=['Min','Sen','Sel','Rab','Kam','Jum','Sab'],ALL=[0,1,2,3,4,5,6],AD=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)};
+let tkNew=false,tkSrch=false,sd='',tr={open:false,mode:'goal',sel:'',v:'month',m:new Date().getMonth(),y:new Date().getFullYear()};
+const css=document.createElement('style');css.textContent=`
+.tgl{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:2px 0;cursor:pointer;color:var(--ink);font:700 1.05rem Fredoka,"Plus Jakarta Sans",system-ui,sans-serif}.tgl span{color:var(--mu)}
+.chip.on{background:var(--ac);color:#fff}.trp{max-height:170px;overflow:auto;margin:6px 0}.trp small{opacity:.75}
+.trg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.trg small{text-align:center;color:var(--mu);font-size:.7rem}.trg.s{gap:2px}
+.trc{min-height:74px;text-align:left;padding:4px 5px;border:1px solid var(--ln);background:var(--bg);border-radius:8px;cursor:pointer;display:flex;gap:4px;align-items:flex-start;overflow:hidden;color:var(--ink);min-width:0}
+.trc>b{font-size:.78rem;flex:0 0 auto}.trc>div{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}.trc.td{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac)}
+.trn{font-size:.68rem;line-height:1.2;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trn.g{color:var(--ok)}.trn.r{color:var(--rd)}.trn.n{color:var(--mu)}
+.trc.sm{min-height:34px;padding:2px;flex-direction:column;gap:0;border-radius:5px}.trc.sm>b{font-size:.6rem}.trc.sm .trn{font-size:.5rem;line-height:1.1}
+.tryg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+@media(max-width:600px){.trc{flex-direction:column;gap:0;min-height:58px}.trn{font-size:.6rem}}
+.dlr label{flex:0 0 auto!important;font-size:.74rem}.dlr input,.gform input[type=date]{width:140px;max-width:100%;padding:3px 7px;font-size:.8rem}.dlr .b.sm{padding:2px 8px;font-size:.74rem}.gform .f>label{flex:0 1 auto}.gform label small{font-size:.7rem}
+.mhero .pv[data-a],.mhero .mi[data-a]{cursor:pointer}`;document.head.appendChild(css);
+
+/* ---------- JADWAL TUGAS: isi semua tanggal otomatis (tanpa batas = terus diperpanjang) ---------- */
+function occ(r,d){if(r.on===false||d<(r.start||d)||(r.end&&d>r.end))return false;
+ const g=r.goal&&gT(r.goal);if(g&&(g.fin||(g.due&&d>g.due)))return false;
+ const x=new Date(d+'T12:00:00');
+ if(r.rep==='day')return true;if(r.rep==='once')return r.date===d;
+ if(r.rep==='month')return Math.min(+r.md||1,new Date(x.getFullYear(),x.getMonth()+1,0).getDate())===x.getDate();
+ if(r.rep==='year')return !!r.date&&r.date.slice(5)===d.slice(5);
+ return (r.days||ALL).includes(x.getDay())}
+let bgAt=0,bg=false;const isBig=()=>{if(Date.now()-bgAt>6e4){bgAt=Date.now();try{bg=JSON.stringify(S).length>650000}catch(e){bg=false}}return bg};
+window.ensureRt2=function(){S.rt=S.rt||[];const T=TD(),Y=+T.slice(0,4),ye=Y+'-12-31';let ch=0,key=null;
+ const K=()=>key||(key=new Set(S.tasks.filter(t=>t.rid).map(t=>t.rid+'|'+t.due)));
+ if(!S.set.v9un){S.rt.forEach(r=>{if(r.on===false){r.on=true;if(r.gen)delete r.gen.__w}});S.set.v9un=1;ch=1}
+ S.rt.forEach(r=>{r.gen=r.gen||{};const w=r.gen.__w;let H;
+  if(r.end)H=r.end>AD(T,800)?AD(T,800):r.end;
+  else{H=(Y+1)+'-12-31';if(w&&w>=H)return;if(isBig()){if(w&&w>=ye)return;H=ye}}
+  if(w&&w>=H)return;
+  const g=r.goal&&gT(r.goal);if(g&&g.due&&g.due<H)H=g.due;
+  for(let d=w&&w>=T?AD(w,1):T;d<=H;d=AD(d,1)){if(!occ(r,d)||K().has(r.id+'|'+d))continue;
+   S.tasks.push({id:uid(),t:r.t,cat:(g&&g.cat)||r.cat||'Pengembangan diri',gid:r.goal||'',due:d,time:r.time||'',est:+r.min||0,st:'belum mulai',rid:r.id,hb:r.kind==='habit'?1:0});K().add(r.id+'|'+d);ch=1}
+  r.gen.__w=H;ch=1;
+  Object.keys(r.gen).forEach(k=>{if(k!=='__w'&&k<AD(T,-60))delete r.gen[k]})});
+ if(ch)sv()};
+
+/* ---------- TUGAS: Buat tugas → Jadwal hari ini → Cari tugas ---------- */
+const tkForm=d=>`<div class="f"><input id="nt" placeholder="Nama tugas…" style="flex:2 1 200px" aria-label="Tugas"><select id="ngl" aria-label="Goal terkait">${goalOpts('')}</select><select id="nc" aria-label="Kategori">${opt(CAT)}</select></div><div class="f" style="margin-top:8px"><input id="nd" type="date" value="${d}" aria-label="Tanggal"><input id="ntm" type="time" aria-label="Jam"><input id="ne" type="number" min="0" placeholder="Durasi (mnt)" aria-label="Durasi"><select id="nrm" aria-label="Pengingat">${rmOpts('')}</select></div>${S.goals.length?'':'<p class="mu" style="margin:8px 0 0">💡 Belum ada goal. Jadwal rutin diatur lewat Goals. <button class="b s sm" data-a="pg" data-k="goals">Buat goal</button></p>'}<div style="margin-top:8px"><button class="b" data-v9="tadd">＋ Tambah tugas</button></div>`;
+const tkF=T=>({today:x=>(x.due||T)===T&&x.st!=='selesai',up:x=>x.due>T&&x.st!=='selesai',over:x=>x.due&&x.due<T&&x.st!=='selesai',done:x=>x.st==='selesai',day:x=>(x.due||T)===vd});
+V.tasks=function(){const T=TD(),D0=tab==='day'&&vd?vd:T,f=tkF(T),so=tkSrch||(tab==='day'&&vd);
+ return `<div class="c" style="margin-top:4px"><button class="tgl" data-v9="tknew" aria-expanded="${tkNew}"><b>➕ Buat tugas</b><span>${tkNew?'▾':'▸'}</span></button>${tkNew?`<div style="margin-top:10px">${tkForm(D0)}</div>`:''}</div>
+ ${window.v8Sched?v8Sched(D0):schedCard(D0)}
+ <div class="c"><button class="tgl" data-v9="tksrch" aria-expanded="${so}"><b>🔍 Cari tugas</b><span>${so?'▾':'▸'}</span></button>${so?`<div class="f" style="margin-top:10px"><input id="q" placeholder="Nama tugas…" value="${E(q)}" aria-label="Cari"><input id="qd" type="date" value="${sd}" aria-label="Tanggal tugas" title="Cari di tanggal tertentu" style="flex:0 1 150px"><select id="fl" aria-label="Filter kategori"><option value="">Semua kategori</option>${CAT.map(c=>`<option ${c===fl?'selected':''}>${c}</option>`).join('')}</select>${sd?'<button class="b s sm n" data-v9="sdclr">✕ Tanggal</button>':''}</div>${sd?`<p class="mu" style="margin:8px 0 0">Tugas pada ${fmtD(sd)}</p>`:`<div class="tabs">${[['today','Hari ini'],['up','Mendatang'],['over','Terlambat'],['done','Selesai'],...(vd?[['day','📅 '+vd.slice(5).split('-').reverse().join('/')]]:[])].map(([k,l])=>`<button class="b ${tab===k?'':'s'} sm" data-a="tab" data-k="${k}">${l} (${S.tasks.filter(f[k]).length})</button>`).join('')}</div>`}<div id="tl"></div>`:''}</div>`};
+rList=function(){const el=$('#tl');if(!el)return;const T=TD(),f=tkF(T)[tab]||(()=>true);
+ const l=S.tasks.filter(x=>(sd?(x.due||T)===sd:f(x))&&(!fl||x.cat===fl)&&x.t.toLowerCase().includes(q.toLowerCase())).sort(tsort);
+ el.innerHTML=l.length?l.map(row).join(''):'<p class="mu">Tidak ada tugas di sini.</p>'};
+/* kelola kategori dipindah ke Goals */
+(()=>{const o=V.goals;V.goals=()=>o().replace('</h1>','</h1><div class="f" style="margin:8px 0 0"><button class="b s sm n" data-a="cmt">🏷️ Kelola kategori</button></div>'+catCard())})();
+
+/* ---------- PET: siang/malam, jendela, lampu, tidur ---------- */
+const hr=()=>new Date().getHours(),isNight=()=>hr()>=18||hr()<6,sleepN=p=>p.nap>Date.now()||hr()>=22||hr()<5,sig=()=>S.pet?[sleepN(S.pet),isNight()].join():'';
+const deco=(n,sl)=>{const O='stroke="#2B2A4C" stroke-width="3" stroke-linejoin="round"',on=n&&!sl;let s='';
+ if(n||sl)s+=`<rect x="30" y="34" width="53" height="92" rx="5" fill="#8E7CC3" ${O}/><rect x="77" y="34" width="53" height="92" rx="5" fill="#9F8DD6" ${O}/><path d="M48 38V122M64 38V122M96 38V122M112 38V122" stroke="#6F5FA8" stroke-width="3" fill="none"/>`;
+ return s+`<path d="M185 0V56" fill="none" ${O}/><path d="M160 92L210 92L198 56L172 56Z" fill="${on?'#FFD84D':'#C9C3D8'}" ${O}/><circle cx="185" cy="95" r="6" fill="${on?'#FFF6B0':'#9A94AD'}" ${O}/>`};
+const _pb=petBox;petBox=function(p,sm){const h=_pb(p,sm),sl=sleepN(p),n=isNight(),room=(p.hab||'room')==='room';let x=room?deco(n,sl):'';
+ if(sl)x+=`<rect width="400" height="340" fill="#0A0E33" opacity="${room?.5:.55}"/>`;else if(n)x+=`<rect width="400" height="340" fill="#0A0E33" opacity="${room?.2:.28}"/>`;
+ if(room&&n&&!sl)x+='<defs><radialGradient id="lgl"><stop offset="0" stop-color="#FFE9A0" stop-opacity=".8"/><stop offset="1" stop-color="#FFE9A0" stop-opacity="0"/></radialGradient></defs><circle cx="185" cy="96" r="150" fill="url(#lgl)"/>';
+ return x?h.replace('</svg>',x+'</svg>'):h};
+const _ps=petStage;petStage=function(p){return _ps(p).replace(/<button data-a="play"[^>]*>🎾<\/button>/,'').replace(/<button data-a="xchg"[^>]*>🔄<\/button>/,'')};
+function post9(){const p=S.pet;document.querySelectorAll('#app [data-a="play"],#app [data-a="xchg"]').forEach(x=>x.remove());
+ if(!p)return;const pv=$('.mhero .pv');if(!pv)return;const sl=sleepN(p),sad=p.full<25||p.joy<25;
+ pv.innerHTML=petSVG(p.sp,sl?'zz':sad?'sad':'ok')+(sl?'<span style="position:absolute;right:-2px;top:-4px;font-size:16px">💤</span>':'');pv.style.position='relative';
+ [pv,$('.mhero .mi')].forEach(e=>{if(e){e.dataset.a='pg';e.dataset.k='pet';e.title='Buka halaman Pet'}});
+ pv.setAttribute('role','link');pv.setAttribute('aria-label','Buka halaman Pet')}
+let sg=sig();setInterval(()=>{const n=sig();if(n!==sg){sg=n;if(S.pet&&(pg==='dash'||pg==='pet'))render()}},30000);
+
+/* ---------- editor tugas: hapus jadwal rutin dari satu tugas ---------- */
+const _dw=drawer;drawer=function(){_dw.apply(this,arguments);try{const T=edt&&S.tasks.find(x=>x.id===edt);if(T&&T.rid){const b=document.querySelector('#dr .sh .tabs');if(b&&!b.querySelector('[data-v9="rdel"]'))b.insertAdjacentHTML('beforeend','<button class="b s" style="color:var(--rd)" data-v9="rdel" data-i="'+T.rid+'">🗑 Hapus jadwal rutin ini</button>')}}catch(x){}};
+
+/* ---------- TRACKER TUGAS (di Progres, tertutup sampai diklik) ---------- */
+const trKey=t=>(t.t||'').trim().toLowerCase();
+function trCalc(){const T=TD(),m=tr.mode,s=tr.sel,days={},nw=()=>({ok:0,no:0,nm:[],m:0});let doneDays=0,done=0,und=0,min=0,first=null;
+ if(m==='focus')S.focus.forEach(f=>{if(s&&(f.s||'Umum')!==s)return;const x=days[f.d]=days[f.d]||nw();x.m+=f.m;x.ok++});
+ else{const ok=m==='goal'?t=>s?t.gid===s:!!t.gid&&!!gT(t.gid):m==='cat'?t=>!s||t.cat===s:t=>trKey(t)===s;
+  S.tasks.forEach(t=>{if(!ok(t))return;const d=t.due||T,x=days[d]=days[d]||nw(),dn=t.st==='selesai',k=dn?'g':d<=T?'r':'n';if(dn)x.ok++;else if(d<=T)x.no++;
+   const e=x.nm.find(a=>a[0]===t.t&&a[1]===k);if(e)e[2]++;else x.nm.push([t.t,k,1])})}
+ Object.keys(days).forEach(d=>{const x=days[d];if(!first||d<first)first=d;if(x.ok)doneDays++;done+=x.ok;und+=x.no;min+=x.m});
+ let st=first;if(m==='goal'){const a=(s?[gT(s)]:S.goals).filter(Boolean).map(g=>g.s0).filter(Boolean).sort()[0];if(a&&(!st||a<st))st=a}
+ const total=st&&st<=T?Math.round((new Date(T+'T12:00')-new Date(st+'T12:00'))/864e5)+1:0;
+ return{days,st,total,doneDays,done,und,min}}
+function trPick(){const m=tr.mode,ch=(s,l)=>`<button class="chip${tr.sel===s?' on':''}" data-v9="trpick" data-s="${E(s)}">${l}</button>`;let h='';
+ if(m==='goal')h=ch('','Semua goal')+S.goals.map(g=>ch(g.id,'🎯 '+E(g.t))).join('');
+ else if(m==='cat')h=ch('','Semua kategori')+CAT.map(c=>ch(c,E(c))).join('');
+ else if(m==='focus')h=ch('','Semua waktu belajar')+[...new Set(S.focus.map(f=>f.s||'Umum'))].map(s=>ch(s,'📚 '+E(s))).join('');
+ else{const mp=new Map();S.tasks.forEach(t=>{const k=trKey(t);if(!k)return;const o=mp.get(k)||{n:t.t,c:0,d:0};o.c++;if(t.st==='selesai')o.d++;mp.set(k,o)});
+  h=mp.size?[...mp].sort((a,b)=>a[1].n.localeCompare(b[1].n)).map(([k,o])=>ch(k,E(o.n)+' <small>'+o.d+'/'+o.c+'</small>')).join(''):'<span class="mu">Belum ada tugas yang pernah dibuat.</span>'}
+ return `<div class="trp">${h}</div>`}
+function trCell(d,i,C,sm){const x=C.days[d],T=TD();let c='';
+ if(tr.mode==='focus'){if(x&&x.m)c=`<span class="trn g">${x.m} mnt</span>`;else if(C.st&&d>=C.st&&d<=T)c='<span class="trn r">0</span>'}
+ else if(x){const sh=sm?2:3;c=x.nm.slice(0,sh).map(([n,k,q2])=>`<span class="trn ${k}">${E(n)}${q2>1?' ×'+q2:''}</span>`).join('')+(x.nm.length>sh?`<span class="trn n">+${x.nm.length-sh}</span>`:'')}
+ const tt=tr.mode==='focus'?(x&&x.m?x.m+' menit':''):x?x.nm.map(a=>a[0]+(a[2]>1?' ×'+a[2]:'')).join(', '):'';
+ return `<button class="trc${sm?' sm':''}${d===T?' td':''}" data-a="yd" data-d="${d}" title="${E(d+(tt?': '+tt:''))}"><b>${i}</b><div>${c}</div></button>`}
+function trMonth(y,m,C,sm){const f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate();let c='';for(let i=1;i<=n;i++)c+=trCell(iso(new Date(y,m,i)),i,C,sm);
+ return `<div class="trg${sm?' s':''}">${DN.map(x=>`<small>${sm?x[0]:x}</small>`).join('')}${'<span></span>'.repeat(f)}${c}</div>`}
+function trChart(lb,ser){const h=150,w=Math.max(340,lb.length*24),mx=Math.max(1,...ser.flatMap(s=>s.v)),px=i=>24+i*(w-36)/Math.max(1,lb.length-1),py=v=>h-22-v/mx*(h-40),st=Math.ceil(lb.length/16);
+ return `<div style="overflow-x:auto;color:var(--mu)"><svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="Kurva naik turun"><line x1="24" y1="${h-22}" x2="${w-8}" y2="${h-22}" stroke="currentColor" opacity=".3"/><text x="2" y="12" font-size="9" fill="currentColor">${Math.round(mx*10)/10}</text>${ser.map(s=>`<polyline fill="none" style="stroke:${s.c}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="${s.v.map((v,i)=>px(i)+','+py(v)).join(' ')}"/>`+s.v.map((v,i)=>v?`<circle cx="${px(i)}" cy="${py(v)}" r="2.6" style="fill:${s.c}"/>`:'').join('')).join('')}${lb.map((l,i)=>i%st?'':`<text x="${px(i)}" y="${h-8}" font-size="9" text-anchor="middle" fill="currentColor">${l}</text>`).join('')}</svg></div>`}
+function trCard(){const mds=[['goal','🎯 Total goals'],['task','✅ Tugas tertentu'],['cat','🏷️ Kategori'],['focus','⏱️ Waktu belajar']];
+ let h=`<div class="c"><button class="tgl" data-v9="tropen" aria-expanded="${tr.open}"><b>📋 Tracker tugas</b><span>${tr.open?'▾':'▸'}</span></button>`;if(!tr.open)return h+'</div>';
+ h+=`<div class="tabs">${mds.map(([k,l])=>`<button class="b ${tr.mode===k?'':'s'} sm" data-v9="trmode" data-m="${k}">${l}</button>`).join('')}</div>${trPick()}`;
+ if(tr.mode==='task'&&!tr.sel)return h+'<p class="mu" style="margin:6px 0 0">Klik salah satu tugas di atas untuk melihat kalender & progresnya.</p></div>';
+ const C=trCalc(),f=tr.mode==='focus',y=tr.y,m=tr.m,st=(l,v)=>`<div class="c st"><span class="mu">${l}</span><b>${v}</b></div>`;
+ h+=`<div class="g g4" style="margin:10px 0">${st(tr.mode==='goal'?'Hari sejak goal dibuat':'Total hari',C.total)}${st(f?'Hari belajar':'Hari pengerjaan',C.doneDays)}${f?st('Total belajar',(C.min>=60?Math.round(C.min/6)/10+' jam':C.min+' mnt')+' · '+C.done+'×'):st('Total selesai',C.done+'×')}${f?st('Hari tanpa belajar',Math.max(0,C.total-C.doneDays)):st('Belum dikerjakan',C.und+'×')}</div>`;
+ h+=`<div class="tabs">${[['month','🗓️ Bulanan'],['year','📆 Tahunan'],['curve','📈 Kurva']].map(([k,l])=>`<button class="b ${tr.v===k?'':'s'} sm" data-v9="trv" data-m="${k}">${l}</button>`).join('')}</div><div class="f" style="flex-wrap:nowrap"><button class="b s sm n" data-v9="trnav" data-v="-1" aria-label="Sebelumnya">‹</button><h2 style="flex:1;text-align:center;margin:0;text-transform:capitalize">${tr.v==='year'?y:MN[m]+' '+y}</h2><button class="b s sm n" data-v9="trnav" data-v="1" aria-label="Berikutnya">›</button><button class="b s sm n" data-v9="trnav" data-v="0">Sekarang</button></div>`;
+ h+=`<div class="leg"><span><b style="background:var(--ok)"></b>${f?'ada waktu belajar':'selesai'}</span><span><b style="background:var(--rd)"></b>${f?'tidak belajar':'belum dikerjakan'}</span>${f?'':'<span><b style="background:var(--mu)"></b>jadwal mendatang</span>'}</div><div style="margin-top:10px">`;
+ if(tr.v==='month')h+=trMonth(y,m,C,0);
+ else if(tr.v==='year')h+=`<div class="tryg">${MN.map((nm,i)=>`<div><b style="text-transform:capitalize">${nm}</b>${trMonth(y,i,C,1)}</div>`).join('')}</div>`;
+ else{const n=new Date(y,m+1,0).getDate(),ds=[...Array(n)].map((_,i)=>iso(new Date(y,m,i+1))),g=(d,k)=>C.days[d]?C.days[d][k]:0,ag=k=>MN.map((_,i)=>Object.entries(C.days).filter(([d])=>d.slice(0,7)===y+'-'+String(i+1).padStart(2,'0')).reduce((a,[,x])=>a+x[k],0)),
+  sr=(v1,v2)=>f?[{c:'var(--ac)',v:v1('m')}]:[{c:'var(--ok)',v:v1('ok')},{c:'var(--rd)',v:v1('no')}];
+  h+=`<h3 style="margin:0 0 4px;text-transform:capitalize">${MN[m]} ${y} · per hari</h3>${trChart(ds.map((_,i)=>i+1),sr(k=>ds.map(d=>g(d,k))))}<h3 style="margin:12px 0 4px">${y} · per bulan</h3>${trChart(MN.map(x=>x.slice(0,3)),sr(ag))}<p class="mu" style="margin:6px 0 0">${f?'🔵 menit belajar':'🟢 selesai · 🔴 belum dikerjakan'}</p>`}
+ return h+'</div></div>'}
+(()=>{const o=V.prog;V.prog=()=>o()+trCard()})();
+
+/* ---------- aksi ---------- */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-v9]');if(!b)return;const k=b.dataset.v9,D=b.dataset;
+ if(k==='tknew')tkNew=!tkNew;
+ else if(k==='tksrch'){if(tab==='day'&&vd){tab='today';tkSrch=false}else tkSrch=!tkSrch}
+ else if(k==='sdclr')sd='';
+ else if(k==='tadd'){const t=gv('nt');if(!t){$('#nt').focus();return}const gid=gv('ngl'),g=gT(gid);
+  S.tasks.push({id:uid(),t,cat:gv('nc')||(g&&g.cat)||'Akademik',pri:'Sedang',dif:'Sedang',gid,mid:'',tj:'',cl:[],due:gv('nd')||TD(),time:gv('ntm'),rm:gv('nrm'),est:+gv('ne')||0,st:'belum mulai',act:0});sv();tkNew=false;render();toast('Tugas ditambahkan ✅');return}
+ else if(k==='rdel'){const r=(S.rt||[]).find(x=>x.id===D.i);if(!r||!confirm('Hapus jadwal rutin ini beserta tugas mendatang yang belum dikerjakan?'))return;const T0=TD();S.tasks=S.tasks.filter(t=>!(t.rid===r.id&&(t.due||'')>=T0&&t.st==='belum mulai'));S.rt=S.rt.filter(x=>x!==r);edt=null;sv();toast('Jadwal rutin dihapus')}
+ else if(k==='tropen')tr.open=!tr.open;
+ else if(k==='trmode'){tr.mode=D.m;tr.sel=''}
+ else if(k==='trpick')tr.sel=D.s;
+ else if(k==='trv')tr.v=D.m;
+ else if(k==='trnav'){const v=+D.v;if(!v){const n=new Date();tr.m=n.getMonth();tr.y=n.getFullYear()}else if(tr.v==='year')tr.y+=v;else{const d=new Date(tr.y,tr.m+v,1);tr.m=d.getMonth();tr.y=d.getFullYear()}}
+ else return;render()});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='qd'){sd=t.value;render()}});
+
+const _r=render;render=function(){_r();try{post9();sg=sig()}catch(x){}};
 render();
 })();
 </script>
