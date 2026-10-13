@@ -1868,7 +1868,8 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       let ok = false;
       try {
         const m = await F.getDoc(F.doc(db, 'members', (user.email || '').toLowerCase()));
-        ok = m.exists() && m.data().active === true;
+        ok = m.exists() && String(m.data().active) === 'true';
+        if (!ok) { try { ok = (await F.getDoc(F.doc(db, 'admins', (user.email || '').toLowerCase()))).exists(); } catch (e2) {} }   // admin selalu boleh masuk
       } catch (e) {
         console.error('[FocusNest] Gagal cek member:', e);
         showBlock('Gagal memeriksa status member', 'Cek koneksi internetmu lalu coba lagi.' + (e && e.code === 'permission-denied' ? ' (Firestore Rules menolak membaca daftar member — periksa Rules di Firebase Console.)' : ''), [retryBtn, logoutBtn]); return;
