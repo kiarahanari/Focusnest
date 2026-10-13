@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>FocusNest — Plan · Focus · Grow · Achieve</title>
-<!-- build: v9 -->
+<!-- build: v10 -->
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -370,6 +370,20 @@ details.tpc p,details.tpc li{font-size:.88rem;margin:4px 0}details.tpc ul,detail
 .gix{display:flex;gap:6px;align-items:center;margin:6px 0;flex-wrap:wrap}.gix input{flex:1 1 110px}
 .gst{text-align:center;font-size:2.4rem}
 @media(max-width:480px){.cs{height:320px}.dk button{width:46px;height:46px;font-size:1.3rem}.cs .pe svg{width:170px}}
+
+details.cl{padding:0}details.cl>summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none;display:flex;justify-content:space-between}
+details.cl>summary::after{content:'▸';color:var(--mu)}details.cl[open]>summary::after{content:'▾'}details.cl>summary::-webkit-details-marker{display:none}
+details.cl>*:not(summary){margin-left:14px;margin-right:14px}details.cl>*:last-child{margin-bottom:14px}
+.sub{border-top:1px solid var(--ln);margin-top:10px;padding-top:6px}.sub .in{padding:0}details.sub{padding:0;border-radius:0}details.sub>summary{padding:8px 0}
+.tk{padding:5px 0;font-size:.9rem}.tk .tag{font-size:.68rem}.bar{height:6px}.c{padding:12px}
+.tag[class*="df-"],label:has([data-k="dif"]),label:has(#ndf){display:none!important}
+.rb{display:inline-block;font-size:.75rem;font-weight:700;border-radius:20px;padding:1px 9px;background:var(--as);color:var(--ac)}.rb.ad{background:#E5484D22;color:var(--rd)}
+#gx{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:10px}
+.gxs{background:var(--card);border-radius:16px;padding:14px;max-width:440px;width:100%;max-height:92vh;overflow:auto}
+.sg{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;margin:10px 0}.sc{aspect-ratio:1;padding:0;border:1px solid var(--ln);background:var(--bg);border-radius:4px;font-weight:700;cursor:pointer}
+.sc.fx{background:var(--as);color:var(--ac)}.sc.sl{outline:2px solid var(--ac)}.sc.bd{color:var(--rd);background:#E5484D22}
+.dr{display:flex;gap:6px;align-items:center;margin:6px 0}.dr b,.dr input{flex:1;min-width:0;text-align:center;padding:7px 2px;border-radius:8px}.dr b{background:var(--as)}
+.dr input.ok{border-color:var(--ok);background:#25A57A22}.dr input.no{border-color:var(--rd);background:#E5484D22}
 </style>
 </head>
 <body>
@@ -781,7 +795,7 @@ function guideHTML(){const st=guideSteps(),n=st.filter(x=>x[2]).length,box=(h,b)
   +box('🧭 Alur kerja FocusNest',`<div class="gfl"><span>🎯 Goal</span>›<span>📅 Jadwal tugas</span>›<span>✅ Tugas</span>›<span>⏱️ Fokus</span>›<span>⭐ Poin & Pet</span>›<span>📈 Progres</span></div><ul class="gl2"><li><b>Goal</b> = tujuan besar (mis. “Lulus tes SKD”). Isi alasan, target angka, dan tenggat (boleh kosong).</li><li><b>Jadwal tugas</b> = kebiasaan kerja untuk goal itu (mis. “Latihan TIU” Sen & Rab). Otomatis jadi tugas harian.</li><li><b>Tugas</b> = hal yang dikerjakan di tanggal tertentu. Bisa sekali saja atau berulang.</li><li><b>Fokus</b> = Pomodoro + musik latar. Menitnya tercatat di Progres.</li><li><b>Progres</b> = lihat persen selesai, konsistensi, dan tulis refleksi mingguan.</li></ul>`)
   +box('🧩 Banyak keinginan? Ubah jadi rencana (langkah demi langkah)',`<ol class="gl2"><li><b>Tumpahkan dulu</b>: tulis semua keinginan di Sticky Notes tanpa menyaring.</li><li><b>Kelompokkan</b> per kategori (Akademik, Karir, Kesehatan, Keuangan, dll).</li><li><b>Pilih maksimal 3 goal aktif</b>. Sisanya simpan dulu, aktifkan saat satu goal tercapai 🏁.</li><li><b>Beri ukuran</b>: target angka (mis. 40 sesi) dan tenggat bila ada. Goal tanpa tenggat tetap bisa, progresnya dihitung dari konsistensi 14 hari terakhir.</li><li><b>Pecah</b> tiap goal jadi 3–5 jadwal tugas dengan hari & jam jelas (menu Goals → ＋ Rencana jadwal).</li><li><b>Cek beban</b>: total estimasi per hari maksimal ±6 jam efektif. Terlalu padat? Kurangi, jangan dipaksakan.</li></ol>`)
   +box('✅ Membuat tugas: sekali atau berulang',`<ul class="gl2"><li><b>Dilakukan hanya sekali</b>: tugas biasa di satu tanggal.</li><li><b>Hari tertentu</b>: centang hari (mis. Sen, Rab, Jum). <b>Tiap bulan</b>: pilih tanggal 1–31. <b>Tiap tahun</b>: ikut tanggal & bulan yang dipilih.</li><li><b>Berlaku</b>: tanpa batas waktu, sampai tanggal tertentu, atau sampai akhir tahun.</li><li><b>Pilih goal</b> di tugas → tiap tugas selesai, progres goal naik dan tercatat di Progres → Tracker.</li><li>Ingin tugas besar tidak menakutkan? Buka ✏️ Edit dan pecah jadi checklist kecil.</li></ul>`)
-  +box('🗓️ Rutinitas harian & mingguan',`<ul class="gl2"><li>☀️ <b>Pagi (2 menit)</b>: buka Beranda, lihat “Rencana hari ini”, pilih maksimal 3 tugas prioritas 🔴, cek mood.</li><li>🌤️ <b>Siang</b>: kerjakan dengan Pomodoro di Fokus. Mulai dari yang paling penting.</li><li>🌙 <b>Malam (2 menit)</b>: centang yang selesai, pindahkan sisa tugas ke besok, catat refleksi singkat.</li><li>📝 <b>Mingguan (10 menit)</b>: buka Progres → Mingguan, isi refleksi: apa yang berhasil, hambatan, dan rencana minggu depan.</li></ul>`)
+  +box('🗓️ Rutinitas harian & mingguan',`<ul class="gl2"><li>☀️ <b>Pagi (2 menit)</b>: buka Beranda, lihat “Jadwal hari ini”, pilih maksimal 3 tugas prioritas 🔴, cek mood.</li><li>🌤️ <b>Siang</b>: kerjakan dengan Pomodoro di Fokus. Mulai dari yang paling penting.</li><li>🌙 <b>Malam (2 menit)</b>: centang yang selesai, pindahkan sisa tugas ke besok, catat refleksi singkat.</li><li>📝 <b>Mingguan (10 menit)</b>: buka Progres → Mingguan, isi refleksi: apa yang berhasil, hambatan, dan rencana minggu depan.</li></ul>`)
   +box('📈 Cara membaca Progres & Tracker',`<ul class="gl2"><li><b>Persentase selesai</b> = tugas selesai ÷ (selesai + belum dikerjakan). Tugas yang jadwalnya masih mendatang tidak dihitung gagal.</li><li><b>Tracker</b> punya 4 mode: Total goals, Tugas tertentu, Kategori, dan <b>Fokus / target belajar</b>. Klik tanggal untuk melihat atau mengatur tugas di hari itu.</li><li>Di mode <b>Fokus / target belajar</b>, isi target menit per hari. Hijau = target tercapai, kuning = belum capai, merah = tidak belajar.</li><li>Lihat tampilan <b>Bulanan, Tahunan, atau Kurva</b> untuk melihat naik-turun konsistensimu.</li></ul>`)
   +box('⏰ Pengingat & alarm',`<ul class="gl2"><li>Beri <b>jam</b> pada tugas agar diingatkan. Atur waktu (mis. 10 menit sebelumnya), bunyi, dan notifikasi di <b>Atur → Pengingat & Alarm</b>.</li><li><b>Alarm kustom</b>: tentukan nama, jam, hari, jumlah ulangan, dan <b>lama dering bebas dalam detik</b>.</li><li>Pengingat & alarm aktif selama FocusNest terbuka di tab browser (boleh di latar belakang). Install ke layar utama HP agar lebih andal.</li></ul>`)
   +box('🆘 Kewalahan atau ketinggalan?',`<ul class="gl2"><li><b>Pindahkan tanggalnya</b>, jangan langsung dihapus.</li><li>Kurangi goal aktif jadi 1–2 dulu, lalu naikkan lagi pelan-pelan.</li><li>Mulai dari <b>5 menit saja</b>. Yang penting konsisten, bukan sempurna.</li><li>Satu hari bolong tidak masalah. Lanjutkan besok tanpa menyalahkan diri.</li></ul>`)
@@ -800,7 +814,7 @@ function vDash(){const t=tdTasks().sort(byTime),d=t.filter(x=>x.st==='selesai').
   return `<div class="gtop"><button class="gbtn" data-a="xtip" aria-label="Buka tips produktivitas & belajar" title="Tips produktivitas & belajar">📚<small>Tips</small></button><button class="gbtn" data-a="gopen" aria-label="Buka panduan mulai (${gn} dari ${gst.length} langkah selesai)" title="Panduan mulai">💡<small>${gn}/${gst.length}</small></button></div><div class="topr">`+notesCard()+`</div>`
   +`<div class="c hero"><div><h1>${h<11?'Selamat pagi':h<15?'Selamat siang':h<18?'Selamat sore':'Selamat malam'}, ${esc(S.set.name||'Future You')}! 🌤️</h1><p class="mu">${new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}. Langkah kecil hari ini menuju impian besar.</p></div><div id="clk"></div></div>`
   +`<div class="g g4" style="margin-bottom:12px"><div class="c st"><span class="mu">Tugas hari ini</span><b>${d}/${t.length}</b></div><div class="c st"><span class="mu">Fokus hari ini</span><b>${fm(TD())} mnt</b></div><div class="c st"><span class="mu">Progres goals</span><b>${gs}%</b></div><div class="c st"><span class="mu">Mood</span><b>${m&&m.m?EM[m.m-1]:'—'}</b></div></div>`
-  +`<div class="c"><div class="f" style="flex-wrap:nowrap"><button class="tgl" data-v9="rpo" aria-expanded="${window.__rpo!==false}" style="flex:1"><b>📋 Rencana hari ini <span class="mu">${d}/${t.length}</span></b><span>${window.__rpo!==false?'▾':'▸'}</span></button><button class="b s sm n" data-a="pg" data-k="tasks">Kelola & tambah ›</button></div>${window.__rpo!==false?`<div class="bar" style="margin-top:8px"><i style="width:${t.length?Math.round(d/t.length*100):0}%"></i></div>${t.length?t.map(lite).join(''):'<p class="mu">Belum ada tugas hari ini. Buka halaman Tugas untuk menambah rencana pertamamu.</p>'}`:''}</div>`
+  +`<div class="c"><div class="f" style="flex-wrap:nowrap"><button class="tgl" data-v9="rpo" aria-expanded="${window.__rpo!==false}" style="flex:1"><b>🕐 Jadwal hari ini <span class="mu">${d}/${t.length}</span></b><span>${window.__rpo!==false?'▾':'▸'}</span></button><button class="b s sm n" data-a="pg" data-k="tasks">Kelola & tambah ›</button></div>${window.__rpo!==false?`<div class="bar" style="margin-top:8px"><i style="width:${t.length?Math.round(d/t.length*100):0}%"></i></div>${t.length?t.map(lite).join(''):'<p class="mu">Belum ada tugas hari ini. Buka halaman Tugas untuk menambah rencana pertamamu.</p>'}`:''}</div>`
   +(window.dashHab?dashHab():'')+dashX()+petMini()}
 
 /* ---------- pengingat (reminder) ---------- */
@@ -1023,7 +1037,7 @@ const WD=[['belajar','Kegiatan menuntut ilmu'],['fokus','Memusatkan perhatian'],
 const mkMt=()=>{const s=GS('mt'),op=pk(s.ops.length?s.ops:['+']),lo=Math.max(0,+s.min||0),hi=Math.max(lo+1,+s.max||10);let a,b,r;
   if(op==='+'){a=rnd(lo,hi);b=rnd(lo,hi);r=a+b}else if(op==='-'){a=rnd(lo,hi);b=rnd(lo,hi);if(b>a)[a,b]=[b,a];r=a-b}else if(op==='×'){a=rnd(lo,hi);b=rnd(lo,hi);r=a*b}else{b=rnd(Math.max(1,lo),Math.max(1,hi));r=rnd(1,Math.min(12,hi));a=b*r}
   return{t:`${a} ${op} ${b} = ?`,a:String(r),big:1}};
-const mkSq=()=>{const k=rnd(0,4),n=[...Array(6)];let a=rnd(1,15),s;
+const mkSq=()=>{const k=rnd(0,[1,2,3,4][(GS('sq').lv||1)-1]),n=[...Array(6)];let a=rnd(1,15),s;
   if(k===0){const d=rnd(2,9);s=n.map((_,i)=>a+d*i)}else if(k===1){const d=rnd(2,7);a=rnd(30,60);s=n.map((_,i)=>a-d*i)}else if(k===2){const r=rnd(2,3);a=rnd(1,4);s=n.map((_,i)=>a*r**i)}else if(k===3){s=n.map((_,i)=>(i+1+a%3)**2)}else{s=[rnd(1,4),rnd(2,6)];for(let i=2;i<6;i++)s.push(s[i-1]+s[i-2])}
   const ans=s[5],o=new Set([ans]);while(o.size<4)o.add(ans+(rnd(-9,9)||11));return{t:s.slice(0,5).join(', ')+', … ?',a:String(ans),o:shuf([...o]).map(String),big:1}};
 const scr=w=>{let x;do x=shuf([...w]).join('');while(x===w);return x};
@@ -1046,7 +1060,7 @@ function gmSetup(){const k=g.k,S0=`<button class="b" data-x="start">▶️ Mulai
   if(k==='qz'){const L=S.qz;return `<p class="mu">Isi soal & jawaban benar. Tambah pilihan salah agar jadi pilihan ganda; kosongkan untuk soal isian.</p><div class="f"><input id="qq" placeholder="Soal" style="flex:2 1 200px"><input id="qa" placeholder="Jawaban benar"></div><div class="f" style="margin-top:6px"><input id="qw1" placeholder="Pilihan salah 1"><input id="qw2" placeholder="Pilihan salah 2"><input id="qw3" placeholder="Pilihan salah 3"><button class="b n" data-x="qadd">+ Soal</button></div><div class="gl">${L.map(c=>`<div class="gix"><input data-x="qedit" data-f="q" data-i="${c.id}" value="${esc(c.q)}" aria-label="Soal"><input data-x="qedit" data-f="a" data-i="${c.id}" value="${esc(c.a)}" aria-label="Jawaban benar"><input data-x="qedit" data-f="w" data-i="${c.id}" value="${esc((c.w||[]).join('; '))}" placeholder="salah1; salah2" aria-label="Pilihan salah"><button class="b x sm n" data-x="qdel" data-i="${c.id}" aria-label="Hapus soal">✕</button></div>`).join('')||'<p class="mu">Belum ada soal.</p>'}</div>${cnt('qz','Soal per sesi')}${L.length?S0:''}`}
   if(k==='mt'){const s=GS('mt');return `<p class="mu">Pilih operasi dan rentang angka sesukamu.</p><div class="tabs">${['+','-','×','÷'].map(o=>`<label class="chip"><input type="checkbox" data-x="mop" data-o="${o}" ${s.ops.includes(o)?'checked':''} style="width:auto"> ${o}</label>`).join('')}</div><div class="f"><label class="mu">Angka terkecil<input type="number" min="0" data-x="mset" data-f="min" value="${s.min}"></label><label class="mu">Angka terbesar<input type="number" min="1" data-x="mset" data-f="max" value="${s.max}"></label><label class="mu">Jumlah soal<input type="number" min="1" max="50" data-x="mset" data-f="n" value="${s.n}"></label></div><p class="mu">Untuk ÷ hasilnya selalu bilangan bulat; untuk − tidak ada hasil negatif.</p>${S0}`}
   if(k==='mm')return `<p class="mu">Balik dua kartu, cari pasangan yang sama dengan langkah sesedikit mungkin.</p><label class="mu">Jumlah pasangan <select data-x="gcfg" data-k="mm" data-f="pairs">${[4,6,8].map(n=>`<option ${GS('mm').pairs===n?'selected':''}>${n}</option>`).join('')}</select></label><br>${S0}`;
-  return `<p class="mu">${k==='sq'?'Temukan aturan pola lalu pilih angka berikutnya.':'Susun huruf acak menjadi kata yang benar (petunjuk tersedia).'}</p>${cnt(k,'Jumlah soal')}<br>${S0}`}
+  return `<p class="mu">${k==='sq'?'Temukan aturan pola lalu pilih angka berikutnya.':'Susun huruf acak menjadi kata yang benar (petunjuk tersedia).'}</p>${k==='sq'&&window.lvSel?lvSel():''}${cnt(k,'Jumlah soal')}<br>${S0}`}
 function gmPlay(){const k=g.k;
   if(k==='mm'){const done=g.cd.every(x=>x.d);return `<div class="gprog"><span>Langkah: ${g.mv}</span><span>${g.cd.filter(x=>x.d).length/2}/${g.cd.length/2} pasang</span></div><div class="mmg">${g.cd.map((c,i)=>`<button class="mmc ${c.o||c.d?'on':''}" data-x="mflip" data-i="${i}" aria-label="Kartu ${i+1}">${c.o||c.d?c.e:'❓'}</button>`).join('')}</div>`}
   const q=g.qs[g.i],pr=`<div class="gprog"><span>${k==='fc'?'Kartu':'Soal'} ${g.i+1}/${g.qs.length}</span><span>⭐ ${g.sc}</span></div><div class="bar"><i style="width:${g.i/g.qs.length*100}%"></i></div>`;
@@ -1332,7 +1346,7 @@ const _tg=tags;tags=function(t,ed,sm){if(t.rid||t.hb){const g=!sm&&t.gid&&gT(t.g
 const _dw=drawer;drawer=function(){_dw.apply(this,arguments);try{const T=edt&&S.tasks.find(x=>x.id===edt);if(T&&T.rid)document.querySelectorAll('#dr [data-k="pri"],#dr [data-k="dif"]').forEach(e=>{(e.closest('label')||e).style.display='none'})}catch(x){}};
 
 /* ---------- navigasi ---------- */
-(()=>{const m={};P.forEach(x=>m[x[0]]=x);m.goals[2]='Goals';m.goals[1]='🎯';m.habit&&(m.habit[2]='Kebiasaan');P.length=0;['dash','goals','tasks','habit','cal','year','focus','music','pet','prog','mood','alarm','set'].forEach(k=>m[k]&&P.push(m[k]))})();
+(()=>{const m={};P.forEach(x=>m[x[0]]=x);m.goals[2]='Goals';m.goals[1]='🎯';m.habit&&(m.habit[2]='Kebiasaan');m.alarm&&(m.alarm[2]='Pengingat');P.length=0;['dash','goals','tasks','habit','cal','year','focus','pet','prog','mood','alarm','set'].forEach(k=>m[k]&&P.push(m[k]))})();
 
 /* ---------- aksi ---------- */
 document.addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b)return;mig();const n=b.dataset.n,i=b.dataset.i,G=S.goals.find(x=>x.id===i),R=S.rt.find(x=>x.id===i),ok=m=>{sv();render();m&&toast(m)};
@@ -1638,6 +1652,72 @@ const _r=render;render=function(){_r();try{post9();sg=sig()}catch(x){}};
 render();
 })();
 </script>
+<script>
+/* ===== FocusNest v10 layer ===== */
+(()=>{
+const OP=window.__op=window.__op||{},LV=['Mudah','Sedang','Sulit','Sangat sulit'];
+document.addEventListener('toggle',e=>{const d=e.target;if(d.dataset&&d.dataset.ck)OP[d.dataset.ck]=d.open},true);
+const dom=h=>{const t=document.createElement('template');t.innerHTML=h;return t.content};
+const html=f=>{const d=document.createElement('div');d.appendChild(f);return d.innerHTML};
+const hx=c=>{const h=c.querySelector('h2,h3');return h?h.textContent.trim():''};
+function mk(c,key,title,body,open){return `<details class="c cl" data-ck="${key}" ${(OP[key]??open)?'open':''}><summary>${title}</summary>${body}</details>`}
+function fold(h,rules,open){const f=dom(h);f.querySelectorAll('.c').forEach(c=>{const h2=c.querySelector('h2');if(!h2)return;const t=h2.textContent;for(const [re,key,ttl] of rules){if(re.test(t)){const k=document.createElement('template');if(h2.parentNode===c){const T=ttl||h2.innerHTML;h2.remove();k.innerHTML=mk(c,key,T,c.innerHTML,open&&open[key])}else k.innerHTML=mk(c,key,ttl||t,c.innerHTML,open&&open[key]);c.replaceWith(k.content);break}}});return html(f)}
+function shopSplit(h){const f=dom(h),d=f.querySelector('details[data-ck=toko]');if(!d)return h;const parts=[];let cur=null;[...d.childNodes].forEach(n=>{if(n.nodeName==='H3'){cur={t:n.textContent,k:[]};parts.push(cur)}else if(cur)cur.k.push(n.outerHTML||n.textContent);else if(n.nodeName!=='SUMMARY')parts.push({p:n.outerHTML||''})});
+ const s=d.querySelector('summary').outerHTML;d.innerHTML=s+parts.map(p=>p.p!==undefined?p.p:mk(0,'shop-'+p.t,p.t,p.k.join(''),false).replace('class="c cl"','class="sub cl"')).join('');return html(f)}
+const wrap=(k,fn)=>{const o=V[k];V[k]=()=>fn(o())};
+/* Beranda */
+wrap('dash',h=>fold(h,[[/Goal aktif/,'d-goal'],[/Level \d/,'d-lv']],{'d-goal':true,'d-lv':true}));
+/* Pet */
+wrap('pet',h=>shopSplit(fold(h,[[/poin$/,'lv','⭐ Level & poin'],[/Mainan/,'mainan'],[/Ganti pet/,'ganti'],[/Toko pet/,'toko'],[/Hadiah/,'hadiah'],[/Lencana/,'lencana'],[/Riwayat/,'riwayat']],{lv:true})));
+/* Goals */
+wrap('goals',h=>{const f=dom(h);f.querySelectorAll('.c').forEach((c,i)=>{const h2=c.querySelector('h2');if(!h2||c.closest('details'))return;const t=h2.textContent.trim();if(/Cara kerja|Kategori/.test(t))return;const k=document.createElement('template');k.innerHTML=mk(c,'g-'+t,t,c.innerHTML,true);c.replaceWith(k.content)});return html(f)});
+/* Progres: rutin + mood -> tracker */
+wrap('prog',h=>{const f=dom(h);let rt='';f.querySelectorAll('.c').forEach(c=>{if(/Progres tugas rutin/.test(hx(c))){rt=c.innerHTML;c.remove()}});const cs=f.querySelectorAll('.c'),tr=cs[cs.length-1];
+ if(tr){const k=document.createElement('template');k.innerHTML=mk(0,'tracker','🎯 Tracker tugas',tr.innerHTML+(rt?`<div class="sub">${rt}</div>`:'')+`<div class="sub">${moodProg()}</div>`,true);tr.replaceWith(k.content)}return html(f).replace(/<div class="sub"><div class="c">/g,'<div class="sub"><div class="in">')});
+wrap('mood',h=>{const f=dom(h);f.querySelectorAll('.c').forEach(c=>{if(/Progres mood/.test(hx(c)))c.remove()});return html(f)});
+/* Atur */
+const oldSet=V.set;
+V.set=()=>{const s=S.set,F=window.FN||{},f=dom(oldSet()),data=[...f.querySelectorAll('.c')].find(c=>hx(c)==='Data'),ad=!!F.isAdmin,role=ad?'<span class="rb ad">🛡️ Admin</span>':F.email?'<span class="rb">👤 Member</span>':'<span class="rb">👤 Tamu (lokal)</span>';
+ const ac=dom(acctCard()),rm=dom(rmCard()),mu=dom(vMusic());mu.querySelectorAll('h1').forEach(x=>x.remove());const rh=rm.querySelector('h2');if(rh)rh.textContent='🔔 Pengingat';
+ const aBox=ac.querySelector('.c');
+ return `<h1>Pengaturan</h1><div class="c"><h2>👤 Profil</h2><div class="f"><label>Nama<input data-a="sf" data-k="name" value="${esc(s.name)}"></label></div><p class="mu" style="margin:8px 0 0">${role}${F.email?' '+esc(F.email):''}</p>${ad?'<div class="tabs"><button class="b s sm" data-v10="adm">🛡️ Kelola member (Admin)</button></div>':''}${aBox?aBox.innerHTML.replace(/<h2>Akun<\/h2>/,''):''}</div>`
+ +html(rm)+`<div class="c"><h2>🎨 Tema</h2><div class="tabs"><button class="b" data-a="th">Tema: ${s.theme==='dark'?'Gelap 🌙':'Terang ☀️'}</button></div></div>`
+ +mk(0,'musik','🎵 Musik',html(mu),false)+(data?data.outerHTML:'')};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-v10=adm]');if(b&&window.FN&&window.FN.openAdmin)window.FN.openAdmin()});
+/* tersimpan toast pada edit flashcard/kuis */
+document.addEventListener('change',e=>{const x=e.target.dataset&&e.target.dataset.x;if(x&&(x.indexOf('fe')===0||x.indexOf('qe')===0))toast('✓ Tersimpan')},true);
+/* level Lanjutkan Pola */
+window.lvSel=()=>`<label class="mu">Level <select data-x="gcfg" data-k="sq" data-f="lv">${LV.map((l,i)=>`<option value="${i+1}" ${(GS('sq').lv||1)===i+1?'selected':''}>${l}</option>`).join('')}</select></label>`;
+/* ===== Sudoku & Deret Tabel ===== */
+const rn=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=rn(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+GM.push(['sd','🔲','Sudoku','Isi grid 9×9 tanpa angka kembar. 4 level.'],['dt','📊','Deret Tabel','Lengkapi angka kosong pada tabel deret. 4 level.']);
+let X={};const ov=h=>{let e=document.getElementById('gx');if(!e){e=document.createElement('div');e.id='gx';document.body.appendChild(e)}e.innerHTML=`<div class="gxs">${h}</div>`};
+const lvB=()=>`<div class="tabs">${LV.map((l,i)=>`<button class="b ${X.lv===i+1?'':'s'} sm" data-g="lv" data-v="${i+1}">${l}</button>`).join('')}</div>`;
+const top=t=>`<div class="f" style="flex-wrap:nowrap"><button class="b s sm n" data-g="x">← Tutup</button><b style="flex:1;text-align:center">${t}</b></div>`;
+function sdGen(lv){const p=sh([0,1,2]),r=[],c=[];sh([0,1,2]).forEach(b=>sh([0,1,2]).forEach(x=>r.push(b*3+x)));sh([0,1,2]).forEach(b=>sh([0,1,2]).forEach(x=>c.push(b*3+x)));const d=sh([1,2,3,4,5,6,7,8,9]),sol=[];r.forEach(i=>c.forEach(j=>sol.push(d[(i*3+Math.floor(i/3)+j)%9])));const keep=[46,38,32,26][lv-1],on=new Set(sh([...Array(81).keys()]).slice(0,keep));return{sol,cur:sol.map((v,i)=>on.has(i)?v:0),fx:sol.map((v,i)=>on.has(i)),sel:-1,lv}}
+const sdBad=(a,i)=>{const v=a[i];if(!v)return false;const r=Math.floor(i/9),c=i%9;for(let k=0;k<81;k++){if(k!==i&&a[k]===v&&(Math.floor(k/9)===r||k%9===c||(Math.floor(k/27)===Math.floor(r/3)&&Math.floor((k%9)/3)===Math.floor(c/3))))return true}return false};
+function sdDraw(){const q=X.s;let g='';for(let i=0;i<81;i++){const r=Math.floor(i/9),c=i%9,bad=sdBad(q.cur,i);g+=`<button class="sc${q.fx[i]?' fx':''}${q.sel===i?' sl':''}${bad?' bd':''}" style="${c%3===2&&c<8?'margin-right:3px;':''}${r%3===2&&r<8?'margin-bottom:3px;':''}" data-g="c" data-i="${i}">${q.cur[i]||''}</button>`}
+ ov(top('🔲 Sudoku · '+LV[q.lv-1])+`<div class="sg">${g}</div><div class="tabs" style="justify-content:center">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b s sm" data-g="n" data-v="${n}">${n}</button>`).join('')}<button class="b s sm" data-g="n" data-v="0">⌫</button></div><div class="tabs"><button class="b sm" data-g="chk">✓ Cek</button><button class="b s sm" data-g="new">🔄 Baru</button></div><p class="mu" id="gxm" style="margin:0">Pilih kotak lalu ketuk angka. Angka kembar ditandai merah.</p>`)}
+function win(n,pts){const k=S.gl;S.gl.push({d:TD(),g:n,r:100});gain(pts,'Game: '+n);try{petPlus(8,10)}catch(e){}sv();toast('🎉 Selesai! +'+pts+' poin',1)}
+function dtGen(lv){const rows=[];for(let r=0;r<5;r++){let a=[],x=rn(1,9),d;const k=lv===1?0:lv===2?rn(0,1):lv===3?rn(1,3):rn(2,5);
+ if(k===0){d=rn(1,5);a=[...Array(6)].map((_,i)=>x+d*i)}else if(k===1){d=rn(2,9)*(rn(0,1)?1:-1);x=rn(20,60);a=[...Array(6)].map((_,i)=>x+d*i)}else if(k===2){const m=rn(2,3);x=rn(1,4);a=[...Array(6)].map((_,i)=>x*m**i)}else if(k===3){x=rn(1,5);a=[...Array(6)].map((_,i)=>(i+x)**2)}else if(k===4){a=[rn(1,4),rn(2,6)];for(let i=2;i<6;i++)a.push(a[i-1]+a[i-2])}else{d=rn(1,3);x=rn(1,9);a=[x];for(let i=1;i<6;i++)a.push(a[i-1]+d*i)}
+ const nb=[1,2,2,3][lv-1],bl=new Set(sh([1,2,3,4,5]).slice(0,nb));rows.push({a,bl,v:a.map(()=>'')})}return{rows,lv}}
+function dtDraw(chk){const q=X.t;ov(top('📊 Deret Tabel · '+LV[q.lv-1])+`<div class="dtw">${q.rows.map((r,i)=>`<div class="dr"><span class="mu">${i+1}</span>${r.a.map((n,j)=>r.bl.has(j)?`<input inputmode="numeric" data-g="v" data-r="${i}" data-c="${j}" value="${r.v[j]}" class="${chk?(+r.v[j]===n&&r.v[j]!==''?'ok':'no'):''}">`:`<b>${n}</b>`).join('')}</div>`).join('')}</div><div class="tabs"><button class="b sm" data-g="chk">✓ Periksa</button><button class="b s sm" data-g="new">🔄 Baru</button></div><p class="mu" id="gxm" style="margin:0">Temukan aturan tiap baris lalu isi kotak kosong.</p>`)}
+function gxOpen(k){X={k,lv:1,scr:'menu'};gxMenu()}
+function gxMenu(){const n=X.k==='sd'?'🔲 Sudoku':'📊 Deret Tabel';ov(top(n)+`<p class="mu">${X.k==='sd'?'Isi grid 9×9 agar tiap baris, kolom, dan kotak 3×3 berisi angka 1–9 tanpa kembar.':'Tiap baris mengikuti satu aturan deret. Isi angka yang kosong.'}</p><p><b>Pilih level</b></p>${lvB()}<button class="b" data-g="go">▶️ Mulai</button>`)}
+const oo=window.openGame;window.openGame=function(k){if(k==='sd'||k==='dt')return gxOpen(k);return oo(k)};
+document.addEventListener('click',e=>{const b=e.target.closest('#gx [data-g]');if(!b)return;const a=b.dataset.g,v=+b.dataset.v;
+ if(a==='x'){document.getElementById('gx').remove();return}
+ if(a==='lv'){X.lv=v;gxMenu();return}
+ if(a==='go'||a==='new'){if(X.k==='sd'){X.s=sdGen(X.lv);sdDraw()}else{X.t=dtGen(X.lv);dtDraw()}return}
+ if(a==='c'){X.s.sel=+b.dataset.i;sdDraw();return}
+ if(a==='n'){const q=X.s;if(q.sel<0||q.fx[q.sel])return;q.cur[q.sel]=v;sdDraw();return}
+ if(a==='chk'){if(X.k==='sd'){const q=X.s,full=q.cur.every(x=>x),bad=q.cur.some((_,i)=>sdBad(q.cur,i));const m=document.getElementById('gxm');if(!full)m.textContent='Masih ada kotak kosong.';else if(bad)m.textContent='Ada angka kembar, periksa kotak merah.';else{win('Sudoku '+LV[q.lv-1],[15,25,35,50][q.lv-1]);m.textContent='🎉 Benar semua!'}}
+  else{const q=X.t;dtDraw(true);const ok=q.rows.every(r=>[...r.bl].every(j=>+r.v[j]===r.a[j]&&r.v[j]!==''));if(ok){win('Deret Tabel '+LV[q.lv-1],[10,20,30,40][q.lv-1]);document.getElementById('gxm').textContent='🎉 Semua benar!'}else document.getElementById('gxm').textContent='Kotak hijau benar, merah perlu dicek.'}}
+});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.g==='v'){X.t.rows[+t.dataset.r].v[+t.dataset.c]=t.value}});
+})();
+</script>
 <script type="module">
 /* ===== Firebase Auth (Google + Email) & Firestore — SDK modular v10 ===== */
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -1774,7 +1854,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
         if ((await F.getDoc(F.doc(db, 'admins', em))).exists()) {
           const bt = document.createElement('button');
           bt.textContent = '🛡️ Admin'; bt.setAttribute('style', 'position:fixed;right:12px;bottom:84px;z-index:9998;padding:8px 12px;border-radius:20px;border:0;background:#4F7CF0;color:#fff;font-weight:700;cursor:pointer');
-          document.body.appendChild(bt);
+          window.FN.isAdmin=true;window.FN.openAdmin=()=>bt.onclick();
           bt.onclick = async () => {
             let o = document.getElementById('adm'); if (o) o.remove();
             o = document.createElement('div'); o.id = 'adm';
@@ -1783,10 +1863,10 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
             const draw = async () => {
               let qs; try { qs = await F.getDocs(F.collection(db, 'members')); } catch (e) { alert('Gagal membaca daftar member: ' + (e.code || e.message) + '\n\nPeriksa Firestore Rules dan pastikan dokumen admins/' + em + ' ada.'); o.remove(); return; }
               const rows = [];
-              qs.forEach(d => rows.push([d.id, d.data().active === true]));
+              qs.forEach(d => rows.push([d.id, d.data().active === true])); let ads = new Set([em]); try { (await F.getDocs(F.collection(db, 'admins'))).forEach(d => ads.add(d.id)); } catch (e) {} ads.forEach(a => { if (!rows.some(r => r[0] === a)) rows.push([a, true]); }); rows.sort((x, y) => ads.has(y[0]) - ads.has(x[0]));
               o.innerHTML = '<div class="c" style="max-width:480px;width:100%;max-height:85vh;overflow:auto"><h2>🛡️ Kelola member (' + rows.length + ')</h2>' +
                 '<div class="f"><input id="ame" type="email" placeholder="email member baru"><button class="b n" id="aad">Tambah</button></div>' +
-                rows.map(([e, a]) => '<div class="tk"><div><b>' + E2(e) + '</b> <span class="tag">' + (a ? 'aktif' : 'nonaktif') + '</span></div><button class="b s sm" data-t="' + E2(e) + '" data-v="' + (a ? 0 : 1) + '">' + (a ? 'Nonaktifkan' : 'Aktifkan') + '</button><button class="b x sm" data-d="' + E2(e) + '">Hapus</button></div>').join('') +
+                rows.map(([e, a]) => '<div class="tk"><div><b>' + E2(e) + '</b> ' + (ads.has(e) ? '<span class="tag" style="background:#E5484D22;color:#E5484D">🛡️ Admin</span>' : '<span class="tag">👤 Member</span>') + ' <span class="tag">' + (a ? 'aktif' : 'nonaktif') + '</span></div><button class="b s sm" data-t="' + E2(e) + '" data-v="' + (a ? 0 : 1) + '">' + (a ? 'Nonaktifkan' : 'Aktifkan') + '</button><button class="b x sm" data-d="' + E2(e) + '">Hapus</button></div>').join('') +
                 '<button class="b" id="acl" style="margin-top:10px">Tutup</button></div>';
               o.querySelector('#acl').onclick = () => o.remove();
               o.querySelector('#aad').onclick = async () => { const v = o.querySelector('#ame').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(v)) { alert('Format email salah'); return; } try { await F.setDoc(F.doc(db, 'members', v), { active: true, addedAt: F.serverTimestamp() }); } catch (e) { alert('Gagal menambah member: ' + (e.code || e.message) + (e.code === 'permission-denied' ? '\n\nRules menolak. Pastikan Rules terbaru sudah dipublish dan dokumen admins/' + em + ' ada.' : '')); return; } draw(); };
