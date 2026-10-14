@@ -146,7 +146,7 @@ button.tag:hover{filter:brightness(.95);text-decoration:underline dotted}
 .ht4{background:var(--ac);background:color-mix(in srgb,var(--ac) 82%,var(--card));color:#fff}
 .yd.td{outline:2px solid var(--ac);outline-offset:1px;font-weight:800}
 .yd.ok{box-shadow:inset 0 0 0 2px var(--ok)}
-.yd.sl{background:var(--ac);color:#fff}
+.yd.sl{background:var(--ac);color:#fff}.yd.gdn{background:#8B5CF6!important;color:#fff!important}.yd.gdn.sl{box-shadow:0 0 0 2px var(--ac)}
 .yd .hi,.yd .gi{position:absolute;top:2px;width:5px;height:5px;border-radius:50%}
 .yd .hi{right:2px;background:var(--rd)}.yd .gi{left:2px;background:#A66BFF}
 .leg{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--mu);margin-top:12px;align-items:center}
@@ -312,7 +312,7 @@ input[type=range]{accent-color:var(--ac);padding:0}
 .cchip{display:inline-flex;gap:2px;align-items:center;background:var(--as);border-radius:20px;padding:2px 4px 2px 10px;margin:3px 6px 3px 0}
 .cchip input{background:transparent;border:0;padding:4px;width:128px;font-weight:600;color:var(--ac)}
 #rmb{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));right:12px;z-index:80;display:flex;flex-direction:column;gap:8px;width:min(360px,calc(100vw - 24px))}
-.rmi{background:var(--card);border:2px solid var(--ac);border-radius:14px;padding:10px 12px;box-shadow:0 10px 28px rgba(0,0,0,.28);display:flex;flex-direction:column;gap:8px}
+.rmx{position:absolute;top:4px;right:8px;border:0;background:none;color:inherit;opacity:.55;cursor:pointer;font-size:16px;line-height:1;padding:4px}.rmx:hover{opacity:1}.rmi{position:relative;padding-right:30px;background:var(--card);border:2px solid var(--ac);border-radius:14px;padding:10px 12px;box-shadow:0 10px 28px rgba(0,0,0,.28);display:flex;flex-direction:column;gap:8px}
 @media(prefers-reduced-motion:no-preference){.rmi{animation:tin .3s}}
 /* ===== v5: pet komik, brain games, tips, progres ===== */
 .gtop{gap:8px}
@@ -482,6 +482,7 @@ const opt=(a,v)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('
 const dn=d=>['Min','Sen','Sel','Rab','Kam','Jum','Sab'][new Date(d).getDay()];
 const l7=()=>[...Array(7)].map((_,i)=>iso(Date.now()-(6-i)*864e5));
 const fm=(d,m)=>S.focus.filter(f=>f.d===d).reduce((a,f)=>a+f.m,0);
+window.gDn=d=>S.goals.some(g=>g.fin&&(g.finD||g.due)===d);
 const gp=g=>window.gPct?gPct(g):g.ms&&g.ms.length?Math.round(g.ms.filter(m=>m.d).length/g.ms.length*100):0;
 window.gDueTxt=g=>{if(!g.due)return '♾️ tanpa tenggat';const l=Math.round((new Date(g.due+'T12:00')-new Date(TD()+'T12:00'))/864e5),dt=new Date(g.due+'T12:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});return '📅 '+dt+(g.fin?'':l>0?' · sisa '+l+' hari':l===0?' · hari ini':' · lewat '+(-l)+' hari')};
 const wk=()=>{const d=new Date();d.setDate(d.getDate()-(d.getDay()+6)%7);return iso(d)};
@@ -489,17 +490,10 @@ const tdTasks=()=>S.tasks.filter(t=>(t.due||TD())===TD());
 
 
 const mini=t=>`<div class="tk ${t.st==='selesai'?'dn':''}"><input type="checkbox" aria-label="Selesai" data-a="tg" data-i="${t.id}" ${t.st==='selesai'?'checked':''}><div><b>${esc(t.t)}</b> ${tags(t,0,1)}</div></div>`;
-let addF=d=>`<div class="f"><input id="nt" placeholder="Tulis tugas baru…" aria-label="Tugas" style="flex:2 1 220px"><select id="nc" aria-label="Kategori">${opt(CAT)}</select><select id="np" aria-label="Prioritas">${PRI.map(p=>`<option value="${p}" ${p==='Sedang'?'selected':''}>${PRI_I[p]} Prioritas ${p}</option>`).join('')}</select><select id="ndf" aria-label="Level kesulitan">${DIF.map(x=>`<option value="${x}" ${x==='Sedang'?'selected':''}>Kesulitan ${x}</option>`).join('')}</select></div><div class="f" style="margin-top:8px"><select id="ngl" aria-label="Goal terkait">${goalOpts('')}</select><select id="nms" aria-label="Milestone"><option value="">🚩 Tanpa milestone</option></select><input id="ntj" placeholder="💡 Tujuan tugas ini (kenapa penting?)" aria-label="Tujuan tugas" style="flex:2 1 200px"><input id="nd" type="date" value="${d||TD()}" aria-label="Deadline"><input id="ntm" type="time" aria-label="Jam"><select id="nrm" aria-label="Pengingat" style="flex:1 1 150px">${rmOpts('')}</select><input id="ne" type="number" min="0" placeholder="Est. menit" aria-label="Estimasi"><button class="b n" data-a="at">Tambah</button></div><p class="mu" id="ppv" style="margin:8px 0 0">${pvTxt('Sedang','Sedang')}</p>`;
 
 
-function vTasks(){
-  const T=TD(),all=S.tasks.filter(x=>window.tfOk?tfOk(x):1),f={today:x=>(x.due||T)===T&&x.st!=='selesai',up:x=>x.due>T&&x.st!=='selesai',over:x=>x.due&&x.due<T&&x.st!=='selesai',done:x=>x.st==='selesai',day:x=>(x.due||T)===vd};
-  const D0=tab==='day'&&vd?vd:T,tl=all.filter(x=>(x.due||T)===D0&&x.time).sort((a,b)=>a.time.localeCompare(b.time));
-  return `<h1>Tugas</h1><div class="c" style="margin-top:12px">${addF(tab==='day'&&vd?vd:TD())}</div>
-  <div class="c"><div class="f"><input id="q" placeholder="🔍 Cari tugas…" value="${esc(q)}" aria-label="Cari"><select id="fl" aria-label="Filter kategori"><option value="">Semua kategori</option>${CAT.map(c=>`<option ${c===fl?'selected':''}>${c}</option>`).join('')}</select><button class="b s n" data-a="cmt">🏷️ Kelola kategori</button></div>
-  <div class="tabs">${[['today','Hari ini'],['up','Mendatang'],['over','Terlambat'],['done','Selesai'],...(vd?[['day','📅 '+vd.slice(5).split('-').reverse().join('/')]]:[])].map(([k,l])=>`<button class="b ${tab===k?'':'s'} sm" data-a="tab" data-k="${k}">${l} (${all.filter(f[k]).length})</button>`).join('')}</div><div id="tl"></div></div>
-  ${catCard()}${window.v8Sched?v8Sched(D0):schedCard(D0)}${window.v8Rt?v8Rt():''}`;
-}
+
+function vTasks(){return''}
 function rList(){const T=TD(),f={today:x=>(x.due||T)===T&&x.st!=='selesai',up:x=>x.due>T&&x.st!=='selesai',over:x=>x.due&&x.due<T&&x.st!=='selesai',done:x=>x.st==='selesai',day:x=>(x.due||T)===vd};
   const l=S.tasks.filter(f[tab]).filter(x=>(!fl||x.cat===fl)&&(!window.tfOk||tfOk(x))&&x.t.toLowerCase().includes(q.toLowerCase())).sort(tsort);$('#tl').innerHTML=l.length?l.map(row).join(''):'<p class="mu">Tidak ada tugas di sini.</p>'}
 function vGoals(){
@@ -636,19 +630,19 @@ function vPet(){const p=S.pet;
 /* ---------- kalender tahunan ---------- */
 function vYear(){const op=k=>(window.__op||{})[k]??true,T=TD(),y=yr,map={},gd={},DL=['M','S','S','R','K','J','S'];
   S.tasks.forEach(t=>{const d=t.due||T;if(d.slice(0,4)==y){const m=map[d]=map[d]||{n:0,d:0,h:0};m.n++;if(t.st==='selesai')m.d++;else if(d<=T)m.h++}});
-  S.goals.forEach(g=>{if(g.due&&g.due.slice(0,4)==y)(gd[g.due]=gd[g.due]||[]).push(g.t)});
+  S.goals.forEach(g=>{if(!g.fin&&g.due&&g.due.slice(0,4)==y)(gd[g.due]=gd[g.due]||[]).push(g.t)});
   let tn=0,td=0;Object.values(map).forEach(m=>{tn+=m.n;td+=m.d});
-  const gl=S.goals.filter(g=>g.due?g.due.slice(0,4)==y:(g.per==='Tahunan'&&y===new Date().getFullYear())).sort((a,b)=>(a.due||'9').localeCompare(b.due||'9'));
+  const gl=S.goals.filter(g=>g.due?g.due.slice(0,4)==y:((g.per==='Tahunan'&&y===new Date().getFullYear())||(g.fin&&g.finD&&g.finD.slice(0,4)==y))).sort((a,b)=>(a.due||'9').localeCompare(b.due||'9'));
   const mons=MN.map((nm,m)=>{const f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate();let mn=0,md=0,c='';
-    for(let i=1;i<=n;i++){const d=iso(new Date(y,m,i)),x=map[d]||{n:0,d:0,h:0};mn+=x.n;md+=x.d;const lv=x.n?x.n>=8?4:x.n>=5?3:x.n>=3?2:1:0,lb=i+' '+nm+' '+y+': '+(x.n?x.n+' tugas, '+x.d+' selesai':'kosong')+(gd[d]?' · deadline goal':'');
-      c+=`<button class="yd ${lv?'ht'+lv:''} ${d===T?'td':''} ${d===cs?'sl':''} ${x.n&&x.d===x.n?'ok':''}" data-a="yd" data-d="${d}" title="${esc(lb)}" aria-label="${esc(lb)}">${i}${x.h?'<i class="hi"></i>':''}${gd[d]?'<i class="gi"></i>':''}</button>`}
+    for(let i=1;i<=n;i++){const d=iso(new Date(y,m,i)),x=map[d]||{n:0,d:0,h:0};mn+=x.n;md+=x.d;const lv=x.n?x.n>=8?4:x.n>=5?3:x.n>=3?2:1:0,lb=i+' '+nm+' '+y+': '+(x.n?x.n+' tugas, '+x.d+' selesai':'kosong')+(gd[d]?' · deadline goal':'')+(gDn(d)?' · goal selesai':'');
+      c+=`<button class="yd ${lv?'ht'+lv:''} ${d===T?'td':''} ${d===cs?'sl':''} ${x.n&&x.d===x.n?'ok':''}${gDn(d)?' gdn':''}" data-a="yd" data-d="${d}" title="${esc(lb)}" aria-label="${esc(lb)}">${i}${x.h?'<i class="hi"></i>':''}${gd[d]?'<i class="gi"></i>':''}</button>`}
     return `<div class="c ym"><button class="mh" data-a="ym" data-m="${m}" title="Buka di kalender bulanan">${nm}</button><span class="mu">${mn} tugas · ${md} selesai</span><div class="bar"><i style="width:${mn?Math.round(md/mn*100):0}%"></i></div><div class="ycal">${DL.map(x=>`<small>${x}</small>`).join('')}${'<span></span>'.repeat(f)}${c}</div></div>`}).join('');
   return `<h1>Kalender Tahunan</h1><p class="mu">Lihat seluruh rencana setahun. <b>Klik tanggal</b> untuk membuka & mengatur to-do list hari itu.</p>
   <div class="c" style="margin-top:12px"><div class="f" style="justify-content:space-between"><button class="b s n" data-a="yp" data-v="-1" aria-label="Tahun sebelumnya">‹</button><h2 style="margin:0;flex:1;text-align:center">${y}</h2><button class="b s n" data-a="yp" data-v="1" aria-label="Tahun berikutnya">›</button><button class="b s n" data-a="yp" data-v="0">Tahun ini</button></div>
   <div class="g g4" style="margin-top:10px"><div class="c st"><span class="mu">Total rencana</span><b>${tn}</b></div><div class="c st"><span class="mu">Selesai</span><b>${td}</b></div><div class="c st"><span class="mu">Realisasi</span><b>${tn?Math.round(td/tn*100):0}%</b></div><div class="c st"><span class="mu">Goals tahun ini</span><b>${gl.length}</b></div></div>
-  <div class="leg"><span>Padat:</span><span><b class="ht1"></b>1–2</span><span><b class="ht2"></b>3–4</span><span><b class="ht3"></b>5–7</span><span><b class="ht4"></b>8+</span><span><em style="background:var(--rd)"></em>belum selesai</span><span><em style="background:#A66BFF"></em>deadline goal</span><span><b style="box-shadow:inset 0 0 0 2px var(--ok)"></b>semua selesai</span></div></div>
+  <div class="leg"><span>Padat:</span><span><b class="ht1"></b>1–2</span><span><b class="ht2"></b>3–4</span><span><b class="ht3"></b>5–7</span><span><b class="ht4"></b>8+</span><span><em style="background:var(--rd)"></em>belum selesai</span><span><em style="background:#A66BFF"></em>deadline goal</span><span><b style="background:#8B5CF6"></b>goal selesai</span><span><b style="box-shadow:inset 0 0 0 2px var(--ok)"></b>semua selesai</span></div></div>
   <details class="c cl" data-ck="y-kal" ${op('y-kal')?'open':''}><summary>🗓️ Kalender ${y}</summary><div class="yg" style="margin-top:8px">${mons}</div></details>
-  <details class="c cl" data-ck="y-goal" ${op('y-goal')?'open':''}><summary>🎯 Goals ${y}</summary>${gl.length?gl.map(g=>`<div class="tk"><div><b>${esc(g.t)}</b><br><span class="mu">${gDueTxt(g)}</span><div class="bar"><i style="width:${gp(g)}%"></i></div></div><span class="mu">${gp(g)}%</span></div>`).join(''):'<p class="mu">Belum ada goal bertanggal / bertipe Tahunan untuk tahun ini. Tambahkan di halaman Goals.</p>'}</details>`}
+  <details class="c cl" data-ck="y-goal" ${op('y-goal')?'open':''}><summary>🎯 Goals ${y}</summary>${gl.length?gl.map(g=>`<div class="tk"><div><b>${esc(g.t)}</b><br><span class="mu">${gDueTxt(g)}${g.fin&&(g.finD||g.due)?' · ✅ selesai '+(g.finD||g.due):''}</span><div class="bar"><i style="width:${gp(g)}%"></i></div></div><span class="mu">${gp(g)}%</span><button class="b s sm" data-n="gfin" data-i="${g.id}">${g.fin?'↩ Buka lagi':'✔ Tandai selesai'}</button></div>`).join(''):'<p class="mu">Belum ada goal bertanggal / bertipe Tahunan untuk tahun ini. Tambahkan di halaman Goals.</p>'}</details>`}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&(edt||dro)){if(edt){edt=null;render();return}const d=dro;dro=null;render();const x=document.querySelector('.yd[data-d="'+d+'"]');x&&x.focus();return}
   if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.a==='clin'){e.preventDefault();addCl(e.target.dataset.i)}});
 
@@ -759,7 +753,7 @@ function msLink(g,m){m.id=m.id||uid();const ts=S.tasks.filter(x=>x.mid===m.id).s
 /* ---------- baris tugas ---------- */
 function row(t){return `<div class="tk tkx ${t.st==='selesai'?'dn':''}"><input type="checkbox" aria-label="Selesai" data-a="tg" data-i="${t.id}" ${t.st==='selesai'?'checked':''}><div><b>${esc(t.t)}</b><br><span class="tag">${esc(t.cat)}</span>${tags(t,1,1)}<span class="mu">${t.due?'📅 '+t.due:''} ${t.time||''} ${t.est?'· est '+t.est+'m':''}</span>${lkLine(t)}${clBox(t)}</div><select data-a="st" data-i="${t.id}" aria-label="Status">${opt(ST,t.st)}</select><input type="number" min="0" placeholder="akt." title="Durasi aktual (menit)" data-a="act" data-i="${t.id}" value="${t.act||''}"><button class="b x" data-a="et" data-i="${t.id}" aria-label="Edit tugas" title="Edit semua detail">✏️</button><button class="b x" data-a="dt" data-i="${t.id}" aria-label="Hapus">✕</button></div>`}
 const lite=t=>`<div class="tk ${t.st==='selesai'?'dn':''}"><input type="checkbox" aria-label="Selesai" data-a="tg" data-i="${t.id}" ${t.st==='selesai'?'checked':''}><div><div class="tt">${t.time?`<span class="tm2">🕐 ${t.time}${rmAct(t)?' 🔔':''}</span> `:''}<b>${esc(t.t)}</b></div>${noPt(tags(t,1,1))}${lkPt(t)}${clBar(t)}</div><button class="b x" data-a="et" data-i="${t.id}" aria-label="Edit tugas">✏️</button><button class="b x" data-a="dt" data-i="${t.id}" aria-label="Hapus">✕</button></div>`;
-const liteD=t=>liteC(t).replace(/<button class="b x" data-a="dt"[^>]*>✕<\/button>/,'');
+const liteD=t=>liteC(t).replace(/<button class="b x" data-a="dt"[^>]*>✕<\/button>/,'').replace(/<(button|span) class="tag (?:Tinggi|Sedang|Rendah)"[^>]*>[^<]*<\/\1>/,'');
 const liteC=t=>lite(t).replace(/<button class="tag df-[^"]*"[^>]*>[^<]*<\/button>/,'');
 function schedCard(d){const T=TD(),ts=S.tasks.filter(x=>(x.due||T)===d).sort(byTime),dn=ts.filter(x=>x.st==='selesai').length,n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
   return `<div class="c"><h2>🕐 Jadwal ${d===T?'hari ini':fmtD(d,{weekday:'long',day:'numeric',month:'long'})} <span class="mu">${dn}/${ts.length} selesai</span></h2><div class="bar"><i style="width:${ts.length?Math.round(dn/ts.length*100):0}%"></i></div><p class="mu">Urut sesuai jam. Ubah jam langsung di kolom kiri, atau klik ✏️ untuk mengedit semuanya (nama, tujuan, goal, milestone, checklist…).</p>${ts.length?`<div class="tl2">${ts.map(x=>`<div class="tr ${x.st==='selesai'?'dn':''} ${d===T&&x.time&&x.time<=hm&&x.st!=='selesai'?'late':''}"><input type="time" data-a="tmt" data-i="${x.id}" value="${x.time||''}" aria-label="Jam tugas"><div><div class="tt"><input type="checkbox" data-a="tg" data-i="${x.id}" ${x.st==='selesai'?'checked':''} aria-label="Selesai"> <b>${esc(x.t)}</b> <button class="b x sm" data-a="et" data-i="${x.id}" aria-label="Edit tugas">✏️</button></div>${noPt(tags(x,1,1))}<span class="mu">${x.est?x.est+' mnt':''}</span>${lkPt(x)}${clBar(x)}</div></div>`).join('')}</div>`:'<p class="mu">Belum ada tugas pada tanggal ini.</p>'}</div>`}
@@ -787,8 +781,7 @@ function drawer(){const e=$('#dr');if(!e)return;const T=edt&&S.tasks.find(x=>x.i
   <div class="bar"><i style="width:${ts.length?Math.round(dd/ts.length*100):0}%"></i></div>
   ${gs.map(g=>`<p class="mu" style="margin:0">🎯 Deadline goal: <b>${esc(g.t)}</b></p>`).join('')}
   <div>${ts.length?ts.map(liteC).join(''):'<p class="mu">Tanggal ini masih kosong. Tambahkan rencana pertamamu di bawah ⬇️</p>'}</div>
-  ${window.__dadd?`<h3>➕ Tambah ke tanggal ini</h3><div class="f"><input id="dnt" placeholder="Tulis tugas…" aria-label="Tugas" style="flex:2 1 160px"><select id="dnc" aria-label="Kategori">${opt(CAT)}</select><select id="dnp" aria-label="Prioritas">${PRI.map(p=>`<option value="${p}" ${p==='Sedang'?'selected':''}>${PRI_I[p]} ${p}</option>`).join('')}</select></div>
-  <div class="f"><select id="dng" aria-label="Goal terkait">${goalOpts('')}</select><input id="dntm" type="time" aria-label="Jam" style="flex:0 1 110px"><button class="b n" data-a="dat">Tambah</button><button class="b s n" data-v9="dcancel">Batal</button></div>`:`<div class="tabs"><button class="b" data-v9="dadd">➕ Tambah tugas</button></div>`}
+  ${window.__dadd?`<h3>➕ Tambah ke tanggal ini</h3>${window.tkForm(d,{cancel:1})}`:`<div class="tabs"><button class="b" data-v9="dadd">➕ Tambah tugas</button></div>`}
   <!--dn-->
   <div class="tabs"><button class="b s sm" data-a="dto">Buka di halaman Tugas ›</button></div></aside>`}
   const ns=e.querySelector('.sh');if(was){e.querySelectorAll('.bk,.sh').forEach(x=>x.classList.add('same'));if(ns)ns.scrollTop=sc}}
@@ -853,7 +846,7 @@ function vDash(){const t=tdTasks().sort(byTime),d=t.filter(x=>x.st==='selesai').
   return `<div class="gtop"><button class="gbtn" data-a="xtip" aria-label="Buka tips produktivitas & belajar" title="Tips produktivitas & belajar">📚<small>Tips</small></button><button class="gbtn" data-a="gopen" aria-label="Buka panduan mulai (${gn} dari ${gst.length} langkah selesai)" title="Panduan mulai">💡<small>${gn}/${gst.length}</small></button></div><div class="topr">`+notesCard()+`</div>`
   +`<div class="c hero"><div><h1>${h<11?'Selamat pagi':h<15?'Selamat siang':h<18?'Selamat sore':'Selamat malam'}, ${esc(S.set.name||'Future You')}! 🌤️</h1><p class="mu">${new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}. Langkah kecil hari ini menuju impian besar.</p></div><div id="clk"></div></div>`
   +`<div class="g g4" style="margin-bottom:12px"><div class="c st"><span class="mu">Tugas hari ini</span><b>${d}/${t.length}</b></div><div class="c st"><span class="mu">Fokus hari ini</span><b>${fm(TD())} mnt</b></div><div class="c st"><span class="mu">Progres goals</span><b>${gs}%</b></div><div class="c st"><span class="mu">Mood</span><b>${m&&m.m?EM[m.m-1]:'—'}</b></div></div>`
-  +`<div class="c"><div class="f" style="flex-wrap:nowrap"><button class="tgl" data-v9="rpo" aria-expanded="${window.__rpo!==false}" style="flex:1"><b>🕐 Jadwal hari ini <span class="mu">${d}/${t.length}</span></b><span>${window.__rpo!==false?'▾':'▸'}</span></button><button class="b s sm n" data-a="pg" data-k="tasks">Kelola & tambah ›</button></div>${window.__rpo!==false?`<div class="bar" style="margin-top:8px"><i style="width:${t.length?Math.round(d/t.length*100):0}%"></i></div>${t.length?t.map(liteD).join(''):'<p class="mu">Belum ada tugas hari ini. Buka halaman Tugas untuk menambah rencana pertamamu.</p>'}`:''}</div>`
+  +`<div class="c"><div class="f" style="flex-wrap:nowrap"><button class="tgl" data-v9="rpo" aria-expanded="${window.__rpo!==false}" style="flex:1"><b>🕐 Jadwal hari ini <span class="mu">${d}/${t.length}</span></b><span>${window.__rpo!==false?'▾':'▸'}</span></button><button class="b s sm n" data-v9="badd">＋ Tugas</button><button class="b s sm n" data-a="pg" data-k="tasks">Kelola ›</button></div>${window.__badd?`<div style="margin-top:10px">${window.tkForm(TD(),{cancel:1})}</div>`:''}${window.__rpo!==false?`<div class="bar" style="margin-top:8px"><i style="width:${t.length?Math.round(d/t.length*100):0}%"></i></div>${t.length?t.map(liteD).join(''):'<p class="mu">Belum ada tugas hari ini. Buka halaman Tugas untuk menambah rencana pertamamu.</p>'}`:''}</div>`
   +(window.dashHab?dashHab():'')+dashX()+petMini()}
 
 /* ---------- pengingat (reminder) ---------- */
@@ -871,7 +864,7 @@ function rmBeep(){try{const c=actx(),t=c.currentTime;[0,.28,.56].forEach((d,i)=>
 function rmTitle(){if(!document.querySelector('.rmi'))document.title=TTL}
 function rmFire(o){if(!fnDev())return;try{const L=petLine(o);if(L)o.body=L+' · '+o.body}catch(e){}if(S.set.rmSnd!==false)rmBeep();if(S.set.rmVib!==false)try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
   try{if('Notification' in window&&Notification.permission==='granted'){fnNotify(o)}}catch(e){}
-  const box=$('#rmb');if(box){const d=document.createElement('div');d.className='rmi';d.innerHTML=`<div><b>${esc(o.title)}</b><div class="mu">${esc(o.body)}</div></div><div class="f" style="justify-content:flex-end">${o.tid?`<button class="b s sm n" data-a="rmsnz" data-i="${o.tid}">Tunda 5 mnt</button>`:''}<button class="b sm n" data-a="rmok">Oke 👍</button></div>`;box.appendChild(d)}
+  const box=$('#rmb');if(box){const d=document.createElement('div');d.className='rmi';d.innerHTML=`<button class="rmx" data-a="rmok" aria-label="Tutup pengingat" title="Tutup">✕</button><div><b>${esc(o.title)}</b><div class="mu">${esc(o.body)}</div></div><div class="f" style="justify-content:flex-end">${o.tid?`<button class="b s sm n" data-a="rmsnz" data-i="${o.tid}">Tunda 5 mnt</button>`:''}<button class="b sm n" data-a="rmok">Oke 👍</button></div>`;box.appendChild(d)}
   document.title='⏰ '+o.title}
 function askNotif(){try{if(!('Notification' in window)){toast('Browser tidak mendukung notifikasi sistem — pengingat tetap tampil di aplikasi 🙂');return}
   Notification.requestPermission().then(p=>{S.set.rmSeen=1;sv();render();if(p==='granted')rmFire({title:'🔔 Pengingat aktif!',body:'Kamu akan diingatkan sesuai jadwal tugasmu.',key:'t'});else toast('Notifikasi tidak diizinkan — pengingat tetap tampil di dalam aplikasi.')})}catch(e){toast('Gagal meminta izin notifikasi')}}
@@ -888,7 +881,8 @@ function remind(){const st=S.set;if(st.rmOn===false)return;const now=Date.now(),
 const TONES={bell:['Lonceng',[880,1175,1568],'sine'],digi:['Digital',[1000,1000,1400],'square'],soft:['Lembut',[523,659,784],'triangle'],chime:['Chime',[784,988,1319],'sine']};
 function rmBeep(){try{const c=actx(),t=c.currentTime,T=TONES[S.set.atone]||TONES.bell,v=S.set.avol==null?.6:+S.set.avol;[0,.3,.6].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type=T[2];o.frequency.value=T[1][i];o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.6*v,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+.26);o.start(t+d);o.stop(t+d+.28)})}catch(e){}}
 function fnDev(){const d=localStorage.getItem('fn_dev')||'all',m=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);return!((d==='desktop'&&m)||(d==='mobile'&&!m))}
-function fnNotify(o){const op={body:o.body,tag:o.key||'focusnest',vibrate:[200,100,200],requireInteraction:true,renotify:true},plain=()=>{try{new Notification(o.title,op)}catch(e){}};if(!navigator.serviceWorker){plain();return}navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(o.title,op):plain()).catch(plain)}
+function fnNotify(o){const op={body:o.body,tag:o.key||'focusnest',vibrate:[200,100,200],requireInteraction:true,renotify:true},plain=()=>{try{const n=new Notification(o.title,op);n.onclose=()=>{window.rmStop&&rmStop()}}catch(e){}};if(!navigator.serviceWorker){plain();return}navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(o.title,op).then(()=>rmWatchN(r,op.tag)):plain()).catch(plain)}
+function rmWatchN(r,tag){let n=0;const iv=setInterval(()=>{r.getNotifications({tag}).then(l=>{if(!l.length||++n>300){clearInterval(iv);if(!l.length&&window.rmStop)rmStop()}}).catch(()=>clearInterval(iv))},1000)}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 function petLine(o){const p=S.pet;if(!p||!o.tid)return'';const t=S.tasks.find(x=>x.id===o.tid);if(!t)return'';const n=(S.set.name||'').split(' ')[0]||'sahabat',g=S.goals.find(x=>x.id===t.gid),gn=g&&(g.t||g.n||g.name||g.title),k=(o.key||'')[0],gt=gn?' demi goal “'+gn+'”':'';
  return p.name+': '+(k==='a'?'Sebentar lagi “'+t.t+'”, '+n+'! Tarik napas, kamu pasti bisa 💪':k==='e'?'Tinggal sedikit lagi, '+n+'! Selesaikan “'+t.t+'”'+gt+' ya, kamu hebat ✨':'Ayo mulai “'+t.t+'”, '+n+gt+'! Aku menemanimu 🥰')}
@@ -940,12 +934,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
   else if(a==='nt2'){askNotif();return}
   else if(a==='ex'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));l.download='focusnest-'+TD()+'.json';l.click();return}
   else if(a==='lo'){window.FN&&window.FN.logout&&window.FN.logout();return}
-  else if(a==='rs'){if(confirm('Hapus SEMUA data? Tindakan ini tidak bisa dibatalkan.')){localStorage.removeItem('focusnest');Promise.resolve(window.FN&&window.FN.reset&&window.FN.reset()).catch(()=>{}).then(()=>location.reload())}return}
+  else if(a==='rs'){if(confirm('Hapus SEMUA data? Tindakan ini tidak bisa dibatalkan.')&&confirm('Yakin ingin hapus data semua? Data di perangkat dan di cloud akan terhapus permanen.')){localStorage.removeItem('focusnest');Promise.resolve(window.FN&&window.FN.reset&&window.FN.reset()).catch(()=>{}).then(()=>location.reload())}return}
   else if(a==='yd'){cs=D.d;dro=D.d;window.__dadd=false;render();const x=$('#drc');x&&x.focus();return}
   else if(a==='drx'){const d=dro;dro=null;edt=null;window.__dadd=false;render();const x=document.querySelector('.yd[data-d="'+d+'"]');x&&x.focus();return}
   else if(a==='dto'){vd=dro;tab='day';dro=null;pg='tasks';animF=true;render();window.scrollTo(0,0);return}
-  else if(a==='dat'){const t=gv('dnt');if(!t){$('#dnt').focus();return}S.tasks.push({id:uid(),t,cat:gv('dnc')||'Akademik',pri:gv('dnp')||'Sedang',dif:gv('dndf')||'Sedang',gid:gv('dng'),mid:gv('dnm'),tj:gv('dntj'),cl:[],due:dro,time:gv('dntm'),est:0,st:'belum mulai',act:0});window.__dadd=false;toast('Rencana ditambahkan 📌')}
-  else if(a==='yp'){yr=+D.v?yr+ +D.v:new Date().getFullYear();render();return}
+    else if(a==='yp'){yr=+D.v?yr+ +D.v:new Date().getFullYear();render();return}
   else if(a==='ym'){cm=new Date(yr,+D.m,1);pg='cal';animF=true;render();window.scrollTo(0,0);return}
   else if(a==='cyp'){const o=['Rendah','Sedang','Tinggi'];T.pri=o[(o.indexOf(T.pri)+1)%3]}
   else if(a==='cyd'){T.dif=DIF[(DIF.indexOf(T.dif||'Sedang')+1)%DIF.length]}
@@ -957,8 +950,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
   else if(a==='catd'){const i=+D.j,old=CAT[i];if(CAT.length<=1){toast('Minimal harus ada 1 kategori');return}const nw=CAT[i?0:1],cnt=S.tasks.filter(x=>x.cat===old).length+S.goals.filter(x=>x.cat===old).length;if(!confirm('Hapus kategori “'+old+'”?'+(cnt?' '+cnt+' tugas/goal akan dipindah ke “'+nw+'”.':'')))return;S.tasks.forEach(x=>{if(x.cat===old)x.cat=nw});S.goals.forEach(x=>{if(x.cat===old)x.cat=nw});CAT.splice(i,1);if(fl===old)fl='';catSave();return}
   else if(a==='rmon'){S.set.rmOn=S.set.rmOn===false;S.set.rmSeen=1;if(S.set.rmOn&&'Notification' in window&&Notification.permission==='default')askNotif();toast(S.set.rmOn?'Pengingat diaktifkan ⏰':'Pengingat dimatikan')}
   else if(a==='rmtest'){S.set.rmSeen=1;sv();rmFire({title:'🔔 Tes pengingat',body:'Kalau kamu melihat & mendengar ini, pengingat berfungsi!',key:'test'});return}
-  else if(a==='rmok'){const it=b.closest('.rmi');it&&it.remove();rmTitle();return}
-  else if(a==='rmsnz'){if(T){T.snz=Date.now()+5*6e4;sv()}const it=b.closest('.rmi');it&&it.remove();rmTitle();toast('Diingatkan lagi 5 menit ⏳');return}
+  else if(a==='rmok'){window.rmStop&&rmStop();const it=b.closest('.rmi');it&&it.remove();rmTitle();return}
+  else if(a==='rmsnz'){window.rmStop&&rmStop();if(T){T.snz=Date.now()+5*6e4;sv()}const it=b.closest('.rmi');it&&it.remove();rmTitle();toast('Diingatkan lagi 5 menit ⏳');return}
   else if(a==='adopt'){const k=SP[+D.k];if(!k)return;S.pet={sp:k[0],name:(gv('pnm')||'Mochi').slice(0,16),full:80,joy:80,xp:0,last:Date.now(),own:['room'],hab:'room',hd:'',sd:''};gain(30,'Hadiah adopsi');burst(b,'🎉✨🐾❤️',18);toast('🐾 '+S.pet.name+' bergabung denganmu! +30 poin',1)}
   else if(a==='feed'){openFood();return}else if(a==='feed_old'){const p=S.pet;if(!p)return;petTick();if(p.full>=98){toast(p.name+' sudah kenyang 😋');return}if(S.pts<8){toast('Poin belum cukup (butuh 8 ⭐). Selesaikan tugas dulu ya!');return}spend(8,'Makanan '+p.name);p.full=Math.min(100,p.full+30);p.joy=Math.min(100,p.joy+3);p.xp+=3;pfx='eat';setTimeout(()=>pfx='',1800);burst(b,'🍖❤️😋');toast('Nyam nyam! 😋')}
   else if(a==='play'){const p=S.pet;if(!p)return;petTick();if(p.full<10){toast(p.name+' terlalu lapar buat main 🥺');return}if(p.joy>=98){toast(p.name+' sudah super senang 💖');return}p.joy=Math.min(100,p.joy+20);p.full=Math.max(0,p.full-5);p.xp+=2;pfx='play';setTimeout(()=>pfx='',2300);burst(b,'🎾💖⭐')}
@@ -1064,35 +1057,30 @@ function sceneSVG(h){const O=`stroke="${IK}" stroke-width="3" stroke-linejoin="r
 function petBox(p,sm){const l=pLv(p),sc=pStage(l)[1],[mb,msg]=petMood(p),h=new Date().getHours(),A=id=>SH.find(x=>x.id===id),hd=p.hd&&A(p.hd),sd=p.sd&&A(p.sd),sad=p.full<25||p.joy<25,sl=h>=22||h<5,mo=pfx==='eat'?'eat':sad?'sad':sl?'zz':'ok';
   return `<div class="cs ${sm?'sm':''} ${sad?'sad':''} ${pfx?'fx-'+pfx:''}" id="pst">${sceneSVG(p.hab||'room')}<div class="bub" id="pbub">${msg}</div><div class="pw" style="--sc:${sm?sc*.8:sc}">${sl?'<span class="zz">💤</span>':''}${hd?`<span class="ach">${hd.e}</span>`:''}<button class="pe" data-a="pp" aria-label="Belai ${esc(p.name)}">${petSVG(p.sp,mo)}</button>${sd?`<span class="acs">${sd.e}</span>`:''}</div></div>`}
 function petStage(p){return `<div style="position:relative">${petBox(p)}<div class="dk l"><button data-a="feed" aria-label="Beri makan" title="Beri makan">🍖</button><button data-a="play" aria-label="Main" title="Main">🎾</button><button data-a="xgm" aria-label="Brain games" title="Mainan otak">🧠</button></div><div class="dk r"><button data-a="xchg" aria-label="Ganti pet" title="Ganti pet">🔄</button><button data-a="xshop" aria-label="Toko & dekorasi" title="Toko & dekorasi">🛍️</button></div><div class="hud"><span>🍖 ${Math.round(p.full)}%</span><span>💖 ${Math.round(p.joy)}%</span></div></div>`}
-const GM=[['fc','🃏','Flashcard','Kartu tanya-jawab buatanmu, sistem Leitner (spaced repetition).'],['qz','❓','Kuis Custom','Buat soal pilihan ganda atau isian sendiri.'],['mt','🧮','Hitung Cepat','Tambah, kurang, kali, bagi dengan angka yang kamu atur.'],['mm','🧩','Memory Match','Cocokkan pasangan kartu, latih memori kerja.'],['sq','🔢','Lanjutkan Pola','Tebak angka berikutnya dari sebuah pola.'],['ws','🔤','Kata Acak','Susun huruf acak menjadi kata.']];
-const toyBox=()=>`<div class="c" id="toy"><h2>🧸 Mainan Otak</h2><p class="mu">Main bareng pet sambil melatih otak. Tiap sesi menambah 💖 & XP pet, plus sedikit ⭐ poin (maks 20 poin/hari dari game).</p><div class="toy">${GM.map(([k,e,n,d])=>`<button class="tc" data-a="xg" data-k="${k}"><span>${e}</span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`;
+const GM=[['fc','🃏','Flashcard','Kartu tanya-jawab buatanmu, sistem Leitner (spaced repetition).'],['qz','❓','Kuis Custom','Buat soal pilihan ganda atau isian sendiri.'],['mt','🧮','Hitung Cepat','Tambah, kurang, kali, bagi dengan angka yang kamu atur.'],['mm','🧩','Memory Match','Cocokkan pasangan kartu, latih memori kerja.']];
+const toyBox=()=>`<div class="c" id="toy"><h2>🧸 Mainan Otak</h2><p class="mu">Main bareng pet sambil melatih otak. Tiap sesi menambah 💖 & XP pet, plus ⭐ poin tanpa batas harian.</p><div class="toy">${GM.map(([k,e,n,d])=>`<button class="tc" data-a="xg" data-k="${k}"><span>${e}</span><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>`;
 const changePet=p=>`<div class="c" id="chg"><h2>🔄 Ganti pet</h2><p class="mu">Ganti jenis pet kapan saja. Nama, level, aksesori, dan progresnya tetap aman.</p><div class="shg">${SP.map(([e,n],i)=>`<button class="si ${p.sp===e?'on':''}" data-a="xsp" data-k="${i}"><span class="em">${petSVG(e,'ok')}</span><b>${n}</b><span class="mu">${p.sp===e?'Dipakai ✓':'Pilih'}</span></button>`).join('')}</div></div>`;
 
 /* ---------- Brain games ---------- */
 let g=null;
-const GS=k=>S.gs[k]=S.gs[k]||({mt:{ops:['+','-'],min:1,max:20,n:10},mm:{pairs:6},sq:{n:8},ws:{n:8},fc:{n:10},qz:{n:10}}[k]);
+const GS=k=>S.gs[k]=S.gs[k]||({mt:{ops:['+','-'],min:1,max:20,n:10},mm:{pairs:6},fc:{n:10},qz:{n:10}}[k]);
 const MJ=['🍎','🚀','🌟','🐳','🎧','📚','🍕','⚽','🎨','🌈','🔥','🍀'];
-const WD=[['belajar','Kegiatan menuntut ilmu'],['fokus','Memusatkan perhatian'],['rencana','Susunan langkah ke depan'],['disiplin','Taat pada aturan diri'],['ingatan','Kemampuan mengingat'],['semangat','Dorongan untuk maju'],['jadwal','Daftar waktu kegiatan'],['produktif','Banyak menghasilkan'],['prioritas','Hal yang didahulukan'],['istirahat','Berhenti sejenak'],['konsisten','Tetap, tidak berubah-ubah'],['evaluasi','Penilaian hasil kerja'],['target','Sasaran yang dituju'],['kebiasaan','Hal yang rutin dilakukan'],['motivasi','Alasan untuk bergerak'],['membaca','Memahami tulisan'],['menulis','Menuangkan pikiran'],['tabungan','Uang yang disisihkan'],['mimpi','Cita-cita besar'],['ulangan','Ujian singkat']];
+
 const mkMt=()=>{const s=GS('mt'),op=pk(s.ops.length?s.ops:['+']),lo=Math.max(0,+s.min||0),hi=Math.max(lo+1,+s.max||10);let a,b,r;
   if(op==='+'){a=rnd(lo,hi);b=rnd(lo,hi);r=a+b}else if(op==='-'){a=rnd(lo,hi);b=rnd(lo,hi);if(b>a)[a,b]=[b,a];r=a-b}else if(op==='×'){a=rnd(lo,hi);b=rnd(lo,hi);r=a*b}else{b=rnd(Math.max(1,lo),Math.max(1,hi));r=rnd(1,Math.min(12,hi));a=b*r}
   return{t:`${a} ${op} ${b} = ?`,a:String(r),big:1}};
-const mkSq=()=>{const k=rnd(0,[1,2,3,4][(GS('sq').lv||1)-1]),n=[...Array(6)];let a=rnd(1,15),s;
-  if(k===0){const d=rnd(2,9);s=n.map((_,i)=>a+d*i)}else if(k===1){const d=rnd(2,7);a=rnd(30,60);s=n.map((_,i)=>a-d*i)}else if(k===2){const r=rnd(2,3);a=rnd(1,4);s=n.map((_,i)=>a*r**i)}else if(k===3){s=n.map((_,i)=>(i+1+a%3)**2)}else{s=[rnd(1,4),rnd(2,6)];for(let i=2;i<6;i++)s.push(s[i-1]+s[i-2])}
-  const ans=s[5],o=new Set([ans]);while(o.size<4)o.add(ans+(rnd(-9,9)||11));return{t:s.slice(0,5).join(', ')+', … ?',a:String(ans),o:shuf([...o]).map(String),big:1}};
-const scr=w=>{let x;do x=shuf([...w]).join('');while(x===w);return x};
-const mkWs=()=>{const x=pk(WD);return{t:scr(x[0]).toUpperCase(),h:'💡 '+x[1]+' ('+x[0].length+' huruf)',a:x[0],big:1,txt:1}};
 function fcInit(){if(!Array.isArray(S.ff)||!S.ff.length)S.ff=[{id:'ff0',n:'Umum'}];const ok=new Set(S.ff.map(f=>f.id));S.fc.forEach(c=>{if(!c.f||!ok.has(c.f))c.f=S.ff[0].id})}
 function openGame(k){g={k,scr:'menu',name:GM.find(x=>x[0]===k)[2]};gmDraw()}
 function startGame(){const k=g.k,s=GS(k);g.i=0;g.sc=0;g.fb=null;g.fl=false;g.scr='play';
   if(k==='fc'){fcInit();const L=g.fd&&g.fd!=='all'?S.fc.filter(c=>c.f===g.fd):S.fc;g.qs=shuf(L).sort((a,b)=>(a.box||1)-(b.box||1)).slice(0,s.n).map(c=>({id:c.id,t:c.q,a:c.a}))}
   else if(k==='qz')g.qs=shuf(S.qz).slice(0,s.n).map(c=>{const w=(c.w||[]).filter(Boolean);return{t:c.q,a:c.a,o:w.length?shuf([c.a,...w]):null,txt:!w.length}});
   else if(k==='mm'){const em=shuf(MJ).slice(0,s.pairs);g.cd=shuf([...em,...em]).map(e=>({e,o:0,d:0}));g.mv=0;g.op=[];g.lock=0}
-  else g.qs=[...Array(s.n)].map(()=>k==='mt'?mkMt():k==='sq'?mkSq():mkWs())}
+  else g.qs=[...Array(s.n)].map(()=>mkMt())}
 function gmEnd(r,info){const st=r>=.85?3:r>=.6?2:1,d=TD();S.gl.push({d,g:g.k,r:Math.round(r*100)});if(S.gl.length>800)S.gl=S.gl.slice(-800);
-  S.gpD=S.gpD&&S.gpD.d===d?S.gpD:{d,p:0};const p=Math.max(0,Math.min(Math.round(r*5),20-S.gpD.p));S.gpD.p+=p;if(p>0)gain(p,'Brain game: '+g.name);
+  const p=Math.max(0,Math.round(r*5));if(p>0)gain(p,'Brain game: '+g.name);
   if(S.pet){petPlus(4+Math.round(r*8),8+Math.round(r*10));S.pet.full=Math.max(0,S.pet.full-3)}
   g.scr='end';g.st=st;g.p=p;g.info=info;sv();burst(null,'🧠⭐✨',12)}
-function answer(v){const q=g.qs[g.i];if(g.fb!=null)return;const num=g.k==='mt'||g.k==='sq',ok=num?(String(v).trim()!==''&&+v===+q.a):nrm(v)===nrm(q.a);g.fb=ok?1:0;if(ok)g.sc++}
+function answer(v){const q=g.qs[g.i];if(g.fb!=null)return;const num=g.k==='mt',ok=num?(String(v).trim()!==''&&+v===+q.a):nrm(v)===nrm(q.a);g.fb=ok?1:0;if(ok)g.sc++}
 function nextQ(){g.fb=null;g.fl=false;g.i++;if(g.i>=g.qs.length)gmEnd(g.sc/g.qs.length,g.sc+'/'+g.qs.length+(g.k==='fc'?' hafal':' benar'))}
 const cnt=(k,l)=>`<label class="mu">${l} <input type="number" min="1" max="30" value="${GS(k).n}" data-x="gcfg" data-k="${k}" data-f="n" style="width:80px;margin-left:6px"></label>`;
 function gmSetup(){const k=g.k,S0=`<button class="b" data-x="start">▶️ Mulai</button>`;
@@ -1103,7 +1091,7 @@ function gmSetup(){const k=g.k,S0=`<button class="b" data-x="start">▶️ Mulai
   if(k==='qz'){const L=S.qz;return `<p class="mu">Isi soal & jawaban benar. Tambah pilihan salah agar jadi pilihan ganda; kosongkan untuk soal isian.</p><div class="f"><input id="qq" placeholder="Soal" style="flex:2 1 200px"><input id="qa" placeholder="Jawaban benar"></div><div class="f" style="margin-top:6px"><input id="qw1" placeholder="Pilihan salah 1"><input id="qw2" placeholder="Pilihan salah 2"><input id="qw3" placeholder="Pilihan salah 3"><button class="b n" data-x="qadd">+ Soal</button></div><div class="gl">${L.map(c=>`<div class="gix"><input data-x="qedit" data-f="q" data-i="${c.id}" value="${esc(c.q)}" aria-label="Soal"><input data-x="qedit" data-f="a" data-i="${c.id}" value="${esc(c.a)}" aria-label="Jawaban benar"><input data-x="qedit" data-f="w" data-i="${c.id}" value="${esc((c.w||[]).join('; '))}" placeholder="salah1; salah2" aria-label="Pilihan salah"><button class="b x sm n" data-x="qdel" data-i="${c.id}" aria-label="Hapus soal">✕</button></div>`).join('')||'<p class="mu">Belum ada soal.</p>'}</div>${cnt('qz','Soal per sesi')}${L.length?S0:''}`}
   if(k==='mt'){const s=GS('mt');return `<p class="mu">Pilih operasi dan rentang angka sesukamu.</p><div class="tabs">${['+','-','×','÷'].map(o=>`<label class="chip"><input type="checkbox" data-x="mop" data-o="${o}" ${s.ops.includes(o)?'checked':''} style="width:auto"> ${o}</label>`).join('')}</div><div class="f"><label class="mu">Angka terkecil<input type="number" min="0" data-x="mset" data-f="min" value="${s.min}"></label><label class="mu">Angka terbesar<input type="number" min="1" data-x="mset" data-f="max" value="${s.max}"></label><label class="mu">Jumlah soal<input type="number" min="1" max="50" data-x="mset" data-f="n" value="${s.n}"></label></div><p class="mu">Untuk ÷ hasilnya selalu bilangan bulat; untuk − tidak ada hasil negatif.</p>${S0}`}
   if(k==='mm')return `<p class="mu">Balik dua kartu, cari pasangan yang sama dengan langkah sesedikit mungkin.</p><label class="mu">Jumlah pasangan <select data-x="gcfg" data-k="mm" data-f="pairs">${[4,6,8].map(n=>`<option ${GS('mm').pairs===n?'selected':''}>${n}</option>`).join('')}</select></label><br>${S0}`;
-  return `<p class="mu">${k==='sq'?'Temukan aturan pola lalu pilih angka berikutnya.':'Susun huruf acak menjadi kata yang benar (petunjuk tersedia).'}</p>${k==='sq'&&window.lvSel?lvSel():''}${cnt(k,'Jumlah soal')}<br>${S0}`}
+  return ''}
 function gmPlay(){const k=g.k;
   if(k==='mm'){const done=g.cd.every(x=>x.d);return `<div class="gprog"><span>Langkah: ${g.mv}</span><span>${g.cd.filter(x=>x.d).length/2}/${g.cd.length/2} pasang</span></div><div class="mmg">${g.cd.map((c,i)=>`<button class="mmc ${c.o||c.d?'on':''}" data-x="mflip" data-i="${i}" aria-label="Kartu ${i+1}">${c.o||c.d?c.e:'❓'}</button>`).join('')}</div>`}
   const q=g.qs[g.i],pr=`<div class="gprog"><span>${k==='fc'?'Kartu':'Soal'} ${g.i+1}/${g.qs.length}</span><span>⭐ ${g.sc}</span></div><div class="bar"><i style="width:${g.i/g.qs.length*100}%"></i></div>`;
@@ -1231,6 +1219,7 @@ function tipDraw(){const e=$('#tp');if(!e)return;if(!tpo){e.innerHTML='';e.class
 window.FN={get:()=>S,
   apply(r){hydrate(r);try{localStorage.setItem('focusnest',JSON.stringify(S))}catch(e){}if(!tm.run)setMode(tm.mode);render()},
   prefill(n){if(n&&!S.set.name){S.set.name=n;sv();render()}},
+  refresh:()=>render(),
   toast:m=>toast(m)};
 const acctCard=()=>window.FN&&window.FN.email?`<div class="c"><h2>Akun</h2><p class="mu" style="margin:0 0 8px">Masuk sebagai <b>${esc(window.FN.email)}</b> · data tersinkron ke cloud ☁️</p><div class="tabs"><button class="b s" data-a="lo">Keluar</button></div></div>`:'';
 render();
@@ -1259,7 +1248,7 @@ let ZR=null;function zStop(){if(ZR){clearInterval(ZR.iv);clearTimeout(ZR.to)}ZR=
 function zPlay(id,dur){try{const T=ZT[id==='sync'?(S.set.rmTone||'bell'):id]||ZT.bell,c=actx(),vol=S.set.avol==null?.6:+S.set.avol;let i=0;const note=(f,d,w)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime;o.type=w||T[1];o.connect(g);g.connect(c.destination);if(Array.isArray(f)){o.frequency.setValueAtTime(f[0],t);o.frequency.linearRampToValueAtTime(f[1],t+d)}else o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5*vol,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.start(t);o.stop(t+d+.02)};const step=Array.isArray(T[2])?T[3]:T[2]==='s'?.8:.5;const f=()=>{if(T[2]==='s')note([600,1100],.78);else if(T[2]==='b'){const b=2000+Math.random()*1500;note([b,b*1.4],.12);setTimeout(()=>note([b*1.2,b*1.6],.1),160)}else{const n=T[2][i++%T[2].length];if(n)note(n,step*.9)}};f();const iv=setInterval(f,step*1000);return{iv,to:setTimeout(()=>zStop(),dur*1000)}}catch(e){return null}}
 function zRing(a,k){zStop();const p=zPlay(a.tone,+a.dur||15)||{};ZR=p;try{navigator.vibrate&&navigator.vibrate([300,150,300,150,300])}catch(e){}
 const ttl='⏰ '+(a.t||'Alarm'),body='Pengingat '+(k+1)+'/'+a.times+' · '+a.time;try{if('Notification'in window&&Notification.permission==='granted')fnNotify({title:ttl,body,key:'al'+a.id})}catch(e){}
-const o=document.createElement('div');o.id='zring';o.innerHTML=`<div class="c" style="max-width:340px;text-align:center"><div style="font-size:54px">⏰</div><h2>${E(a.t||'Alarm')}</h2><p class="mu">${body}</p><div class="tabs" style="justify-content:center"><button class="b" data-z="rstop">Matikan</button><button class="b s" data-z="rall" data-i="${a.id}">Hentikan semua ulangan</button></div></div>`;document.body.appendChild(o)}
+const o=document.createElement('div');o.id='zring';o.innerHTML=`<div class="c" style="max-width:340px;text-align:center;position:relative"><button class="rmx" data-z="rstop" aria-label="Tutup alarm" title="Tutup">✕</button><div style="font-size:54px">⏰</div><h2>${E(a.t||'Alarm')}</h2><p class="mu">${body}</p><div class="tabs" style="justify-content:center"><button class="b" data-z="rstop">Matikan</button><button class="b s" data-z="rall" data-i="${a.id}">Hentikan semua ulangan</button></div></div>`;document.body.appendChild(o)}
 const FK='fn_alf';function fired(){try{return JSON.parse(localStorage.getItem(FK)||'{}')}catch(e){return{}}}
 function zTick(){init();const n=new Date(),nm=n.getHours()*60+n.getMinutes(),d=TD(),F=fired();let ch=0;S.al.forEach(a=>{if(a.on===false||!(a.days||[0,1,2,3,4,5,6]).includes(n.getDay()))return;const[h,m]=(a.time||'07:00').split(':').map(Number);for(let k=0;k<(+a.times||1);k++){const sl=h*60+m+k*(+a.every||5),key=a.id+'|'+d+'|'+k;if(sl%1440===nm&&!F[key]){F[key]=1;ch=1;zRing(a,k)}}});if(ch){Object.keys(F).forEach(k=>{if(k.split('|')[1]!==d)delete F[k]});try{localStorage.setItem(FK,JSON.stringify(F))}catch(e){}}}
 V.alarm=()=>{init();const ps='Notification'in window?Notification.permission:'x';
@@ -1377,7 +1366,7 @@ function gCard(g){const pl=S.rt.filter(r=>r.goal===g.id),pc=gPct(g),dn=S.tasks.f
  <h3 style="margin:10px 0 4px">📅 Jadwal tugas <span class="mu">(${pl.length})</span></h3>
  ${pl.length?pl.map(r=>`<div class="tk"><div><b>${E(r.t)}</b><br><span class="mu">🔁 ${rd(r)}${r.time?' · ⏰ '+r.time:''}${r.min?' · '+r.min+' mnt':''}${r.rm==='off'?' · 🔕 tanpa pengingat':r.time?' · 🔔 pengingat':''}</span></div><button class="b x sm" data-n="pedit" data-i="${r.id}" title="Edit">✏️</button></div>`).join(''):'<p class="mu" style="margin:0">Belum ada rencana. Tambahkan jadwal belajar/latihanmu 👇</p>'}
  ${pf&&pf.g===g.id?pWrap(g,pf):''}
- <div class="tabs" style="margin-bottom:0"><button class="b s sm" data-n="padd" data-i="${g.id}">＋ Rencana jadwal</button><button class="b s sm" data-n="gtask" data-i="${g.id}">＋ Tugas sekali</button><button class="b s sm" data-n="gfin" data-i="${g.id}">${g.fin?'↩ Buka lagi':'🏁 Tandai tercapai'}</button></div></div>`}
+ <div class="tabs" style="margin-bottom:0"><button class="b s sm" data-n="padd" data-i="${g.id}">＋ Rencana jadwal</button><button class="b s sm" data-n="gtask" data-i="${g.id}">＋ Tugas sekali</button><button class="b s sm" data-n="gfin" data-i="${g.id}">${g.fin?'↩ Buka lagi':'🏁 Tandai selesai'}</button></div></div>`}
 
 V.goals=function(){mig();const gs=S.goals;
  return `<h1>Goals 🎯</h1>
@@ -1409,7 +1398,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b
  else if(n==='gsave'){const t=gv('g-t');if(!t){toast('Isi nama goal dulu');return}const ty=(G&&G.type)||'short',o={t,type:ty,cat:gv('g-cat'),why:gv('g-why'),measure:gv('g-ms'),due:gv('g-due'),tgt:+gv('g-tg')||0,unit:gv('g-un')};
   if(G){Object.assign(G,o);gf=null;ok('Goal diperbarui ✅')}else{const id=uid();S.goals.push({id,...o,log:[],s0:TD(),ms:[]});gf=null;pf={g:id,id:''};scr=true;ok('Goal tersimpan 🎯 — sekarang atur rencana jadwalnya')}}
  else if(n==='gdel'&&G){if(!confirm('Hapus goal ini beserta rencana jadwalnya?'))return;S.rt.filter(r=>r.goal===i).forEach(r=>{regen(r)});S.rt=S.rt.filter(r=>r.goal!==i);S.tasks.forEach(t=>{if(t.gid===i)t.gid=''});S.goals=S.goals.filter(x=>x.id!==i);gf=null;ok('Goal dihapus')}
- else if(n==='gfin'&&G){G.fin=!G.fin;if(G.fin){try{gain(50,'Goal tercapai: '+G.t);if(S.pet)petPlus(10,10);burst(b,'🏆🎉✨',16)}catch(x){}toast('🏆 Goal tercapai! Kamu luar biasa!',true)}ok()}
+ else if(n==='gfin'&&G){G.fin=!G.fin;if(G.fin){G.finD=TD();try{gain(50,'Goal tercapai: '+G.t);if(S.pet)petPlus(10,10);burst(b,'🏆🎉✨',16)}catch(x){}toast('🏆 Goal selesai! Tercatat di '+G.finD+' — tanggalnya jadi ungu di Kalender & Tahunan',true)}else delete G.finD;ok()}
  else if(n==='glog'&&G){const v=parseFloat(prompt('Tambah progres berapa '+(G.unit||'')+'?','1'));if(v){G.log.push({d:TD(),v});ok('Progres dicatat ✅')}}
  else if(n==='gtask'&&G){pf={g:i,id:'',mode:'once'};gf=null;scr=true;render()}
  else if(n==='padd'){pf={g:i,id:'',mode:'plan'};gf=null;scr=true;render()}
@@ -1510,8 +1499,9 @@ const _pb=petBox;petBox=function(p,sm){let h=_pb(p,sm);const h0=new Date().getHo
 const _ps=petStage;petStage=function(p){return _ps(p).replace('title="Main">🎾</button>','title="Main">🎾</button><button data-v8="nap" aria-label="Tidurkan" title="Tidurkan">😴</button>')};
 
 /* ---------- ALARM + PENGINGAT: satu nada, bisa diatur ---------- */
+const RMH=[];window.rmStop=()=>{while(RMH.length){const h=RMH.pop();clearTimeout(h);clearInterval(h)}};
 rmBeep=function(){try{const t=window.ZT&&ZT[S.set.rmTone]&&S.set.rmTone!=='sync'?S.set.rmTone:'bell',n=Math.max(1,gs('rmRep',2)),d=Math.max(1,gs('rmDur',3)),g=Math.max(0,gs('rmGap',2));
- for(let k=0;k<n;k++)setTimeout(()=>{const r=window.zPlay&&zPlay(t,d);if(r)setTimeout(()=>{clearInterval(r.iv);clearTimeout(r.to)},d*1000)},k*(d+g)*1000)}catch(e){}};
+ rmStop();for(let k=0;k<n;k++)RMH.push(setTimeout(()=>{const r=window.zPlay&&zPlay(t,d);if(r){RMH.push(r.iv,r.to,setTimeout(()=>{clearInterval(r.iv);clearTimeout(r.to)},d*1000))}},k*(d+g)*1000))}catch(e){}};
 alCtl=function(){const s=S.set,dv=localStorage.getItem('fn_dev')||'all',Z=Object.entries(window.ZT||{}).filter(x=>x[0]!=='sync'),
  nu=(k,l,v,mn,mx,u)=>`<label>${l}<input type="number" min="${mn}" max="${mx}" value="${v}" data-v8s="${k}"><small class="mu">${u}</small></label>`;
  return `<h3 style="margin:12px 0 6px">🔔 Nada pengingat & alarm</h3><p class="mu" style="margin:0 0 8px">Satu pengaturan nada untuk notifikasi tugas dan alarm. Atur nada, berapa kali berbunyi, dan berapa detik tiap bunyi.</p><div class="f"><label>Nada<select data-v8s="rmTone">${Z.map(([k,v])=>`<option value="${k}" ${(s.rmTone||'bell')===k?'selected':''}>${v[0]}</option>`).join('')}</select></label>${nu('rmRep','Diulang (kali)',gs('rmRep',2),1,20,'kali')}${nu('rmDur','Lama tiap bunyi',gs('rmDur',3),1,600,'detik')}${nu('rmGap','Jeda antar ulangan',gs('rmGap',2),0,60,'detik')}</div><div class="f" style="margin-top:8px"><label>Volume<input type="range" min="0" max="1" step="0.1" value="${s.avol==null?.6:s.avol}" data-v8s="avol"></label><label>Aktif di perangkat ini<select data-fn="dev">${[['all','HP & Desktop'],['desktop','Hanya Desktop'],['mobile','Hanya HP']].map(([k,l])=>`<option value="${k}" ${dv===k?'selected':''}>${l}</option>`).join('')}</select></label><button class="b s n" data-fn="prev">▶ Dengar</button></div>`};
@@ -1594,10 +1584,10 @@ return `<div class="f"><input id="nt" placeholder="${E(o.ph||'Nama tugas…')}" 
 <div class="f" data-nr="week" style="margin-top:8px;${vis('week')}">${[1,2,3,4,5,6,0].map(x=>`<label class="dyc"><input type="checkbox" class="ndy" value="${x}" ${dys.includes(x)?'checked':''}>${DN[x]}</label>`).join('')}</div>
 <p class="mu" data-nr="year" style="margin:6px 0 0;${vis('year')}">Diulang tiap tahun pada tanggal & bulan yang dipilih di “Tanggal”.</p>
 ${gl?'<p class="mu" style="margin:8px 0 0">🔔 Pilih “Tanpa pengingat” jika tidak perlu notifikasi. Jadwal ini otomatis jadi tugas di menu Tugas, Kalender & Tahunan.</p>':`<p class="mu" style="margin:8px 0 0">🎯 Pilih goal agar progres goal bertambah tiap tugas ini selesai. Semua tugas goal tercatat di Progres → Tracker.</p>${S.goals.length?'':'<p class="mu" style="margin:6px 0 0">💡 Belum ada goal. <button class="b s sm" data-a="pg" data-k="goals">Buat goal</button></p>'}`}
-<div class="f" style="margin-top:10px"><button class="b" data-v9="tadd" data-r="${r.id||''}">${ed?'Simpan perubahan':gl?(rp==='once'?'Simpan tugas':'Simpan jadwal tugas'):'＋ Tambah tugas'}</button>${gl?'<button class="b s n" data-n="gx">Batal</button>':''}${ed&&gl?`<button class="b s n" data-n="pdel" data-i="${r.id}" style="margin-left:auto;color:var(--rd)">🗑 Hapus jadwal tugas</button>`:''}</div>`};
+<div class="f" style="margin-top:10px"><button class="b" data-v9="tadd" data-r="${r.id||''}">${ed?'Simpan perubahan':gl?(rp==='once'?'Simpan tugas':'Simpan jadwal tugas'):'＋ Tambah tugas'}</button>${gl?'<button class="b s n" data-n="gx">Batal</button>':o.cancel?'<button class="b s n" data-v9="dcancel">Batal</button>':''}${ed&&gl?`<button class="b s n" data-n="pdel" data-i="${r.id}" style="margin-left:auto;color:var(--rd)">🗑 Hapus jadwal tugas</button>`:''}</div>`};
 window.tkForm=tkForm;
-window.fnNDur=s=>{const u=s.closest('.c').querySelector('#nu');if(u)u.style.display=s.value==='until'?'':'none'};
-window.fnNRep=s=>{const f=s.closest('.c');f.querySelectorAll('[data-nr]').forEach(e=>{e.style.display=e.dataset.nr.split(',').includes(s.value)?'':'none'});const u=f.querySelector('#nu');if(s.value==='once'){if(u)u.style.display='none'}else{const d=f.querySelector('#ndur');if(d)fnNDur(d)}};
+window.fnNDur=s=>{const u=s.closest('.c,.sh').querySelector('#nu');if(u)u.style.display=s.value==='until'?'':'none'};
+window.fnNRep=s=>{const f=s.closest('.c,.sh');f.querySelectorAll('[data-nr]').forEach(e=>{e.style.display=e.dataset.nr.split(',').includes(s.value)?'':'none'});const u=f.querySelector('#nu');if(s.value==='once'){if(u)u.style.display='none'}else{const d=f.querySelector('#ndur');if(d)fnNDur(d)}};
 const jdCard=D0=>{const T=TD(),ts=S.tasks.filter(x=>(x.due||T)===D0),dn=ts.filter(x=>x.st==='selesai').length;
  return `<div class="c"><button class="tgl" data-v9="jdo" aria-expanded="${jdo}"><b>🕐 Jadwal ${D0===T?'hari ini':fmtD(D0,{weekday:'long',day:'numeric',month:'long'})} <small class="mu">${dn}/${ts.length} selesai</small></b><span>${jdo?'▾':'▸'}</span></button></div>`+(jdo?(window.v8Sched?v8Sched(D0):schedCard(D0)).replace(/<h2>🕐 Jadwal[\s\S]*?<\/h2>/,''):'')};
 row=function(t){return `<div class="tk tkx ${t.st==='selesai'?'dn':''}"><input type="checkbox" aria-label="Selesai" data-a="tg" data-i="${t.id}" ${t.st==='selesai'?'checked':''}><div><b>${E(t.t)}</b><br><span class="tag">${E(t.cat)}</span><span class="mu">${t.due?'📅 '+t.due:''}${t.time?' 🕐 '+t.time:''}${t.est?' · '+t.est+' mnt':''}</span>${lkLine(t)}${clBar(t)}</div><button class="b x" data-a="et" data-i="${t.id}" aria-label="Edit tugas" title="Edit">✏️</button><button class="b x" data-a="dt" data-i="${t.id}" aria-label="Hapus">✕</button></div>`};
@@ -1693,10 +1683,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-v9]');if(!
   if(R0){const o=mkR();if(!o)return;const T0=TD();S.tasks=S.tasks.filter(x=>!(x.rid===R0.id&&(x.due||'')>=T0&&x.st==='belum mulai'));Object.assign(R0,o,{on:true,gen:{}});S.tasks.forEach(x=>{if(x.rid===R0.id){x.gid=gid;x.cat=cat}})}
   else if(rep==='once')S.tasks.push({id:uid(),t,cat,pri:'Sedang',dif:'Sedang',gid,mid:'',tj:'',cl:[],due:d0,time:gv('ntm'),rm:gv('nrm'),est:+gv('ne')||0,st:'belum mulai',act:0});
   else{const o=mkR();if(!o)return;S.rt=S.rt||[];S.rt.push({id:uid(),on:true,gen:{},...o})}
-  window.__pfClear&&window.__pfClear();sv();tkNew=false;render();toast(R0?'Jadwal tugas diperbarui ✅':rep==='once'?'Tugas ditambahkan ✅':'Tugas berulang dibuat 🔁 — muncul otomatis di jadwal');return}
+  window.__pfClear&&window.__pfClear();sv();tkNew=false;window.__dadd=false;window.__cadd=null;window.__badd=false;render();toast(R0?'Jadwal tugas diperbarui ✅':rep==='once'?'Tugas ditambahkan ✅':'Tugas berulang dibuat 🔁 — muncul otomatis di jadwal');return}
  else if(k==='rdel'){const r=(S.rt||[]).find(x=>x.id===D.i);if(!r||!confirm('Hapus jadwal rutin ini beserta tugas mendatang yang belum dikerjakan?'))return;const T0=TD();S.tasks=S.tasks.filter(t=>!(t.rid===r.id&&(t.due||'')>=T0&&t.st==='belum mulai'));S.rt=S.rt.filter(x=>x!==r);edt=null;sv();toast('Jadwal rutin dihapus')}
- else if(k==='dadd'){window.__dadd=true;setTimeout(()=>{const x=$('#dnt');x&&x.focus()},60)}
- else if(k==='dcancel')window.__dadd=false;
+ else if(k==='dadd'){window.__dadd=true;setTimeout(()=>{const x=$('#nt');x&&x.focus()},60)}
+ else if(k==='badd'){window.__badd=true;setTimeout(()=>{const x=$('#nt');x&&x.focus()},60)}
+ else if(k==='dcancel'){window.__dadd=false;window.__cadd=null;window.__badd=false}
  else if(k==='tropen')tr.open=!tr.open;
  else if(k==='trmode'){tr.mode=D.m;tr.sel=''}
  else if(k==='trpick')tr.sel=D.s;
@@ -1735,37 +1726,36 @@ wrap('mood',h=>{const f=dom(h);f.querySelectorAll('.c').forEach(c=>{if(/Progres 
 /* Atur */
 const oldSet=V.set;
 V.set=()=>{const s=S.set,F=window.FN||{},f=dom(oldSet()),data=[...f.querySelectorAll('.c')].find(c=>hx(c)==='Data'),ad=!!F.isAdmin,role=ad?'<span class="rb ad">🛡️ Admin</span>':F.email?'<span class="rb">👤 Member</span>':'<span class="rb">👤 Tamu (lokal)</span>';
- const ac=dom(acctCard()),rm=dom(rmCard()),mu=dom(vMusic());mu.querySelectorAll('h1').forEach(x=>x.remove());const rh=rm.querySelector('h2');if(rh)rh.textContent='🔔 Pengingat';
+ const ac=dom(acctCard()),rm=dom(rmCard()),mu=dom(vMusic());mu.querySelectorAll('h1,h2').forEach(x=>x.remove());const rh=rm.querySelector('h2');if(rh)rh.textContent='🔔 Pengingat';
  const aBox=ac.querySelector('.c');
  return `<h1>Pengaturan</h1><div class="c"><h2>👤 Profil</h2><div class="f"><label>Nama<input data-a="sf" data-k="name" value="${esc(s.name)}"></label></div><p class="mu" style="margin:8px 0 0">${role}${F.email?' '+esc(F.email):''}</p>${ad?'<div class="tabs"><button class="b s sm" data-v10="adm">🛡️ Kelola member (Admin)</button></div>':''}${aBox?aBox.innerHTML.replace(/<h2>Akun<\/h2>/,''):''}</div>`
- +html(rm)+`<div class="c"><h2>🎨 Tema</h2><div class="tabs"><button class="b" data-a="th">Tema: ${s.theme==='dark'?'Gelap 🌙':'Terang ☀️'}</button></div></div>`
- +mk(0,'musik','🎵 Musik',html(mu),false)+(data?data.outerHTML:'')};
+ +`<div class="c"><h2>🎨 Tema</h2><div class="tabs"><button class="b" data-a="th">Tema: ${s.theme==='dark'?'Gelap 🌙':'Terang ☀️'}</button></div></div>`
+ +`<div class="c"><h2>🎵 Musik</h2>${html(mu)}</div>`+html(rm)+(data?data.outerHTML:'')};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-v10=adm]');if(b&&window.FN&&window.FN.openAdmin)window.FN.openAdmin()});
 /* tersimpan toast pada edit flashcard/kuis */
 document.addEventListener('change',e=>{const x=e.target.dataset&&e.target.dataset.x;if(x&&(x.indexOf('fe')===0||x.indexOf('qe')===0))toast('✓ Tersimpan')},true);
-/* level Lanjutkan Pola */
-window.lvSel=()=>`<label class="mu">Level <select data-x="gcfg" data-k="sq" data-f="lv">${LV.map((l,i)=>`<option value="${i+1}" ${(GS('sq').lv||1)===i+1?'selected':''}>${l}</option>`).join('')}</select></label>`;
 /* ===== Sudoku & Deret Tabel ===== */
 const rn=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=rn(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
 GM.push(['sd','🔲','Sudoku','Isi kotak 9×9 yang saling nyambung dengan angka 1–9, tanpa angka kembar.'],['dt','📊','Deret Tabel','Tabel 9 atau 12 kotak: temukan pola baris & kolom.']);
 let X={};const ov=h=>{let e=document.getElementById('gx');if(!e){e=document.createElement('div');e.id='gx';document.body.appendChild(e)}e.innerHTML=`<div class="gxs">${h}</div>`};
-const DT_PTS=[5,10,15,20],SD_PT=15,SD_LV=['Mudah','Sedang','Sulit'],SD_CL=[46,36,28],SD_PTS=[10,15,20];
+const DT_PTS=[5,10,15,20],SD_PT=15,SD_LV=['Mudah','Sedang','Sulit'],SD_CL=[63,57,45],SD_PTS=[10,15,20];
 const lvB=()=>{const L=X.k==='sd'?SD_LV:LV;return `<div class="tabs">${L.map((l,i)=>`<button class="b ${X.lv===i+1?'':'s'} sm" data-g="lv" data-v="${i+1}">${l}</button>`).join('')}</div>`};
 const fmB=()=>`<div class="tabs">${[[9,'9 kotak (3 kolom)'],[12,'12 kotak (4 kolom)']].map(([n,l])=>`<button class="b ${X.fm===n?'':'s'} sm" data-g="fm" data-v="${n}">${l}</button>`).join('')}</div>`;
 const top=t=>`<div class="f" style="flex-wrap:nowrap"><button class="b s sm n" data-g="x">← Tutup</button><b style="flex:1;text-align:center">${t}</b></div>`;
-/* ---------- poin: ikut batas maks 20 poin/hari (dibagi dengan game otak lain) ---------- */
+/* ---------- poin game: tanpa batas harian ---------- */
 function win(n,pts){const d=TD();S.gl.push({d,g:n,r:100});if(S.gl.length>800)S.gl=S.gl.slice(-800);
- S.gpD=S.gpD&&S.gpD.d===d?S.gpD:{d,p:0};const p=Math.max(0,Math.min(pts,20-S.gpD.p));S.gpD.p+=p;if(p>0)gain(p,'Game: '+n);
- try{petPlus(8,10)}catch(e){}sv();toast(p>0?'🎉 Selesai! +'+p+' poin (maks 20 poin/hari dari game)':'🎉 Selesai! Batas 20 poin game hari ini sudah tercapai',1);return p}
+ const p=Math.max(0,Math.round(pts));if(p>0)gain(p,'Game: '+n);
+ try{petPlus(8,10)}catch(e){}sv();toast('🎉 Selesai! +'+p+' poin',1);return p}
 /* ---------- SUDOKU: 1 papan 9×9 (baris, kolom, blok 3×3 saling nyambung, angka 1–9 tanpa kembar) ---------- */
 function sdFull(){const b=sh([1,2,3,4,5,6,7,8,9]),pat=(r,c)=>(3*(r%3)+Math.floor(r/3)+c)%9,rs=[],cs=[];sh([0,1,2]).forEach(x=>sh([0,1,2]).forEach(y=>rs.push(x*3+y)));sh([0,1,2]).forEach(x=>sh([0,1,2]).forEach(y=>cs.push(x*3+y)));const g=[];for(const r of rs)for(const c of cs)g.push(b[pat(r,c)]);return g}
 function sdCount(a,lim){let n=0;const rec=()=>{let bi=-1,bc=null,bn=10;for(let i=0;i<81;i++){if(a[i])continue;const r=Math.floor(i/9),c=i%9,u=new Set();for(let k=0;k<9;k++){u.add(a[r*9+k]);u.add(a[k*9+c])}const r0=r-r%3,c0=c-c%3;for(let y=0;y<3;y++)for(let x=0;x<3;x++)u.add(a[(r0+y)*9+c0+x]);const cd=[];for(let v=1;v<=9;v++)if(!u.has(v))cd.push(v);if(cd.length<bn){bn=cd.length;bi=i;bc=cd;if(bn<=1)break}}
  if(bi<0){n++;return n>=lim}if(!bn)return false;for(const v of bc){a[bi]=v;if(rec()){a[bi]=0;return true}}a[bi]=0;return false};rec();return n}
 function sdGen(lv){lv=lv||1;const sol=sdFull(),cur=sol.slice(),tg=SD_CL[lv-1]||36;let clues=81;for(const i of sh([...Array(81).keys()])){if(clues<=tg)break;const v=cur[i];cur[i]=0;if(sdCount(cur.slice(),2)!==1)cur[i]=v;else clues--}
  return{W:9,sol,cur,fx:cur.map(v=>v>0),sel:-1,won:0,lv,hints:0,hh:{}}}
+const _sdGen=sdGen;sdGen=function(lv){let r;for(let i=0;i<8;i++){r=_sdGen(lv);if(r.cur.filter(v=>v>0).length===SD_CL[(lv||1)-1])break}return r};
 const sdBad=(a,i)=>{const v=a[i];if(!v)return false;const r=Math.floor(i/9),c=i%9;for(let k=0;k<81;k++){if(k===i||a[k]!==v)continue;const r2=Math.floor(k/9),c2=k%9;if(r2===r||c2===c||(Math.floor(r2/3)===Math.floor(r/3)&&Math.floor(c2/3)===Math.floor(c/3)))return true}return false};
 function sdDraw(){const q=X.s;let g='';for(let i=0;i<81;i++){const r=Math.floor(i/9),c=i%9,bad=sdBad(q.cur,i);g+=`<button class="sc${q.fx[i]?' fx':''}${q.sel===i?' sl':''}${q.hh&&q.hh[i]?' hn':''}${bad?' bd':''}${c%3===2&&c<8?' bR':''}${r%3===2&&r<8?' bB':''}" data-g="c" data-i="${i}">${q.cur[i]||''}</button>`}
- ov(top('🔲 Sudoku · '+SD_LV[q.lv-1])+`<p class="mu" style="margin:6px 0 0">Isi semua kotak kosong dengan angka 1–9. Tiap baris, kolom, dan blok 3×3 tidak boleh ada angka kembar.</p><div class="sg s9">${g}</div><div class="tabs" style="justify-content:center">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b s sm" data-g="n" data-v="${n}">${n}</button>`).join('')}<button class="b s sm" data-g="n" data-v="0">⌫</button></div><div class="tabs"><button class="b sm" data-g="chk">✓ Cek</button><button class="b s sm" data-g="hint">💡 Bantuan</button><button class="b s sm" data-g="new">🔄 Baru</button><button class="b s sm" data-g="lvm">⚙️ Level</button></div><p class="mu" id="gxm" style="margin:0">Pilih kotak kosong lalu ketuk 💡 Bantuan untuk melihat angka yang benar. Angka kembar ditandai merah. Poin: ${SD_PTS[q.lv-1]} (maks 20/hari). Bantuan terpakai: ${q.hints}.</p>`)}
+ ov(top('🔲 Sudoku · '+SD_LV[q.lv-1])+`<p class="mu" style="margin:6px 0 0">Isi semua kotak kosong dengan angka 1–9. Tiap baris, kolom, dan blok 3×3 tidak boleh ada angka kembar.</p><div class="sg s9">${g}</div><div class="tabs" style="justify-content:center">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="b s sm" data-g="n" data-v="${n}">${n}</button>`).join('')}<button class="b s sm" data-g="n" data-v="0">⌫</button></div><div class="tabs"><button class="b sm" data-g="chk">✓ Cek</button><button class="b s sm" data-g="hint">💡 Bantuan</button><button class="b s sm" data-g="new">🔄 Baru</button><button class="b s sm" data-g="lvm">⚙️ Level</button></div><p class="mu" id="gxm" style="margin:0">Pilih kotak kosong lalu ketuk 💡 Bantuan untuk melihat angka yang benar. Angka kembar ditandai merah. Poin: ${SD_PTS[q.lv-1]} (tanpa batas harian). Bantuan terpakai: ${q.hints}.</p>`)}
 /* ---------- DERET TABEL: 9 kotak (3×3) atau 12 kotak (3×4), pola tiap baris & kolom konsisten ---------- */
 const A={add(n){const d=rn(1,6)*(rn(0,1)?1:-1),x=d>0?rn(1,9):rn(18,30);return[...Array(n)].map((_,i)=>x+d*i)},
  mul(n,mx){const m=rn(2,mx||3),x=rn(1,3);return[...Array(n)].map((_,i)=>x*m**i)},
@@ -1800,9 +1790,9 @@ function dtBlanks(C,lv){const hard=lv>=3,n=C===3?(hard?3:2):(hard?4:3),cols=sh([
 function dtGen(lv,fm){const C=fm===12?4:3,g=dtGrid(lv,C),bl=dtBlanks(C,lv);
  return{rows:g.a.map((a,i)=>({a,bl:bl[i],v:a.map(()=>'')})),lv,cols:C,rule:g.rule,won:0,show:0}}
 function dtDraw(chk){const q=X.t;let g='';q.rows.forEach((r,i)=>r.a.forEach((n,j)=>{g+=r.bl.has(j)?`<input class="dc ${chk?(r.v[j]!==''&&+r.v[j]===n?'ok':'no'):''}" inputmode="numeric" data-g="v" data-r="${i}" data-c="${j}" value="${r.v[j]}" aria-label="Baris ${i+1} kolom ${j+1}">`:`<b class="dc">${n}</b>`}));
- ov(top('📊 Deret Tabel · '+LV[q.lv-1]+' · '+q.rows.length*q.cols+' kotak')+`<p class="mu" style="margin:6px 0 0">Tiap baris dan tiap kolom punya pola yang konsisten (tambah, kurang, kali, bagi, atau kuadrat). Temukan polanya lalu isi kotak kosong.</p><div class="dtg" style="grid-template-columns:repeat(${q.cols},1fr)">${g}</div>${q.show?`<div class="dtn">💡 ${q.rule}</div>`:''}<div class="tabs"><button class="b sm" data-g="chk">✓ Periksa</button><button class="b s sm" data-g="new">🔄 Baru</button></div><p class="mu" id="gxm" style="margin:0">Poin: ${DT_PTS[q.lv-1]} (maks 20/hari).</p>`)}
+ ov(top('📊 Deret Tabel · '+LV[q.lv-1]+' · '+q.rows.length*q.cols+' kotak')+`<p class="mu" style="margin:6px 0 0">Tiap baris dan tiap kolom punya pola yang konsisten (tambah, kurang, kali, bagi, atau kuadrat). Temukan polanya lalu isi kotak kosong.</p><div class="dtg" style="grid-template-columns:repeat(${q.cols},1fr)">${g}</div>${q.show?`<div class="dtn">💡 ${q.rule}</div>`:''}<div class="tabs"><button class="b sm" data-g="chk">✓ Periksa</button><button class="b s sm" data-g="new">🔄 Baru</button></div><p class="mu" id="gxm" style="margin:0">Poin: ${DT_PTS[q.lv-1]} (tanpa batas harian).</p>`)}
 function gxOpen(k){X={k,lv:1,fm:9,scr:'menu'};gxMenu()}
-function gxMenu(){const sd=X.k==='sd',n=sd?'🔲 Sudoku':'📊 Deret Tabel';ov(top(n)+`<p class="mu">${sd?'Isi kotak 9×9 dengan angka 1–9 tanpa kembar. Mudah = angka kosong sedikit, Sulit = angka kosong banyak. Ada tombol 💡 Bantuan untuk melihat angka yang benar.':'Tiap baris dan kolom mengikuti pola yang konsisten. Isi angka yang kosong.'}</p><p><b>Pilih level</b></p>${lvB()}${sd?'':'<p><b>Bentuk tabel</b></p>'+fmB()}<p class="mu">Poin: ${(sd?SD_PTS:DT_PTS).join(' / ')} sesuai level · maks 20 poin/hari dari game.</p><button class="b" data-g="go">▶️ Mulai</button>`)}
+function gxMenu(){const sd=X.k==='sd',n=sd?'🔲 Sudoku':'📊 Deret Tabel';ov(top(n)+`<p class="mu">${sd?'Isi kotak 9×9 dengan angka 1–9 tanpa kembar. Mudah = 18 kotak kosong, Sedang = 24, Sulit = 36. Ada tombol 💡 Bantuan untuk melihat angka yang benar.':'Tiap baris dan kolom mengikuti pola yang konsisten. Isi angka yang kosong.'}</p><p><b>Pilih level</b></p>${lvB()}${sd?'':'<p><b>Bentuk tabel</b></p>'+fmB()}<p class="mu">Poin: ${(sd?SD_PTS:DT_PTS).join(' / ')} sesuai level · tanpa batas poin harian.</p><button class="b" data-g="go">▶️ Mulai</button>`)}
 const oo=window.openGame;window.openGame=function(k){if(k==='sd'||k==='dt')return gxOpen(k);return oo(k)};
 document.addEventListener('click',e=>{const b=e.target.closest('#gx [data-g]');if(!b)return;const a=b.dataset.g,v=+b.dataset.v;
  if(a==='x'){document.getElementById('gx').remove();return}
@@ -1819,11 +1809,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('#gx [data-g]');i
   if(X.k==='sd'){const q=X.s,m=document.getElementById('gxm'),full=q.cur.every(x=>x),bad=q.cur.some((_,i)=>sdBad(q.cur,i));
    if(!full)m.textContent='Masih ada kotak kosong.';else if(bad)m.textContent='Ada angka kembar, periksa kotak merah.';
    else if(q.won)m.textContent='🎉 Sudah benar! Tekan Baru untuk soal lain.';
-   else{q.won=1;const p=win('Sudoku '+SD_LV[q.lv-1],SD_PTS[q.lv-1]);m.textContent='🎉 Benar semua! '+(p>0?'+'+p+' poin':'(batas 20 poin game hari ini sudah tercapai)')}}
+   else{q.won=1;const p=win('Sudoku '+SD_LV[q.lv-1],SD_PTS[q.lv-1]);m.textContent='🎉 Benar semua! '+('+'+p+' poin')}}
   else{const q=X.t,ok=q.rows.every(r=>[...r.bl].every(j=>+r.v[j]===r.a[j]&&r.v[j]!=='')),first=ok&&!q.won;let p=0;
    if(first){q.won=1;p=win('Deret Tabel '+LV[q.lv-1],DT_PTS[q.lv-1])}
    q.show=ok;dtDraw(true);const m=document.getElementById('gxm');
-   m.textContent=ok?(first?'🎉 Semua benar! '+(p>0?'+'+p+' poin':'(batas 20 poin game hari ini sudah tercapai)'):'🎉 Sudah benar! Tekan Baru untuk soal lain.'):'Kotak hijau benar, merah perlu dicek.'}}
+   m.textContent=ok?(first?'🎉 Semua benar! '+('+'+p+' poin'):'🎉 Sudah benar! Tekan Baru untuk soal lain.'):'Kotak hijau benar, merah perlu dicek.'}}
 });
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.g==='v'&&X.t&&X.t.rows[+t.dataset.r]){X.t.rows[+t.dataset.r].v[+t.dataset.c]=t.value}});
 })();
@@ -1842,38 +1832,62 @@ schedCard=function(d){const T=TD(),ts=S.tasks.filter(x=>(x.due||T)===d).sort(byT
  return `<div class="c"><h2>🕐 Jadwal ${d===T?'hari ini':fmtD(d,{weekday:'long',day:'numeric',month:'long'})} <span class="mu">${dn}/${ts.length} selesai</span></h2><div class="bar"><i style="width:${ts.length?Math.round(dn/ts.length*100):0}%"></i></div><p class="mu" style="margin:6px 0 8px">Urut sesuai jam. Ubah jam langsung di atas judul, atau klik ✏️ untuk edit lengkap.</p>${ts.length?`<div class="tl2">${ts.map(x=>sRow(x,d)).join('')}</div>`:'<p class="mu">Belum ada tugas pada tanggal ini.</p>'}<div class="tabs" style="margin-top:10px"><button class="b s sm" data-v12="tocal" data-d="${d}">📅 Lihat di kalender ›</button></div></div>`};
 
 /* Form tugas baru di kalender */
-const addForm=d=>`<h3 style="margin:14px 0 6px">➕ Tugas baru · ${fmtD(d,{day:'numeric',month:'long',year:'numeric'})}</h3><div class="f"><input id="cnt" placeholder="Nama tugas…" aria-label="Nama tugas" style="flex:2 1 200px"><select id="cng" aria-label="Goal terkait">${goalOpts('')}</select><select id="cnc" aria-label="Kategori">${opt(CAT)}</select></div><div class="f" style="margin-top:8px"><label class="mu">Jam<input id="cntm" type="time"></label><label class="mu">Durasi (mnt)<input id="cne" type="number" min="0" placeholder="0"></label><label class="mu">Pengingat<select id="cnrm">${rmOpts('')}</select></label></div><div class="tabs" style="margin-top:10px"><button class="b" data-v12="csave">Simpan tugas</button><button class="b s" data-v12="ccancel">Batal</button></div>`;
+
 
 /* Kalender bulanan: tanpa catatan tanggal & tanpa tenggat goal; klik tanggal → jadwal hari itu + tambah tugas */
 V.cal=function(){const T=TD(),y=cm.getFullYear(),m=cm.getMonth(),f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate(),map={},gd={},DL=['Min','Sen','Sel','Rab','Kam','Jum','Sab'],op=k=>(window.__op||{})[k]??true;
  S.tasks.forEach(t=>{const d=t.due||T,x=map[d]=map[d]||{n:0,d:0,h:0};x.n++;if(t.st==='selesai')x.d++;else if(d<=T)x.h++});
- S.goals.forEach(g=>{if(g.due)(gd[g.due]=gd[g.due]||[]).push(g.t)});
+ S.goals.forEach(g=>{if(!g.fin&&g.due)(gd[g.due]=gd[g.due]||[]).push(g.t)});
  const nm=cm.toLocaleDateString('id-ID',{month:'long'});let mn=0,md=0,c=DL.map(x=>`<small>${x}</small>`).join('')+'<span></span>'.repeat(f);
- for(let i=1;i<=n;i++){const d=iso(new Date(y,m,i)),x=map[d]||{n:0,d:0,h:0};mn+=x.n;md+=x.d;const lv=x.n?x.n>=8?4:x.n>=5?3:x.n>=3?2:1:0,lb=i+' '+nm+' '+y+': '+(x.n?x.n+' tugas, '+x.d+' selesai':'kosong')+(gd[d]?' · deadline goal':'');
-  c+=`<button class="yd ${lv?'ht'+lv:''} ${d===T?'td':''} ${d===cs?'sl':''} ${x.n&&x.d===x.n?'ok':''}" data-a="cd" data-d="${d}" title="${esc(lb)}" aria-label="${esc(lb)}">${i}${x.h?'<i class="hi"></i>':''}${gd[d]?'<i class="gi"></i>':''}</button>`}
+ for(let i=1;i<=n;i++){const d=iso(new Date(y,m,i)),x=map[d]||{n:0,d:0,h:0};mn+=x.n;md+=x.d;const lv=x.n?x.n>=8?4:x.n>=5?3:x.n>=3?2:1:0,lb=i+' '+nm+' '+y+': '+(x.n?x.n+' tugas, '+x.d+' selesai':'kosong')+(gd[d]?' · deadline goal':'')+(gDn(d)?' · goal selesai':'');
+  c+=`<button class="yd ${lv?'ht'+lv:''} ${d===T?'td':''} ${d===cs?'sl':''} ${x.n&&x.d===x.n?'ok':''}${gDn(d)?' gdn':''}" data-a="cd" data-d="${d}" title="${esc(lb)}" aria-label="${esc(lb)}">${i}${x.h?'<i class="hi"></i>':''}${gd[d]?'<i class="gi"></i>':''}</button>`}
  const ts=S.tasks.filter(t=>(t.due||T)===cs).sort(byTime),dn=ts.filter(t=>t.st==='selesai').length,dg=gd[cs]||[];
  return `<h1>Kalender</h1><div class="c" style="margin-top:12px"><div class="f" style="justify-content:space-between"><button class="b s n" data-a="cp" data-v="-1" aria-label="Bulan sebelumnya">‹</button><h2 style="margin:0;flex:1;text-align:center;text-transform:capitalize">${cm.toLocaleDateString('id-ID',{month:'long',year:'numeric'})}</h2><button class="b s n" data-a="cp" data-v="1" aria-label="Bulan berikutnya">›</button></div><p class="mu" style="margin:6px 0 0;text-align:center">${mn} tugas · ${md} selesai</p><div class="bar" style="margin:4px 0 8px"><i style="width:${mn?Math.round(md/mn*100):0}%"></i></div><div class="ycal yc-big">${c}</div>
- <div class="leg"><span>Padat:</span><span><b class="ht1"></b>1–2</span><span><b class="ht2"></b>3–4</span><span><b class="ht3"></b>5–7</span><span><b class="ht4"></b>8+</span><span><em style="background:var(--rd)"></em>belum selesai</span><span><em style="background:#A66BFF"></em>deadline goal</span><span><b style="box-shadow:inset 0 0 0 2px var(--ok)"></b>semua selesai</span></div><p class="mu" style="margin:8px 0 0">Tampilan sama dengan menu Tahunan — klik nama bulan di Tahunan untuk membuka bulan itu di sini.</p></div>
- <details class="c cl" data-ck="cal-jadwal" ${op('cal-jadwal')?'open':''}><summary><span class="sm1"><b>🕐 Jadwal ${cs===T?'hari ini':fmtD(cs,{weekday:'long',day:'numeric',month:'long'})}</b><span class="mu">${dn}/${ts.length} selesai</span></span></summary><div class="bar"><i style="width:${ts.length?Math.round(dn/ts.length*100):0}%"></i></div>${dg.length?`<p class="mu" style="margin:8px 0 0">🎯 Deadline goal: <b>${dg.map(esc).join(', ')}</b></p>`:''}${ts.length?`<div class="tl2" style="margin-top:8px">${ts.map(x=>sRow(x,cs,{del:1})).join('')}</div>`:'<p class="mu">Belum ada tugas pada tanggal ini.</p>'}${window.__cadd===cs?addForm(cs):`<div class="tabs" style="margin-top:10px"><button class="b" data-v12="cadd">➕ Tambah tugas</button><button class="b s sm" data-v12="totask" data-d="${cs}">Buka di halaman Tugas ›</button></div>`}</details>`};
+ <div class="leg"><span>Padat:</span><span><b class="ht1"></b>1–2</span><span><b class="ht2"></b>3–4</span><span><b class="ht3"></b>5–7</span><span><b class="ht4"></b>8+</span><span><em style="background:var(--rd)"></em>belum selesai</span><span><em style="background:#A66BFF"></em>deadline goal</span><span><b style="background:#8B5CF6"></b>goal selesai</span><span><b style="box-shadow:inset 0 0 0 2px var(--ok)"></b>semua selesai</span></div><p class="mu" style="margin:8px 0 0">Tampilan sama dengan menu Tahunan — klik nama bulan di Tahunan untuk membuka bulan itu di sini.</p></div>
+ <details class="c cl" data-ck="cal-jadwal" ${op('cal-jadwal')?'open':''}><summary><span class="sm1"><b>🕐 Jadwal ${cs===T?'hari ini':fmtD(cs,{weekday:'long',day:'numeric',month:'long'})}</b><span class="mu">${dn}/${ts.length} selesai</span></span></summary><div class="bar"><i style="width:${ts.length?Math.round(dn/ts.length*100):0}%"></i></div>${dg.length?`<p class="mu" style="margin:8px 0 0">🎯 Deadline goal: <b>${dg.map(esc).join(', ')}</b></p>`:''}${ts.length?`<div class="tl2" style="margin-top:8px">${ts.map(x=>sRow(x,cs,{del:1})).join('')}</div>`:'<p class="mu">Belum ada tugas pada tanggal ini.</p>'}${window.__cadd===cs?`<h3 style="margin:14px 0 6px">➕ Tugas baru · ${fmtD(cs,{day:'numeric',month:'long',year:'numeric'})}</h3>${window.tkForm(cs,{cancel:1})}`:`<div class="tabs" style="margin-top:10px"><button class="b" data-v12="cadd">➕ Tambah tugas</button><button class="b s sm" data-v12="totask" data-d="${cs}">Buka di halaman Tugas ›</button></div>`}</details>`};
 
 /* Laci tanggal di Tahunan: tambah tombol "Buka di kalender" (saling terhubung dengan Kalender & Tugas) */
 const _dw12=drawer;drawer=function(){_dw12.apply(this,arguments);try{if(dro&&!edt){document.querySelectorAll('#dr .sh .tk').forEach(el=>{const cb=el.querySelector('[data-a="tg"]'),t=cb&&S.tasks.find(x=>x.id===cb.dataset.i);if(t)el.outerHTML=sRow(t,dro,{del:1})});const b=document.querySelector('#dr [data-a="dto"]');if(b&&!document.querySelector('#dr [data-v12="tocal"]'))b.insertAdjacentHTML('afterend',`<button class="b s sm" data-v12="tocal" data-d="${dro}">📅 Buka di kalender ›</button>`)}}catch(e){}};
 
 document.addEventListener('click',e=>{const b=e.target.closest('[data-v12]');if(!b)return;const k=b.dataset.v12,D=b.dataset;
- if(k==='cadd'){window.__cadd=cs;render();setTimeout(()=>{const x=$('#cnt');x&&x.focus()},60)}
+ if(k==='cadd'){window.__cadd=cs;render();setTimeout(()=>{const x=$('#nt');x&&x.focus()},60)}
  else if(k==='ccancel'){window.__cadd=null;render()}
- else if(k==='csave'){const t=gv('cnt');if(!t){const x=$('#cnt');x&&x.focus();return}const gid=gv('cng'),g=gT(gid);
-  S.tasks.push({id:uid(),t,cat:gv('cnc')||(g&&g.cat)||'Akademik',pri:'Sedang',dif:'Sedang',gid,mid:'',tj:'',cl:[],due:cs,time:gv('cntm'),rm:gv('cnrm'),est:+gv('cne')||0,st:'belum mulai',act:0});
-  window.__cadd=null;sv();render();toast('Tugas ditambahkan ✅ — juga tampil di halaman Tugas')}
  else if(k==='totask'){vd=D.d;tab='day';dro=null;edt=null;window.__cadd=null;pg='tasks';animF=true;render();window.scrollTo(0,0)}
  else if(k==='tocal'){const d=new Date(D.d+'T12:00:00');cm=new Date(d.getFullYear(),d.getMonth(),1);cs=D.d;dro=null;edt=null;window.__dadd=false;window.__cadd=null;pg='cal';animF=true;render();window.scrollTo(0,0)}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='cnt'){e.preventDefault();const b=document.querySelector('[data-v12="csave"]');b&&b.click()}});
 render();
 })();
 </script>
+<script>
+/* ===== v13: goal selesai tercatat di tanggalnya · terhubung ke Progres, Kalender & Tahunan ===== */
+(()=>{
+const E=esc,fd=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d||''}};
+const fin=g=>g.fin?(g.finD||g.due||''):'';
+const btn=g=>`<button class="b s sm" data-n="gfin" data-i="${g.id}">${g.fin?'↩ Buka lagi':'✔ Tandai selesai'}</button>`;
+const row=g=>`<div class="tk"><div><b>${E(g.t)}</b><br><span class="mu">${g.fin?'✅ Selesai '+(fin(g)?fd(fin(g)):'')+' · ':''}${window.gDueTxt?gDueTxt(g):''}</span></div>${btn(g)}</div>`;
+
+/* Progres: semua goal selesai tercatat + tombol tandai selesai */
+const goalDone=()=>{
+  const dn=S.goals.filter(g=>g.fin).sort((a,b)=>fin(b).localeCompare(fin(a))),ac=S.goals.filter(g=>!g.fin);
+  return `<div class="c"><h2>🏆 Goal selesai (${dn.length})</h2><p class="mu">Klik “Tandai selesai”: goal tercatat di tanggal hari ini, lalu tanggal itu berubah <b style="color:#8B5CF6">ungu</b> di Kalender & Tahunan — termasuk goal tanpa tenggat.</p>${dn.length?dn.map(row).join(''):'<p class="mu">Belum ada goal yang selesai.</p>'}${ac.length?`<h3 style="margin:12px 0 4px">Goal aktif</h3>${ac.map(row).join('')}`:''}</div>`};
+
+/* Kalender: goal pada tanggal terpilih + tandai selesai */
+const goalCal=()=>{
+  const d=cs,on=S.goals.filter(g=>!g.fin&&g.due===d),done=S.goals.filter(g=>g.fin&&fin(g)===d),rest=S.goals.filter(g=>!g.fin&&g.due!==d);
+  if(!on.length&&!done.length&&!rest.length)return'';
+  const op=(window.__op||{})['cal-goal']??true;
+  return `<details class="c cl" data-ck="cal-goal" ${op?'open':''}><summary><b>🎯 Goal ${d===TD()?'hari ini':fd(d)}</b></summary>`+
+    (on.length?`<p class="mu" style="margin:8px 0 0">Tenggat pada tanggal ini</p>${on.map(row).join('')}`:'')+
+    (done.length?`<p class="mu" style="margin:8px 0 0">Selesai pada tanggal ini (ungu)</p>${done.map(row).join('')}`:'')+
+    (rest.length?`<p class="mu" style="margin:8px 0 0">Goal aktif lainnya — tandai selesai dicatat di tanggal hari ini</p>${rest.map(row).join('')}`:'')+`</details>`};
+
+(()=>{const o=V.prog;V.prog=()=>o()+goalDone()})();
+(()=>{const o=V.cal;V.cal=()=>o()+goalCal()})();
+render();
+})();
+</script>
+
 <script type="module">
 /* ===== Firebase Auth (Google + Email) & Firestore — SDK modular v10 ===== */
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCZfHDmg9acVtC6n6YjCyc1xATwkqdwPAA",
   authDomain: "focusnest-81ce2.firebaseapp.com",
@@ -1883,17 +1897,20 @@ const firebaseConfig = {
   appId: "1:1034039846676:web:889990fee370f2cfaac401",
   measurementId: "G-R0Y0TN0Z6G"
 };
-// Ganti nilai di atas dengan firebaseConfig dari Firebase Console
-// (roda gigi → Project Settings → Your apps → SDK setup and configuration)
 
-const COLLECTION = 'users';           // dokumen: users/{uid}
+const COLLECTION = 'users';                       // users/{uid} → seluruh data pengguna (1 dokumen)
 const V = '10.14.1', G = 'https://www.gstatic.com/firebasejs/' + V + '/';
+const BUY_URL = 'https://kiarahanari.myscalev.com/p/focusnest';   // link checkout
+const TG_URL = '';                                // opsional: link Telegram (mis. 'https://t.me/namakanal'); kosong = tombol disembunyikan
 const FN = window.FN, OV = document.getElementById('lgn'), $q = s => OV.querySelector(s);
+const E2 = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmtT = ts => { try { return new Date(ts).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
 
 const lock = on => ['#side', '#app'].forEach(s => { const e = document.querySelector(s); if (e) e.inert = !!on; });
-const showForm = () => { OV.hidden = false; OV.classList.remove('ld'); lock(true); };
+const rmBlk = () => { const b = document.getElementById('blk'); if (b) b.remove(); };
+const showForm = () => { rmBlk(); OV.hidden = false; OV.classList.remove('ld'); lock(true); };
 const showLoad = () => { OV.hidden = false; OV.classList.add('ld'); lock(true); };
-const hideOV = () => { OV.hidden = true; lock(false); const b = document.getElementById('blk'); if (b) b.remove(); };
+const hideOV = () => { OV.hidden = true; lock(false); rmBlk(); };
 
 const MSG = {
   'auth/invalid-email': 'Format email belum benar.',
@@ -1911,26 +1928,30 @@ const MSG = {
   'auth/account-exists-with-different-credential': 'Email ini sudah terdaftar dengan cara masuk yang lain.'
 };
 const errMsg = e => MSG[e && e.code] || 'Terjadi kesalahan. Coba lagi ya.';
-/* ===== Gerbang member (hanya email yang sudah bayar) ===== */
-// GANTI dengan link landing page Scalev kamu:
-const BUY_URL = 'https://kiarahanari.myscalev.com/p/focusnest';
-function showBlock(title, body, buttons) {
+
+/* Kartu layar penuh (gerbang member, error, dll) */
+const CARD = 'max-width:420px;width:100%;background:#fff;color:#1f2937;border-radius:16px;padding:26px;box-shadow:0 10px 40px rgba(0,0,0,.12);text-align:center';
+function blkHost() {
   OV.hidden = true; lock(true);
   let b = document.getElementById('blk');
   if (!b) { b = document.createElement('div'); b.id = 'blk'; document.body.appendChild(b); }
-  b.setAttribute('style', 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:#eef1f7;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif');
-  const esc2 = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  b.innerHTML = '<div style="max-width:420px;width:100%;background:#fff;color:#1f2937;border-radius:16px;padding:28px;box-shadow:0 10px 40px rgba(0,0,0,.12);text-align:center">' +
-    '<div style="font-size:40px">🔒</div><h2 style="margin:8px 0 6px;font-size:20px">' + esc2(title) + '</h2>' +
-    '<p style="margin:0 0 18px;line-height:1.5;color:#4b5563">' + esc2(body) + '</p>' +
-    buttons.map((x, i) => '<button data-i="' + i + '" style="display:block;width:100%;margin:8px 0 0;padding:12px;border-radius:10px;border:' + (x.primary ? '0' : '1px solid #cbd5e1') + ';background:' + (x.primary ? '#4f46e5' : '#fff') + ';color:' + (x.primary ? '#fff' : '#1f2937') + ';font-size:15px;cursor:pointer">' + esc2(x.label) + '</button>').join('') + '</div>';
+  b.setAttribute('style', 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto;background:#eef1f7;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif');
+  return b;
+}
+const btnCss = p => 'display:block;width:100%;margin:8px 0 0;padding:12px;border-radius:10px;border:' + (p ? '0' : '1px solid #cbd5e1') + ';background:' + (p ? '#4f46e5' : '#fff') + ';color:' + (p ? '#fff' : '#1f2937') + ';font-size:15px;cursor:pointer';
+function showBlock(title, body, buttons, icon, sub) {
+  const b = blkHost();
+  b.innerHTML = '<div style="' + CARD + '"><div style="font-size:40px">' + (icon || '🔒') + '</div><h2 style="margin:8px 0 6px;font-size:20px">' + E2(title) + '</h2>' +
+    '<p style="margin:0 0 6px;line-height:1.5;color:#4b5563">' + E2(body) + '</p>' + (sub ? '<p style="margin:0 0 14px;font-size:13px;color:#6b7280;word-break:break-all">' + E2(sub) + '</p>' : '<div style="height:12px"></div>') +
+    buttons.map((x, i) => '<button data-i="' + i + '" style="' + btnCss(x.primary) + '">' + E2(x.label) + '</button>').join('') + '</div>';
   b.querySelectorAll('button').forEach(el => el.addEventListener('click', () => buttons[+el.dataset.i].fn()));
 }
-const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.focus || []).length);
+/* data dianggap "ada isinya" bila ada salah satu dari ini → tidak boleh tertimpa data kosong */
+const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.focus || []).length || (s.notes || []).length || (s.rt || []).length || (s.fc || []).length || (s.pts || 0) > 0 || s.pet);
 
 (async () => {
   let resolved = false;
-  const failOpen = (why, e) => { console.warn('[FocusNest] ' + why); if (e) console.error(e); showBlock('Aplikasi belum bisa dimuat', 'Koneksi lambat atau bermasalah. Muat ulang halaman untuk mencoba lagi.', [{ label: 'Muat ulang', primary: true, fn: () => location.reload() }]); };
+  const failOpen = (why, e) => { console.warn('[FocusNest] ' + why); if (e) console.error(e); showBlock('Aplikasi belum bisa dimuat', 'Koneksi lambat atau bermasalah. Muat ulang halaman untuk mencoba lagi.', [{ label: 'Muat ulang', primary: true, fn: () => location.reload() }], '⚠️'); };
 
   if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY') { failOpen('firebaseConfig belum diisi.'); return; }
   setTimeout(() => { if (!resolved) failOpen('Firebase terlalu lama dimuat.'); }, 12000);
@@ -1944,14 +1965,14 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
     try { db = F.initializeFirestore(app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
     catch (e) { db = F.getFirestore(app); }
 
-    /* ---------- Sinkron Firestore ---------- */
+    /* ================= SINKRON DATA (aman: tidak pernah menimpa cloud dengan data kosong) ================= */
     let ref = null, ready = false, dead = false, started = false, timer = null, inflight = 0, failed = false, warned = false, last = Promise.resolve();
 
     function push() {
       if (dead || !ref) return Promise.resolve();
       clearTimeout(timer); timer = null;
       const S = FN.get(), json = JSON.stringify(S);
-      if (json.length > 800000) FN.toast('⚠️ Data hampir penuh (' + Math.round(json.length/1024) + ' KB). Hapus catatan/tugas lama yang selesai.');
+      if (json.length > 800000) FN.toast('⚠️ Data hampir penuh (' + Math.round(json.length / 1024) + ' KB). Hapus catatan/tugas lama yang selesai.');
       inflight++;
       last = F.setDoc(ref, { userId: ref.id, state: json, clientTs: S.ts || Date.now(), updatedAt: F.serverTimestamp() })
         .then(() => { failed = false; })
@@ -1961,27 +1982,36 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       return last;
     }
 
+    /* Akun punya data cloud + perangkat punya data lokal "tamu": pilih mana yang dipakai. Default = cloud. */
+    function preferCloud() {
+      if (confirm('Akun ini sudah punya data tersimpan di cloud.\n\nOK = pakai data cloud (disarankan)\nBatal = pakai data di perangkat ini')) return true;
+      return !confirm('Yakin? Data di cloud akan DITIMPA data perangkat ini dan tidak bisa dikembalikan.\n\nOK = ya, timpa cloud\nBatal = tetap pakai data cloud');
+    }
+
     async function start(user) {
-      if (started) return; started = true;
-      ref = F.doc(db, COLLECTION, user.uid);
-      const owner = localStorage.getItem('focusnest_uid');          // siapa pemilik cache lokal
+      if (started) return true;
+      const rf = F.doc(db, COLLECTION, user.uid);
+      const owner = localStorage.getItem('focusnest_uid');          // pemilik cache lokal
+      let remote = null;
+      try { const snap = await F.getDoc(rf); if (snap.exists()) remote = snap.data(); }
+      catch (e) { console.error('[FocusNest] Gagal ambil dari Firestore:', e); return false; }   // gagal ambil → JANGAN sinkron (cegah menimpa cloud)
+      started = true; ref = rf;
+
       if (owner && owner !== user.uid) {                            // cache milik akun lain → jangan dipakai/diunggah
         try { localStorage.removeItem('focusnest'); } catch (e) {}
         FN.apply(null);
       }
-      let remote = null, fetched = true;
-      try { const snap = await F.getDoc(ref); if (snap.exists()) remote = snap.data(); }
-      catch (e) { fetched = false; console.error('[FocusNest] Gagal ambil dari Firestore:', e); }
-
       const local = FN.get();
       let useRemote = false;
       if (remote && remote.state) {
-        if (!owner && hasData(local))                               // data lama (sebelum ada login) vs data cloud
-          useRemote = confirm('Akun ini sudah punya data tersimpan di cloud.\n\nOK = pakai data cloud\nBatal = timpa cloud dengan data di perangkat ini');
-        else useRemote = (remote.clientTs || 0) > (local.ts || 0);
+        if (!hasData(local)) useRemote = true;                      // perangkat kosong → selalu pakai cloud
+        else if (!owner) useRemote = preferCloud();                 // data tamu vs data cloud
+        else useRemote = (remote.clientTs || 0) > (local.ts || 0);  // akun yang sama: yang terbaru menang
       }
-      if (useRemote) { try { FN.apply(JSON.parse(remote.state)); } catch (e) { console.error('[FocusNest] Data cloud rusak:', e); } }
-      else if (fetched) push();                                     // akun baru / migrasi data lokal
+      if (useRemote) {
+        try { FN.apply(JSON.parse(remote.state)); }
+        catch (e) { console.error('[FocusNest] Data cloud tidak terbaca:', e); started = false; ref = null; return false; }
+      } else push();                                                // akun baru / data perangkat lebih baru
 
       try { localStorage.setItem('focusnest_uid', user.uid); } catch (e) {}
       ready = true;
@@ -1989,10 +2019,12 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 15000); };
       FN.reset = async () => { dead = true; clearTimeout(timer); await F.deleteDoc(ref); };
       FN.logout = async () => {
-        if (timer) push();
-        await Promise.race([last, new Promise(r => setTimeout(r, 4000))]);
-        if ((inflight > 0 || failed) && !confirm('Sebagian perubahan belum tersinkron ke cloud dan bisa hilang jika kamu keluar sekarang. Tetap keluar?')) return;
-        dead = true; clearTimeout(timer);
+        clearTimeout(timer);
+        FN.toast('Menyimpan data ke cloud…');
+        await push();
+        await Promise.race([last, new Promise(r => setTimeout(r, 8000))]);
+        if ((inflight > 0 || failed) && !confirm('Perubahan terakhir belum berhasil tersimpan ke cloud dan bisa hilang jika kamu keluar sekarang. Tetap keluar?')) return;
+        dead = true;
         try { await A.signOut(auth); } catch (e) { console.error(e); }
         try { localStorage.removeItem('focusnest'); localStorage.removeItem('focusnest_uid'); } catch (e) {}
         location.reload();
@@ -2000,45 +2032,217 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       const flush = () => { if (timer) push(); };
       document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
       window.addEventListener('pagehide', flush);
-
-      /* ---------- Panel admin member (hanya jika email ada di admins/{email}) ---------- */
-      try {
-        const em = (user.email || '').toLowerCase();
-        if ((await F.getDoc(F.doc(db, 'admins', em))).exists()) {
-          const bt = document.createElement('button');
-          bt.textContent = '🛡️ Admin'; bt.setAttribute('style', 'position:fixed;right:12px;bottom:84px;z-index:9998;padding:8px 12px;border-radius:20px;border:0;background:#4F7CF0;color:#fff;font-weight:700;cursor:pointer');
-          window.FN.isAdmin=true;window.FN.openAdmin=()=>bt.onclick();
-          bt.onclick = async () => {
-            let o = document.getElementById('adm'); if (o) o.remove();
-            o = document.createElement('div'); o.id = 'adm';
-            o.setAttribute('style', 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:14px');
-            const E2 = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-            const draw = async () => {
-              let qs; try { qs = await F.getDocs(F.collection(db, 'members')); } catch (e) { alert('Gagal membaca daftar member: ' + (e.code || e.message) + '\n\nPeriksa Firestore Rules dan pastikan dokumen admins/' + em + ' ada.'); o.remove(); return; }
-              const rows = [];
-              qs.forEach(d => rows.push([d.id, d.data().active === true])); let ads = new Set([em]); try { (await F.getDocs(F.collection(db, 'admins'))).forEach(d => ads.add(d.id)); } catch (e) {} ads.forEach(a => { if (!rows.some(r => r[0] === a)) rows.push([a, true]); }); rows.sort((x, y) => ads.has(y[0]) - ads.has(x[0]));
-              o.innerHTML = '<div class="c" style="max-width:480px;width:100%;max-height:85vh;overflow:auto"><h2>🛡️ Kelola member (' + rows.length + ')</h2>' +
-                '<div class="f"><input id="ame" type="email" placeholder="email member baru"><button class="b n" id="aad">Tambah</button></div>' +
-                rows.map(([e, a]) => '<div class="tk"><div><b>' + E2(e) + '</b> ' + (ads.has(e) ? '<span class="tag" style="background:#E5484D22;color:#E5484D">🛡️ Admin</span>' : '<span class="tag">👤 Member</span>') + ' <span class="tag">' + (a ? 'aktif' : 'nonaktif') + '</span></div><button class="b s sm" data-t="' + E2(e) + '" data-v="' + (a ? 0 : 1) + '">' + (a ? 'Nonaktifkan' : 'Aktifkan') + '</button><button class="b x sm" data-d="' + E2(e) + '">Hapus</button></div>').join('') +
-                '<button class="b" id="acl" style="margin-top:10px">Tutup</button></div>';
-              o.querySelector('#acl').onclick = () => o.remove();
-              o.querySelector('#aad').onclick = async () => { const v = o.querySelector('#ame').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(v)) { alert('Format email salah'); return; } try { await F.setDoc(F.doc(db, 'members', v), { active: true, addedAt: F.serverTimestamp() }); } catch (e) { alert('Gagal menambah member: ' + (e.code || e.message) + (e.code === 'permission-denied' ? '\n\nRules menolak. Pastikan Rules terbaru sudah dipublish dan dokumen admins/' + em + ' ada.' : '')); return; } draw(); };
-              o.querySelectorAll('[data-t]').forEach(b => b.onclick = async () => { try { await F.setDoc(F.doc(db, 'members', b.dataset.t), { active: b.dataset.v === '1' }, { merge: true }); } catch (e) { alert('Gagal mengubah: ' + (e.code || e.message)); return; } draw(); });
-              o.querySelectorAll('[data-d]').forEach(b => b.onclick = async () => { if (confirm('Hapus ' + b.dataset.d + '?')) { try { await F.deleteDoc(F.doc(db, 'members', b.dataset.d)); } catch (e) { alert('Gagal menghapus: ' + (e.code || e.message)); return; } draw(); } });
-            };
-            document.body.appendChild(o); draw();
-          };
-        }
-      } catch (e) { console.warn('[FocusNest] admin check', e); }
       if (user.displayName) FN.prefill(user.displayName.split(' ')[0]);
+      return true;
     }
 
-    /* ---------- Layar login ---------- */
+    /* ================= PANEL ADMIN: member, admin, kotak masuk ================= */
+    function setupAdmin(user) {
+      const em = (user.email || '').toLowerCase();
+      F.getDoc(F.doc(db, 'admins', em)).then(snap => {
+        if (!snap.exists()) return;
+        FN.isAdmin = true; FN.openAdmin = openAdmin; try { FN.refresh && FN.refresh(); } catch (e) {}
+        const bt = document.createElement('button'); bt.id = 'admbtn'; bt.textContent = '🛡️ Admin';
+        bt.setAttribute('style', 'position:fixed;right:12px;bottom:84px;z-index:9998;padding:8px 12px;border-radius:20px;border:0;background:#4F7CF0;color:#fff;font-weight:700;cursor:pointer');
+        bt.onclick = openAdmin; document.body.appendChild(bt);
+        F.onSnapshot(F.query(F.collection(db, 'requests'), F.where('status', '==', 'pending'), F.limit(99)),
+          s => { bt.textContent = '🛡️ Admin' + (s.size ? ' (' + s.size + ')' : ''); }, e => console.warn('[FocusNest] requests', e));
+      }).catch(e => console.warn('[FocusNest] admin check', e));
+
+      function openAdmin() {
+        const old = document.getElementById('adm'); if (old) old.remove();
+        const o = document.createElement('div'); o.id = 'adm';
+        o.setAttribute('style', 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:14px');
+        o.innerHTML = '<div class="c" style="max-width:520px;width:100%;max-height:88vh;overflow:auto">' +
+          '<div class="f" style="flex-wrap:nowrap;align-items:center"><h2 id="atl" style="margin:0;flex:1">🛡️ Kelola admin & member</h2>' +
+          '<button class="b s sm n" id="asb" aria-label="Cari" title="Cari">🔍</button><button class="b s sm n" id="acl" aria-label="Tutup">✕</button></div>' +
+          '<div class="f" id="asr" hidden style="margin-top:8px"><input id="asq" type="search" placeholder="Cari email…" autocomplete="off" style="flex:1"></div>' +
+          '<div class="tabs"><button class="b sm" data-tab="member">👥 Member</button><button class="b s sm" data-tab="inbox" id="atb">📥 Kotak masuk</button></div>' +
+          '<div id="abody"></div></div>';
+        document.body.appendChild(o);
+        const s = { tab: 'member', q: '', rows: [], last: null, more: false, total: null, ads: new Set([em]), req: [], th: null, msgs: [], busy: false };
+        let unReq = null, unMsg = null, deb = null;
+        const $o = x => o.querySelector(x);
+        const close = () => { if (unReq) unReq(); if (unMsg) unMsg(); o.remove(); };
+
+        async function loadAds() { try { (await F.getDocs(F.collection(db, 'admins'))).forEach(d => s.ads.add(d.id)); } catch (e) { console.warn(e); } }
+        async function loadTotal() { try { s.total = (await F.getCountFromServer(F.collection(db, 'members'))).data().count; } catch (e) { s.total = null; } draw(); }
+        async function loadMembers(more) {
+          s.busy = true; draw();
+          try {
+            const q = s.q.trim().toLowerCase(), c = [F.orderBy(F.documentId())];
+            if (q) c.push(F.where(F.documentId(), '>=', q), F.where(F.documentId(), '<=', q + '\uf8ff'));
+            if (more && s.last) c.push(F.startAfter(s.last));
+            c.push(F.limit(30));
+            const qs = await F.getDocs(F.query(F.collection(db, 'members'), ...c));
+            const add = []; qs.forEach(d => add.push({ id: d.id, active: d.data().active === true }));
+            s.rows = more ? s.rows.concat(add) : add; s.last = qs.docs[qs.docs.length - 1] || null; s.more = qs.size === 30;
+          } catch (e) { alert('Gagal membaca daftar member: ' + (e.code || e.message) + '\n\nPeriksa Firestore Rules dan pastikan dokumen admins/' + em + ' ada.'); }
+          s.busy = false; draw();
+        }
+        function listenReq() {
+          if (unReq) unReq();
+          unReq = F.onSnapshot(F.query(F.collection(db, 'requests'), F.orderBy('ts', 'desc'), F.limit(60)),
+            sn => { s.req = sn.docs.map(d => ({ id: d.id, ...d.data() })); draw(); }, e => alert('Gagal membaca kotak masuk: ' + (e.code || e.message)));
+        }
+        function openThread(id) {
+          s.th = id; s.msgs = []; if (unMsg) unMsg();
+          unMsg = F.onSnapshot(F.query(F.collection(db, 'requests', id, 'msgs'), F.orderBy('ts')), sn => { s.msgs = sn.docs.map(d => d.data()); draw(); const b = $o('#thm'); if (b) b.scrollTop = b.scrollHeight; }, e => console.warn(e));
+          F.setDoc(F.doc(db, 'requests', id), { unreadAdmin: false }, { merge: true }).catch(() => {});
+          draw();
+        }
+
+        const row = (e, adm, active) => {
+          const me = e === em;
+          return '<div class="tk"><div><b>' + E2(e) + '</b> ' + (adm ? '<span class="tag" style="background:#E5484D22;color:#E5484D">🛡️ Admin</span>' : '<span class="tag">👤 Member</span>') +
+            (adm ? '' : ' <span class="tag">' + (active ? 'aktif' : 'nonaktif') + '</span>') + (me ? ' <span class="mu">(kamu)</span>' : '') + '</div>' +
+            (me ? '' : '<div class="tabs" style="margin:6px 0 0">' +
+              (adm ? '' : '<button class="b s sm" data-t="' + E2(e) + '" data-v="' + (active ? 0 : 1) + '">' + (active ? 'Nonaktifkan' : 'Aktifkan') + '</button>') +
+              '<button class="b s sm" data-r="' + E2(e) + '" data-v="' + (adm ? 0 : 1) + '">' + (adm ? 'Jadikan member' : 'Jadikan admin') + '</button>' +
+              '<button class="b x sm" data-d="' + E2(e) + '">Hapus</button></div>') + '</div>';
+        };
+
+        function draw() {
+          $o('#atl').textContent = '🛡️ Kelola admin & member' + (s.total != null ? ' (' + s.total + ')' : '');
+          o.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('s', b.dataset.tab !== s.tab));
+          const body = $o('#abody'), q = s.q.trim().toLowerCase();
+          const keep = $o('#rpl') ? $o('#rpl').value : '';
+          if (s.tab === 'member') {
+            const ads = [...s.ads].filter(a => !q || a.includes(q)).sort();
+            const mem = s.rows.filter(r => !s.ads.has(r.id));
+            body.innerHTML = '<div class="f" style="margin-top:8px"><input id="ame" type="email" placeholder="email member baru" style="flex:1"><button class="b n" id="aad">Tambah</button></div>' +
+              ads.map(a => row(a, true, true)).join('') + mem.map(r => row(r.id, false, r.active)).join('') +
+              (s.busy ? '<p class="mu">Memuat…</p>' : (!ads.length && !mem.length ? '<p class="mu">' + (q ? 'Tidak ada email yang cocok.' : 'Belum ada member.') + '</p>' : '')) +
+              (s.more && !s.busy ? '<button class="b s" id="amo" style="margin-top:8px">Muat lagi</button>' : '');
+          } else if (!s.th) {
+            const L = s.req.filter(r => !q || (r.email || r.id).includes(q));
+            body.innerHTML = '<p class="mu" style="margin:8px 0 0">Percakapan privat tiap orang. Ketuk untuk membalas atau menyetujui.</p>' +
+              (L.map(r => '<div class="tk" data-th="' + E2(r.id) + '" style="cursor:pointer"><div><b>' + E2(r.email || r.id) + '</b> ' + (r.unreadAdmin ? '<span class="tag" style="background:#E5484D22;color:#E5484D">baru</span>' : '') +
+                '<span class="tag">' + (r.status === 'approved' ? '✅ disetujui' : r.status === 'closed' ? 'ditutup' : '⏳ menunggu') + '</span><br><span class="mu">' + E2(String(r.lastMsg || '').slice(0, 80)) + ' · ' + fmtT(r.ts) + '</span></div></div>').join('') || '<p class="mu">Belum ada pesan masuk.</p>');
+          } else {
+            const r = s.req.find(x => x.id === s.th) || { id: s.th, email: s.th };
+            body.innerHTML = '<div class="f" style="flex-wrap:nowrap;margin-top:8px"><button class="b s sm n" id="thb">‹ Kotak masuk</button><b style="flex:1;word-break:break-all">' + E2(r.email || r.id) + '</b></div>' +
+              '<div id="thm" style="max-height:38vh;overflow:auto;margin:8px 0;display:flex;flex-direction:column;gap:6px">' +
+              s.msgs.map(m => '<div style="align-self:' + (m.from === 'admin' ? 'flex-end' : 'flex-start') + ';max-width:85%;padding:8px 10px;border-radius:12px;background:' + (m.from === 'admin' ? 'var(--ac)' : 'var(--as)') + ';color:' + (m.from === 'admin' ? '#fff' : 'inherit') + ';white-space:pre-wrap;word-break:break-word">' + E2(m.text) + '<div style="font-size:.7rem;opacity:.7">' + fmtT(m.ts) + '</div></div>').join('') + '</div>' +
+              '<div class="f"><textarea id="rpl" rows="2" maxlength="500" placeholder="Tulis balasan…" style="flex:1"></textarea><button class="b n" id="rps">Kirim</button></div>' +
+              '<div class="tabs"><button class="b" id="rap">✅ Setujui & jadikan member</button><button class="b s" id="rcl">Tutup permintaan</button><button class="b x" id="rdl">🗑 Hapus</button></div>';
+            if (keep) $o('#rpl').value = keep;
+          }
+        }
+
+        o.addEventListener('click', async ev => {
+          const t = ev.target, b = t.closest('button'), th = t.closest('[data-th]');
+          if (th) { openThread(th.dataset.th); return; }
+          if (!b) { if (t === o) close(); return; }
+          if (b.id === 'acl') { close(); return; }
+          if (b.id === 'asb') { const r = $o('#asr'); r.hidden = !r.hidden; if (!r.hidden) $o('#asq').focus(); return; }
+          if (b.dataset.tab) {
+            s.tab = b.dataset.tab; s.th = null; if (unMsg) { unMsg(); unMsg = null; }
+            if (s.tab === 'inbox') listenReq(); else { if (unReq) { unReq(); unReq = null; } loadMembers(); }
+            draw(); return;
+          }
+          if (b.id === 'thb') { s.th = null; if (unMsg) { unMsg(); unMsg = null; } draw(); return; }
+          if (b.id === 'amo') { loadMembers(true); return; }
+          try {
+            if (b.id === 'aad') {
+              const v = $o('#ame').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(v)) { alert('Format email salah'); return; }
+              await F.setDoc(F.doc(db, 'members', v), { active: true, addedAt: F.serverTimestamp() }, { merge: true }); s.q = ''; $o('#asq').value = ''; loadMembers(); loadTotal();
+            } else if (b.dataset.t) {
+              await F.setDoc(F.doc(db, 'members', b.dataset.t), { active: b.dataset.v === '1' }, { merge: true });
+              const r = s.rows.find(x => x.id === b.dataset.t); if (r) r.active = b.dataset.v === '1'; draw();
+            } else if (b.dataset.r) {
+              const e = b.dataset.r;
+              if (b.dataset.v === '1') {
+                if (!confirm('Jadikan ' + e + ' sebagai ADMIN? Admin bisa mengelola semua member.')) return;
+                await F.setDoc(F.doc(db, 'admins', e), { addedAt: F.serverTimestamp(), by: em });
+                await F.setDoc(F.doc(db, 'members', e), { active: true }, { merge: true }); s.ads.add(e);
+              } else {
+                if (!confirm('Ubah ' + e + ' kembali menjadi member biasa?')) return;
+                await F.deleteDoc(F.doc(db, 'admins', e));
+                await F.setDoc(F.doc(db, 'members', e), { active: true }, { merge: true }); s.ads.delete(e);
+              }
+              loadMembers();
+            } else if (b.dataset.d) {
+              const e = b.dataset.d;
+              if (!confirm('Hapus akses ' + e + '? Orang ini tidak bisa masuk lagi (datanya di cloud tidak ikut terhapus).')) return;
+              await F.deleteDoc(F.doc(db, 'members', e)); if (s.ads.has(e)) { await F.deleteDoc(F.doc(db, 'admins', e)); s.ads.delete(e); }
+              loadMembers(); loadTotal();
+            } else if (b.id === 'rps') {
+              const v = $o('#rpl').value.trim(); if (!v) return;
+              await F.addDoc(F.collection(db, 'requests', s.th, 'msgs'), { from: 'admin', text: v, ts: Date.now() });
+              await F.setDoc(F.doc(db, 'requests', s.th), { lastMsg: v, lastFrom: 'admin', unreadUser: true, ts: Date.now() }, { merge: true });
+              $o('#rpl').value = '';
+            } else if (b.id === 'rap') {
+              if (!confirm('Setujui dan aktifkan ' + s.th + ' sebagai member?')) return;
+              await F.setDoc(F.doc(db, 'members', s.th), { active: true, addedAt: F.serverTimestamp() }, { merge: true });
+              await F.addDoc(F.collection(db, 'requests', s.th, 'msgs'), { from: 'admin', text: '✅ Akses kamu sudah aktif. Silakan masuk ke aplikasi.', ts: Date.now() });
+              await F.setDoc(F.doc(db, 'requests', s.th), { status: 'approved', lastMsg: '✅ Disetujui', lastFrom: 'admin', unreadUser: true, ts: Date.now() }, { merge: true }); loadTotal();
+            } else if (b.id === 'rcl') {
+              await F.setDoc(F.doc(db, 'requests', s.th), { status: 'closed', ts: Date.now() }, { merge: true });
+            } else if (b.id === 'rdl') {
+              if (!confirm('Hapus percakapan ini?')) return;
+              const id = s.th; (await F.getDocs(F.collection(db, 'requests', id, 'msgs'))).forEach(d => F.deleteDoc(d.ref));
+              await F.deleteDoc(F.doc(db, 'requests', id)); s.th = null; if (unMsg) { unMsg(); unMsg = null; } draw();
+            }
+          } catch (e) { alert('Gagal: ' + (e.code || e.message) + (e.code === 'permission-denied' ? '\n\nRules menolak. Pastikan Firestore Rules terbaru sudah dipublish.' : '')); }
+        });
+        o.addEventListener('input', ev => { if (ev.target.id === 'asq') { clearTimeout(deb); deb = setTimeout(() => { s.q = ev.target.value; if (s.tab === 'member') loadMembers(); else draw(); }, 350); } });
+        loadAds().then(() => { loadMembers(); loadTotal(); });
+      }
+    }
+
+    /* ================= GERBANG MEMBER & KONFIRMASI ADMIN (chat privat) ================= */
+    let unMember = null;
+    function watchMember(em) {                                   // setelah admin menyetujui → otomatis masuk
+      if (unMember) return;
+      unMember = F.onSnapshot(F.doc(db, 'members', em), s => { if (s.exists() && String(s.data().active) === 'true') location.reload(); }, () => {});
+    }
+    const logoutBtn = { label: 'Keluar / ganti akun', fn: async () => { try { await A.signOut(auth); } catch (e) {} location.reload(); } };
+
+    function gate(user) {
+      const em = (user.email || '').toLowerCase();
+      watchMember(em);
+      const btns = [{ label: 'Beli akses', primary: true, fn: () => { location.href = BUY_URL; } }, { label: 'Konfirmasi admin', fn: () => support(user) }];
+      if (TG_URL) btns.push({ label: 'Telegram', fn: () => window.open(TG_URL, '_blank', 'noopener') });
+      btns.push(logoutBtn);
+      showBlock('Kamu belum jadi member', 'Gunakan email yang sama saat checkout.', btns, '🔒', 'Masuk sebagai ' + (user.email || ''));
+    }
+
+    function support(user) {
+      const em = (user.email || '').toLowerCase();
+      watchMember(em);
+      const b = blkHost();
+      b.innerHTML = '<div style="' + CARD + ';text-align:left"><h2 style="margin:0 0 4px;font-size:19px">💬 Konfirmasi admin</h2>' +
+        '<p style="margin:0 0 10px;font-size:13px;color:#6b7280">Percakapan privat — hanya kamu dan admin. Tulis nomor order / bukti bayar, lalu tunggu balasan. Setelah disetujui kamu otomatis masuk.</p>' +
+        '<div id="smsg" style="height:250px;overflow:auto;background:#f3f4f6;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px"></div>' +
+        '<textarea id="stx" rows="2" maxlength="500" placeholder="Contoh: Saya sudah checkout dengan email ini, order #123" style="width:100%;box-sizing:border-box;margin-top:8px;padding:10px;border:1px solid #cbd5e1;border-radius:10px;font:inherit"></textarea>' +
+        '<button id="ssd" style="' + btnCss(true) + '">Kirim</button><button id="sbk" style="' + btnCss(false) + '">← Kembali</button></div>';
+      const box = b.querySelector('#smsg'), tx = b.querySelector('#stx');
+      let un = null, lastSend = 0;
+      F.setDoc(F.doc(db, 'requests', em), { unreadUser: false }, { merge: true }).catch(() => {});
+      un = F.onSnapshot(F.query(F.collection(db, 'requests', em, 'msgs'), F.orderBy('ts')), sn => {
+        box.innerHTML = sn.empty ? '<p style="margin:auto;color:#9ca3af;font-size:13px;text-align:center">Belum ada pesan. Tulis pesan pertamamu di bawah.</p>' :
+          sn.docs.map(d => { const m = d.data(), me = m.from !== 'admin'; return '<div style="align-self:' + (me ? 'flex-end' : 'flex-start') + ';max-width:85%;padding:8px 10px;border-radius:12px;background:' + (me ? '#4f46e5' : '#e5e7eb') + ';color:' + (me ? '#fff' : '#1f2937') + ';white-space:pre-wrap;word-break:break-word;font-size:14px">' + E2(m.text) + '<div style="font-size:11px;opacity:.7">' + (me ? 'Kamu' : 'Admin') + ' · ' + fmtT(m.ts) + '</div></div>'; }).join('');
+        box.scrollTop = box.scrollHeight;
+      }, e => { box.innerHTML = '<p style="margin:auto;color:#b91c1c;font-size:13px">Gagal memuat percakapan (' + E2(e.code || e.message) + '). Pastikan Firestore Rules terbaru sudah dipublish.</p>'; });
+      b.querySelector('#sbk').onclick = () => { if (un) un(); gate(user); };
+      b.querySelector('#ssd').onclick = async () => {
+        const v = tx.value.trim(); if (!v) { tx.focus(); return; }
+        if (Date.now() - lastSend < 3000) return; lastSend = Date.now();
+        try {
+          await F.addDoc(F.collection(db, 'requests', em, 'msgs'), { from: 'user', text: v, ts: Date.now() });
+          await F.setDoc(F.doc(db, 'requests', em), { email: em, name: user.displayName || '', status: 'pending', lastMsg: v, lastFrom: 'user', unreadAdmin: true, ts: Date.now() }, { merge: true });
+          tx.value = '';
+        } catch (e) { alert('Pesan belum terkirim (' + (e.code || e.message) + '). Coba lagi.'); }
+      };
+    }
+
+    /* ================= LAYAR LOGIN ================= */
     let mode = 'login';
     const MODES = {
       login:    { t: 'Masuk', s: 'Masuk untuk membuka rencana dan goals-mu di perangkat mana pun.', b: 'Masuk', pw: 'current-password',
                   ft: 'Belum punya akun? <button type="button" class="ln" data-m="register">Daftar</button> · <button type="button" class="ln" data-m="reset">Lupa kata sandi?</button>' },
-      register: { t: 'Buat akun', s: 'Gratis. Datamu tersimpan aman dan bisa dibuka lagi kapan saja.', b: 'Daftar', pw: 'new-password',
+      register: { t: 'Buat akun', s: 'Gunakan email yang sama saat checkout.', b: 'Daftar', pw: 'new-password',
                   ft: 'Sudah punya akun? <button type="button" class="ln" data-m="login">Masuk</button>' },
       reset:    { t: 'Reset kata sandi', s: 'Masukkan email-mu, kami kirim tautan untuk membuat kata sandi baru.', b: 'Kirim tautan reset', pw: null,
                   ft: '<button type="button" class="ln" data-m="login">← Kembali ke halaman masuk</button>' }
@@ -2067,7 +2271,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       busy(true);
       try {
         if (mode === 'reset') { await A.sendPasswordResetEmail(auth, em); msg('Tautan reset sudah dikirim. Cek inbox dan folder spam email-mu.', true); }
-        else if (mode === 'register') { const cr = await A.createUserWithEmailAndPassword(auth, em, pw); try { await A.sendEmailVerification(cr.user); } catch (e) {} }
+        else if (mode === 'register') await A.createUserWithEmailAndPassword(auth, em, pw);   // tanpa verifikasi email
         else await A.signInWithEmailAndPassword(auth, em, pw);
       } catch (x) { msg(errMsg(x)); }
       finally { busy(false); }
@@ -2086,38 +2290,34 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
     });
     A.getRedirectResult(auth).catch(x => { showForm(); msg(errMsg(x)); });
 
-    /* ---------- Status login ---------- */
+    /* ================= STATUS LOGIN ================= */
     A.onAuthStateChanged(auth, async user => {
       resolved = true;
-      if (!user) { if (window.__blk) return; showForm(); return; }
-      if (user.isAnonymous) { await A.signOut(auth); return; }      // sesi anonim dari versi lama → minta login
+      if (!user) { showForm(); return; }
+      if (user.isAnonymous) { await A.signOut(auth); return; }       // sesi anonim versi lama → minta login
       showLoad();
-      const logoutBtn = { label: 'Keluar / ganti akun', fn: async () => { try { await A.signOut(auth); } catch (e) {} location.reload(); } };
-      const retryBtn = { label: 'Cek lagi', primary: true, fn: () => location.reload() };
-      const buyBtn = BUY_URL.indexOf('GANTI-') === -1 ? [{ label: 'Beli akses FocusNest', primary: true, fn: () => { location.href = BUY_URL; } }] : [];
-      if (!user.emailVerified) {
-        showBlock('Email belum terverifikasi', 'Masuk dengan Google, atau klik "Lupa kata sandi" di halaman masuk untuk mengatur kata sandi lewat email yang kamu pakai saat checkout.', [{ label: 'Kirim ulang email verifikasi', primary: true, fn: async () => { try { await A.sendEmailVerification(user); alert('Email verifikasi dikirim. Cek inbox/spam.'); } catch (e) { alert('Tunggu sebentar lalu coba lagi.'); } } }, { label: 'Sudah verifikasi — cek lagi', fn: async () => { try { await user.reload(); } catch (e) {} location.reload(); } }, logoutBtn]); return;
-      }
+      const em = (user.email || '').toLowerCase();
+      const retryBtn = { label: 'Coba lagi', primary: true, fn: () => location.reload() };
       let ok = false;
       try {
-        const m = await F.getDoc(F.doc(db, 'members', (user.email || '').toLowerCase()));
+        const m = await F.getDoc(F.doc(db, 'members', em));
         ok = m.exists() && String(m.data().active) === 'true';
-        if (!ok) { try { ok = (await F.getDoc(F.doc(db, 'admins', (user.email || '').toLowerCase()))).exists(); } catch (e2) {} }   // admin selalu boleh masuk
+        if (!ok) { try { ok = (await F.getDoc(F.doc(db, 'admins', em))).exists(); } catch (e2) {} }   // admin selalu boleh masuk
       } catch (e) {
         console.error('[FocusNest] Gagal cek member:', e);
-        showBlock('Gagal memeriksa status member', 'Cek koneksi internetmu lalu coba lagi.' + (e && e.code === 'permission-denied' ? ' (Firestore Rules menolak membaca daftar member — periksa Rules di Firebase Console.)' : ''), [retryBtn, logoutBtn]); return;
+        showBlock('Gagal memeriksa status member', 'Cek koneksi internetmu lalu coba lagi.' + (e && e.code === 'permission-denied' ? ' (Firestore Rules menolak — periksa Rules di Firebase Console.)' : ''), [retryBtn, logoutBtn], '⚠️'); return;
       }
-      if (!ok) {
-        window.__blk = 1; try { await user.delete(); } catch (e) { try { await A.signOut(auth); } catch (e2) {} }   // non-member: akun dihapus & dikeluarkan
-        showBlock('Email ini belum terdaftar sebagai member', 'Akses FocusNest khusus member. Kamu masuk sebagai ' + user.email + '. Dokumen yang dicari: members/' + (user.email || '').toLowerCase() + ' dengan field active = true (boolean). Gunakan email yang sama dengan saat checkout. Baru bayar? Tunggu 1-2 menit lalu tekan "Cek lagi".', buyBtn.concat([{ label: 'Cek lagi', fn: () => location.reload() }, logoutBtn])); return;
-      }
-      try { await start(user); } catch (e) { console.error('[FocusNest] Gagal memulai sesi:', e); }
-      hideOV();
+      if (!ok) { gate(user); return; }                               // bukan member: akun TIDAK dihapus, hanya ditahan di gerbang
+      let good = false;
+      try { good = await start(user); } catch (e) { console.error('[FocusNest] Gagal memulai sesi:', e); }
+      if (!good) { showBlock('Data belum bisa dimuat', 'Datamu aman di cloud. Cek koneksi lalu coba lagi — aplikasi sengaja tidak dibuka agar data tidak tertimpa.', [retryBtn, logoutBtn], '☁️'); return; }
+      hideOV(); setupAdmin(user);
     });
   } catch (e) {
     failOpen('Firebase tidak dapat dimuat.', e);
   }
 })();
 </script>
+
 </body>
 </html>
