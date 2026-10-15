@@ -465,7 +465,7 @@ details[open]>summary .gsum{display:none}
 <p class="ft mu" id="lgn-ft"></p>
 </div></div></div>
 <script>
-const P=[['dash','🏠','Beranda'],['tasks','✅','Tugas'],['goals','🎯','Goals'],['cal','📅','Kalender'],['year','🗓️','Tahunan'],['focus','⏱️','Fokus'],['music','🎵','Musik'],['pet','🐾','Pet & Hadiah'],['prog','📈','Progress'],['mood','😊','Mood'],['set','⚙️','Atur']];
+const P=[['dash','🏠','Beranda'],['tasks','✅','Tugas'],['goals','🎯','Goals'],['cal','📅','Kalender'],['focus','⏱️','Fokus'],['music','🎵','Musik'],['pet','🐾','Pet & Hadiah'],['prog','📈','Progress'],['mood','😊','Mood'],['set','⚙️','Atur']];
 const CAT=['Akademik','Karir','Kesehatan','Keterampilan'],PRI=['Tinggi','Sedang','Rendah'],ST=['belum mulai','sedang dikerjakan','selesai','tunda'],PER=['Harian','Mingguan','Bulanan','Tahunan'],EM=['😞','😕','😐','🙂','😄'];
 const DEF=()=>({tasks:[],goals:[],mood:{},focus:[],notes:[],dn:{},rev:{},set:{pomo:25,brk:5,theme:'light',name:'',tgt:120,vol:.6,rmOn:true,rmLead:5,rmSnd:true,rmVib:true,rmAmOn:false,rmAm:'07:30',rmPmOn:false,rmPm:'20:30'},pts:0,xp:0,pl:[],bn:{},rw:[],pet:null,yt:''});let S=DEF(),pg='dash',tab='today',q='',fl='',gsel=null;
 function hydrate(r){const d=DEF();S=r&&typeof r==='object'?{...d,...r,set:{...d.set,...r.set}}:d;
@@ -907,7 +907,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&gdo){gdo=false;rend
 const V={dash:vDash,tasks:vTasks,goals:vGoals,cal:vCal,year:vYear,focus:vFocus,music:vMusic,pet:vPet,mood:vMood,prog:vProg,set:vSet};
 function render(){document.documentElement.dataset.t=S.set.theme;
   $('#side').innerHTML='<div class="lg"><span class="lgi">🏠</span><span class="lgt">FocusNest</span></div>'+P.map(([k,i,l])=>`<button data-a="pg" data-k="${k}" ${pg===k?'aria-current="page"':''}><span>${i}</span>${l}</button>`).join('');
-  petTick();$('#side').insertAdjacentHTML('beforeend',sidePts());const ap=$('#app');ap.classList.toggle('anim',animF);animF=false;ap.innerHTML=V[pg]();if(pg==='tasks')rList();clock();drawer();guideDraw();tipDraw();mpPaint()}
+  petTick();$('#side').insertAdjacentHTML('beforeend',sidePts());const ap=$('#app');ap.classList.toggle('anim',animF);animF=false;if(pg==='year'){pg='cal';window.__kv&&(window.__kv.v='year')}ap.innerHTML=V[pg]();if(pg==='tasks')rList();clock();drawer();guideDraw();tipDraw();mpPaint()}
 function clock(){const e=$('#clk');if(e)e.textContent=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}).replace(/\./g,':')}
 setInterval(clock,1000);
 const gv=id=>{const e=$('#'+id);return e?e.value.trim():''};
@@ -939,7 +939,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
   else if(a==='drx'){const d=dro;dro=null;edt=null;window.__dadd=false;render();const x=document.querySelector('.yd[data-d="'+d+'"]');x&&x.focus();return}
   else if(a==='dto'){vd=dro;tab='day';dro=null;pg='tasks';animF=true;render();window.scrollTo(0,0);return}
     else if(a==='yp'){yr=+D.v?yr+ +D.v:new Date().getFullYear();render();return}
-  else if(a==='ym'){cm=new Date(yr,+D.m,1);pg='cal';animF=true;render();window.scrollTo(0,0);return}
+  else if(a==='ym'){cm=new Date(yr,+D.m,1);pg='cal';window.__kv&&(window.__kv.v='month');animF=true;render();window.scrollTo(0,0);return}
   else if(a==='cyp'){const o=['Rendah','Sedang','Tinggi'];T.pri=o[(o.indexOf(T.pri)+1)%3]}
   else if(a==='cyd'){T.dif=DIF[(DIF.indexOf(T.dif||'Sedang')+1)%DIF.length]}
   else if(a==='hg'){S.set.hg=1}
@@ -1054,7 +1054,7 @@ function sceneSVG(h){const O=`stroke="${IK}" stroke-width="3" stroke-linejoin="r
     +R(332,258,56,44,'#FFB347',5)+R(326,250,68,12,'#FF8F52',4)+C(300,296,12,'#FF5C7C')+`<path d="M294 292Q300 286 306 292" stroke="#fff" stroke-width="2" fill="none"/>`}
   return `<svg class="csb" viewBox="0 0 400 340" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${s}</svg>`}
 
-function petBox(p,sm){const l=pLv(p),sc=pStage(l)[1],[mb,msg]=petMood(p),h=new Date().getHours(),A=id=>SH.find(x=>x.id===id),hd=p.hd&&A(p.hd),sd=p.sd&&A(p.sd),sad=p.full<25||p.joy<25,sl=h>=22||h<5,mo=pfx==='eat'?'eat':sad?'sad':sl?'zz':'ok';
+function petBox(p,sm){const l=pLv(p),sc=pStage(l)[1],[mb,msg]=petMood(p),h=new Date().getHours(),A=id=>SH.find(x=>x.id===id),hd=p.hd&&A(p.hd),sd=p.sd&&A(p.sd),sad=p.full<25||p.joy<25,sl=(h>=22||h<5)&&!(p.wk>Date.now()),mo=pfx==='eat'?'eat':sad?'sad':sl?'zz':'ok';
   return `<div class="cs ${sm?'sm':''} ${sad?'sad':''} ${pfx?'fx-'+pfx:''}" id="pst">${sceneSVG(p.hab||'room')}<div class="bub" id="pbub">${msg}</div><div class="pw" style="--sc:${sm?sc*.8:sc}">${sl?'<span class="zz">💤</span>':''}${hd?`<span class="ach">${hd.e}</span>`:''}<button class="pe" data-a="pp" aria-label="Belai ${esc(p.name)}">${petSVG(p.sp,mo)}</button>${sd?`<span class="acs">${sd.e}</span>`:''}</div></div>`}
 function petStage(p){return `<div style="position:relative">${petBox(p)}<div class="dk l"><button data-a="feed" aria-label="Beri makan" title="Beri makan">🍖</button><button data-a="play" aria-label="Main" title="Main">🎾</button><button data-a="xgm" aria-label="Brain games" title="Mainan otak">🧠</button></div><div class="dk r"><button data-a="xchg" aria-label="Ganti pet" title="Ganti pet">🔄</button><button data-a="xshop" aria-label="Toko & dekorasi" title="Toko & dekorasi">🛍️</button></div><div class="hud"><span>🍖 ${Math.round(p.full)}%</span><span>💖 ${Math.round(p.joy)}%</span></div></div>`}
 const GM=[['fc','🃏','Flashcard','Kartu tanya-jawab buatanmu, sistem Leitner (spaced repetition).'],['qz','❓','Kuis Custom','Buat soal pilihan ganda atau isian sendiri.'],['mt','🧮','Hitung Cepat','Tambah, kurang, kali, bagi dengan angka yang kamu atur.'],['mm','🧩','Memory Match','Cocokkan pasangan kartu, latih memori kerja.']];
@@ -1259,7 +1259,7 @@ function pdf(kind,n){init();const ds=[...Array(n)].map((_,i)=>addD(TD(),-(n-1-i)
 const prog=()=>window.pdfProg(ds,tk,dn,fm2,n);
 const mood=()=>{const r=ds.filter(d=>S.mood[d]&&S.mood[d].m);const av=k=>r.length?String(Math.round(r.reduce((a,d)=>a+(+S.mood[d][k]||0),0)/r.length)):'-';return`<h2>😊 Mood & Energi</h2><p>Rata-rata mood <b>${av('m')}/5</b> · energi <b>${av('e')}/5</b></p>${tb(['Tanggal','Mood','Energi','Catatan'],r.map(d=>[d,EM[S.mood[d].m-1]+' '+S.mood[d].m,S.mood[d].e||'-',S.mood[d].n||S.mood[d].note||'']))}`};
 h=(kind==='progres'||kind==='semua'?prog():'')+(kind==='mood'||kind==='semua'?mood():'');
-const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0';document.body.appendChild(f);f.srcdoc=`<html><head><meta charset=utf-8><style>body{font-family:sans-serif;padding:20px;color:#1b2a4a}table{border-collapse:collapse;width:100%;margin:8px 0;page-break-inside:auto}tr{page-break-inside:avoid}.g{color:#25A57A}.r{color:#E5484D}.n{color:#6B7A99}small{color:#6B7A99}h2,h3{page-break-after:avoid}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}td,th{border:1px solid #ccc;padding:4px 6px;font-size:12px;text-align:left}th{background:#eef2ff}h1{color:#4F7CF0}</style></head><body><h1>FocusNest · Laporan ${n} hari</h1><p>${E(S.set.name||'')} · ${TD()}</p>${h}</body></html>`;f.onload=()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){toast('Gagal membuka cetak')}setTimeout(()=>f.remove(),60000)}}
+const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0';document.body.appendChild(f);f.srcdoc=`<html><head><meta charset=utf-8>${window.pdfDoc(h,n,tk,dn,fm2,kind)}</html>`;f.onload=()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){toast('Gagal membuka cetak')}setTimeout(()=>f.remove(),60000)}}
 /* ---------- Enhance setelah render ---------- */
 function hero(){const p=S.pet,h=$('.hero');if(!p||!h||h.querySelector('.mhero'))return;const sad=p.full<25||p.joy<25;let lv=1;try{lv=pLv(p)}catch(e){}h.insertAdjacentHTML('beforeend',`<div class="mhero"><div class="pv" id="pst">${petSVG(p.sp,sad?'sad':'ok')}</div><div class="mi"><b>${E(p.name)}</b> · Lv ${lv}<div class="bar"><i id="pf" style="width:${p.full}%"></i></div>🍖 <span id="pft">${Math.round(p.full)}</span>% <div class="bar"><i id="pj" style="width:${p.joy}%"></i></div>💖 <span id="pjt">${Math.round(p.joy)}</span>%<div class="bub" id="pbub">${petMood(p)[1]}</div></div><div style="display:flex;flex-direction:column;gap:4px"><button data-a="feed" aria-label="Beri makan">🍖</button><button data-a="play" aria-label="Main">🎾</button></div></div>`)}
 function enh(){init();
@@ -1607,7 +1607,7 @@ rList=function(){const el=$('#tl');if(!el)return;const T=TD(),f=tkF(T)[tab]||(()
 (()=>{const o=V.goals;V.goals=()=>o().replace('</h1>','</h1><div class="f" style="margin:8px 0 0"><button class="b s sm n" data-a="cmt">🏷️ Kelola kategori</button></div>'+catCard())})();
 
 /* ---------- PET: siang/malam, jendela, lampu, tidur ---------- */
-const hr=()=>new Date().getHours(),isNight=()=>hr()>=18||hr()<6,sleepN=p=>p.nap>Date.now()||hr()>=22||hr()<5,sig=()=>S.pet?[sleepN(S.pet),isNight()].join():'';
+const hr=()=>new Date().getHours(),isNight=()=>hr()>=18||hr()<6,sleepN=p=>p.nap>Date.now()||((hr()>=22||hr()<5)&&!(p.wk>Date.now())),sig=()=>S.pet?[sleepN(S.pet),isNight()].join():'';
 const deco=(n,sl)=>{const O='stroke="#2B2A4C" stroke-width="3" stroke-linejoin="round"',on=n&&!sl;let s='';
  if(n||sl)s+=`<rect x="30" y="34" width="53" height="92" rx="5" fill="#8E7CC3" ${O}/><rect x="77" y="34" width="53" height="92" rx="5" fill="#9F8DD6" ${O}/><path d="M48 38V122M64 38V122M96 38V122M112 38V122" stroke="#6F5FA8" stroke-width="3" fill="none"/>`;
  return s+`<path d="M185 0V56" fill="none" ${O}/><path d="M160 92L210 92L198 56L172 56Z" fill="${on?'#FFD84D':'#C9C3D8'}" ${O}/><circle cx="185" cy="95" r="6" fill="${on?'#FFF6B0':'#9A94AD'}" ${O}/>`};
@@ -2238,22 +2238,22 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
        Disimpan di usage/{email} (dikirim digabung & dibatasi, bukan tiap write) → hemat kuota 20.000 write/hari. */
     const F = { ...F0 };
     const U = { email: '', p: {}, size: 0, lastFlush: 0, tick: 0, denied: false, on: false, busy: false };
-    const uDay = ts => { const d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+    const uFmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' });
+    const uDay = ts => uFmt.format(new Date(ts));   // hari kuota Firebase = tengah malam waktu Pasifik
     const UK = 'focusnest_usage';
     const uSave = () => { try { localStorage.setItem(UK, JSON.stringify({ e: U.email, p: U.p, s: U.size })); } catch (e) {} };
     const uAdd = (k, n) => { if (!U.on) return; const d = uDay(Date.now()), x = U.p[d] || (U.p[d] = { w: 0, sec: 0 }); x[k] += n; };
-    ['setDoc', 'addDoc', 'updateDoc', 'deleteDoc'].forEach(k => { if (typeof F0[k] === 'function') F[k] = (...a) => { uAdd('w', 1); return F0[k](...a); }; });
+    ['setDoc', 'addDoc', 'updateDoc', 'deleteDoc'].forEach(k => { if (typeof F0[k] === 'function') F[k] = (...a) => { const p = F0[k](...a); Promise.resolve(p).then(() => uAdd('w', 1), () => {}); return p; }; });
 
     async function flushUsage(force) {
       if (!U.on || U.denied || U.busy) return;
       const now = Date.now(); if (!force && now - U.lastFlush < 300000) return;
-      uAdd('w', 1);                                   // kiriman ini sendiri dihitung 1 write
       const snap = U.p; U.p = {}; U.busy = true; U.lastFlush = now; uSave();
       const w = {}, sec = {}; let tw = 0, ts = 0;
       Object.keys(snap).forEach(d => { const x = snap[d]; if (x.w) { w[d] = F0.increment(x.w); tw += x.w; } if (x.sec) { sec[d] = F0.increment(x.sec); ts += x.sec; } });
       const data = { email: U.email, last: now, size: U.size || 0, tw: F0.increment(tw), ts: F0.increment(ts) };
       if (Object.keys(w).length) data.w = w; if (Object.keys(sec).length) data.sec = sec;
-      try { await F0.setDoc(F0.doc(db, 'usage', U.email), data, { merge: true }); }
+      try { await F0.setDoc(F0.doc(db, 'usage', U.email), data, { merge: true }); uAdd('w', 1); }
       catch (e) {
         Object.keys(snap).forEach(d => { const x = U.p[d] || (U.p[d] = { w: 0, sec: 0 }); x.w += snap[d].w; x.sec += snap[d].sec; });   // kembalikan, kirim lagi nanti
         if (e && e.code === 'permission-denied') { U.denied = true; console.warn('[FocusNest] usage: Rules menolak. Tambahkan aturan untuk usage/{email}.'); }
@@ -2759,7 +2759,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
           const none = !Object.keys(s.use).length && !s.err ? '<p class="mu">Belum ada data. Data mulai terisi setelah member membuka aplikasi versi ini.</p>' : '';
           b.innerHTML = hint + none + summary() +
             '<h3 style="margin:14px 0 6px;font-size:.9rem">Peringkat user</h3><div class="tabs" style="margin:0 0 8px">' + TABS.map(([k, l]) => '<button class="b ' + (s.tab === k ? '' : 's') + ' sm" data-ut="' + k + '">' + l + '</button>').join('') + '</div>' + ranking() +
-            '<p class="mu" style="margin-top:12px;font-size:.72rem">Dihitung dari write yang dikirim aplikasi (per tanggal lokal), termasuk chat & aksi admin. Angka resmi ada di Firebase Console → Usage; kuota harian Firebase reset tengah malam waktu Pasifik. Diperbarui ' + fmtHM(s.at) + '.</p>';
+            '<p class="mu" style="margin-top:12px;font-size:.72rem">Dihitung dari write yang dikirim aplikasi (per hari kuota Firebase: reset tengah malam waktu Pasifik ≈ 14.00–15.00 WIB, 1 write per dokumen yang berhasil), termasuk chat & aksi admin. Angka resmi ada di Firebase Console → Usage; kuota harian Firebase reset tengah malam waktu Pasifik. Diperbarui ' + fmtHM(s.at) + '.</p>';
         }
 
         o.addEventListener('click', ev => {
@@ -3180,5 +3180,104 @@ render();
 })();
 </script>
 
+<style>
+.kh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ksisa{margin-left:auto;font-size:.68rem;color:var(--mu);background:var(--bg);border:1px solid var(--bd,#0002);border-radius:99px;padding:2px 8px;white-space:nowrap}
+.kg .yd{aspect-ratio:auto!important;height:auto!important;min-height:62px;display:flex!important;flex-direction:column;align-items:flex-start!important;justify-content:flex-start!important;gap:1px;padding:3px 4px!important;text-align:left;overflow:hidden;position:relative}
+.kg.hid .yd{min-height:0;aspect-ratio:1!important;align-items:center!important;justify-content:center!important}
+.kg .yd .tn{display:block;font-style:normal;font-size:.56rem;line-height:1.15;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx);opacity:.85}
+.kg .yd .tn.dn{text-decoration:line-through;color:var(--ok)}.kg .yd .tn.ms{color:var(--rd);font-weight:600}.kg .yd .tn.gl{color:#8B5CF6;font-weight:600}
+.yd.dim{opacity:.28}.kyg{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:8px}.kyg .mh{background:none;border:0;font-weight:700;text-transform:capitalize;cursor:pointer;color:var(--ac)}
+.kchips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.kchips button{font-size:.7rem;padding:4px 9px;border-radius:99px;border:1px solid var(--bd,#0003);background:var(--bg);color:var(--tx);cursor:pointer}.kchips button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+#nmo{position:fixed;inset:0;z-index:99999;background:#0009;display:flex;align-items:center;justify-content:center;padding:16px}#nmo .c{max-width:380px;width:100%;margin:0}
+</style>
+<script>
+/* ===== v15: Kalender menyatu (bulanan + tahunan) · pet sadar waktu · nama wajib · PDF rapi ===== */
+(()=>{
+const kv=window.__kv=window.__kv||{v:'month',nm:true,mk:'',y:new Date().getFullYear()};
+const MKS=[['miss','🔴 Belum dikerjakan'],['ok','🟢 Selesai semua'],['gdn','🟣 Goal selesai'],['gdl','🟪 Deadline goal']];
+const oldCal=V.cal;
+const info=()=>{const T=TD(),map={},gd={},gf={};
+ S.tasks.forEach(t=>{const d=t.due||T,x=map[d]=map[d]||{n:0,d:0,h:0,l:[]};x.n++;x.l.push(t);if(t.st==='selesai')x.d++;else if(d<=T)x.h++});
+ S.goals.forEach(g=>{if(g.fin){const d=g.finD||g.due;if(d)(gf[d]=gf[d]||[]).push(g.t)}else if(g.due)(gd[g.due]=gd[g.due]||[]).push(g.t)});
+ return{T,map,gd,gf}};
+const hasOf=(d,I)=>{const x=I.map[d]||{n:0,d:0,h:0};return{miss:x.h>0,ok:x.n>0&&x.d===x.n,gdn:!!I.gf[d],gdl:!!I.gd[d]}};
+const cnt=(k,pre,I)=>[...new Set([...Object.keys(I.map),...Object.keys(I.gd),...Object.keys(I.gf)])].filter(d=>d.startsWith(pre)&&hasOf(d,I)[k]).length;
+const cell=(d,i,I,sm)=>{const x=I.map[d]||{n:0,d:0,h:0,l:[]},H=hasOf(d,I),f=kv.mk,on=!f||H[f],lv=x.n?x.n>=8?4:x.n>=5?3:x.n>=3?2:1:0;
+ let c='yd'+(lv&&!f?' ht'+lv:'')+(d===I.T?' td':'')+(d===cs?' sl':'')+(f?(H[f]?' mkon':' dim'):'');
+ if((!f||f==='ok')&&H.ok)c+=' ok';if((!f||f==='gdn')&&H.gdn)c+=' gdn';
+ let h=i;if((!f||f==='miss')&&H.miss)h+='<i class="hi"></i>';if((!f||f==='gdl')&&H.gdl)h+='<i class="gi"></i>';
+ if(!sm&&kv.nm&&on){h+=x.l.slice(0,3).map(t=>`<em class="tn ${t.st==='selesai'?'dn':d<=I.T?'ms':''}">${esc(t.t)}</em>`).join('')+(x.n>3?`<em class="tn">+${x.n-3} lagi</em>`:'');
+  (I.gd[d]||[]).slice(0,1).forEach(g=>h+=`<em class="tn gl">🎯 ${esc(g)}</em>`);(I.gf[d]||[]).slice(0,1).forEach(g=>h+=`<em class="tn gl">🏆 ${esc(g)}</em>`)}
+ const lb=d+': '+(x.n?x.n+' tugas, '+x.d+' selesai':'kosong');
+ return `<button class="${c}" data-a="cd" data-d="${d}" title="${esc(lb)}" aria-label="${esc(lb)}">${h}</button>`};
+const mth=(y,m,I,sm)=>{const f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate(),DL=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+ let c=DL.map(x=>`<small>${sm?x[0]:x}</small>`).join('')+'<span></span>'.repeat(f);for(let i=1;i<=n;i++)c+=cell(iso(new Date(y,m,i)),i,I,sm);
+ return `<div class="ycal ${sm?'':'yc-big kg'+(kv.nm?'':' hid')}">${c}</div>`};
+V.year=()=>{kv.v='year';return V.cal()};
+V.cal=()=>{const old=oldCal(),i=old.indexOf('<details class="c cl" data-ck="cal-jadwal"'),tail=i>=0?old.slice(i):'',I=info(),now=new Date(),
+ left=Math.round((new Date(now.getFullYear(),11,31)-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/864e5),yr=kv.v==='year',y=yr?kv.y:cm.getFullYear(),m=cm.getMonth(),
+ pre=yr?String(y):y+'-'+String(m+1).padStart(2,'0'),MN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+ let mn=0,md=0;Object.keys(I.map).forEach(d=>{if(d.startsWith(pre)){mn+=I.map[d].n;md+=I.map[d].d}});
+ let h=`<div class="kh"><h1 style="margin:0">Kalender</h1><span class="ksisa" title="Sisa hari di tahun ${now.getFullYear()}">⏳ sisa ${left} hari di ${now.getFullYear()}</span></div><div class="c" style="margin-top:12px">
+ <div class="tabs"><button class="b ${yr?'s':''} sm" data-k13="v" data-v="month">📅 Bulanan</button><button class="b ${yr?'':'s'} sm" data-k13="v" data-v="year">🗓️ Tahunan</button>${yr?'':`<button class="b s sm" data-k13="nm">${kv.nm?'🙈 Sembunyikan nama tugas':'👁 Tampilkan nama tugas'}</button>`}</div>
+ <div class="f" style="justify-content:space-between;margin-top:6px"><button class="b s n" ${yr?'data-k13="yn" data-v="-1"':'data-a="cp" data-v="-1"'} aria-label="Sebelumnya">‹</button><h2 style="margin:0;flex:1;text-align:center;text-transform:capitalize">${yr?y:MN[m]+' '+y}</h2><button class="b s n" ${yr?'data-k13="yn" data-v="1"':'data-a="cp" data-v="1"'} aria-label="Berikutnya">›</button></div>
+ <p class="mu" style="margin:6px 0 0;text-align:center">${mn} tugas · ${md} selesai</p><div class="bar" style="margin:4px 0 8px"><i style="width:${mn?Math.round(md/mn*100):0}%"></i></div>
+ <div class="kchips" role="group" aria-label="Tanda di kalender">${MKS.map(([k,l])=>`<button data-k13="mk" data-m="${k}" class="${kv.mk===k?'on':''}" aria-pressed="${kv.mk===k}">${l} · ${cnt(k,pre,I)}</button>`).join('')}<button data-k13="mk" data-m="" class="${kv.mk?'':'on'}">👁 Semua tanda</button></div>`;
+ if(yr)h+=`<p class="mu" style="margin:0 0 6px">Klik nama bulan untuk membuka bulan itu. Klik tanggal untuk melihat jadwalnya di bawah.</p><div class="kyg">${MN.map((nm,i)=>{let a=0,b=0;Object.keys(I.map).forEach(d=>{if(d.startsWith(y+'-'+String(i+1).padStart(2,'0'))){a+=I.map[d].n;b+=I.map[d].d}});return `<div class="c ym"><button class="mh" data-k13="ym" data-m="${i}">${nm}</button><span class="mu"> ${b}/${a}</span>${mth(y,i,I,1)}</div>`}).join('')}</div>`;
+ else h+=mth(y,m,I,0);
+ h+=`<div class="leg"><span>Padat:</span><span><b class="ht1"></b>1–2</span><span><b class="ht2"></b>3–4</span><span><b class="ht3"></b>5–7</span><span><b class="ht4"></b>8+</span><span><em style="background:var(--rd)"></em>belum dikerjakan</span><span><em style="background:#A66BFF"></em>deadline goal</span><span><b style="background:#8B5CF6"></b>goal selesai</span><span><b style="box-shadow:inset 0 0 0 2px var(--ok)"></b>semua selesai</span></div></div>`;
+ return h+tail};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-k13]');if(!b)return;const k=b.dataset.k13;
+ if(k==='v'){kv.v=b.dataset.v;if(kv.v==='year')kv.y=cm.getFullYear()}else if(k==='nm')kv.nm=!kv.nm;else if(k==='mk')kv.mk=kv.mk===b.dataset.m?'':b.dataset.m;
+ else if(k==='yn')kv.y+=+b.dataset.v;else if(k==='ym'){cm=new Date(kv.y,+b.dataset.m,1);kv.v='month'}render()});
+
+/* ---------- Pet: sadar waktu, tidur malam (bisa dibangunin 5 menit), bahasa gaul ---------- */
+const nowH=()=>new Date().getHours(),night=()=>nowH()>=22||nowH()<5,per=()=>{const h=nowH();return h<5||h>=22?'malam':h<11?'pagi':h<15?'siang':h<18?'sore':'malam'},R=a=>a[Math.floor(Math.random()*a.length)];
+const L={
+slp:{pagi:['Zzz… masih ngantuk, 5 menit lagi ya {u} 😴','Hoaam… pagi-pagi udah ganggu, aku mimpi makan enak tadi 💤'],siang:['Zzz… lagi tidur siang, jangan berisik {u} 🤫','Ssst, aku lagi recharge siang. Nanti kita lanjut 😴'],sore:['Zzz… ketiduran sore-sore, bangunin aku kalau udah penting ya 💤','Hmm… lagi nanggung mimpinya, sore bentar lagi 😪'],malam:['Zzz… udah malem {u}, kamu juga tidur dong 🌙','Zzz… mimpiin kamu lagi ngerjain tugas, bangga banget 💤','Psst… udah lewat jam tidur. Istirahat, besok kita gaspol 🌙']},
+wk:['Hah?! Ngapain bangunin aku malem-malem, {u}? 😠 Awas ya, 5 menit doang abis itu aku tidur lagi!','Ihh kesel! Lagi enak-enaknya mimpi… tapi yaudah deh, kangen juga sih 🥺 5 menit aja ya.','Hoaam… kamu tuh ya, susah banget jauh dari aku 😏 Cepetan ngomongnya, bentar lagi aku merem lagi.','Aku melek nih. Jangan begadang, {u}! Peduli banget sama kamu tau 💙 Aku tidur lagi 5 menit lagi ya.'],
+sick:['Badanku lemes… tapi ada {u} di sini, aku tenang 🥺 Kasih aku makan & main ya.','Aku kurang enak badan nih… peluk virtual dong 🤒'],
+hun:['PERUT AKU BUNYI! 😭 {u}, tega banget sih ngelaperin aku… kasih makan dong 🍖','Aku laper banget sampai pengen nangis huhu 😢 Satu suap aja deh ya?','Hei {u}, kamu udah makan, aku belum. Adil nggak tuh? 😤 Kasih makan!'],
+lon:['Aku sendirian dari tadi… kamu sibuk banget sih, aku sedih 😢 Ayo main bentar.','Hiks… kok aku dicuekin? Aku kan juga butuh perhatian 🥺','Kamu lebih sayang sama HP-mu daripada aku ya? 😤 Hmph, cemburu nih!'],
+jea:['Eh, tadi kamu chat-chatan sama siapa? 👀 Aku cemburu loh, jujur aja.','Jangan kebanyakan ngobrol sama yang lain, {u}. Aku yang paling setia nemenin kamu 😤💕','Hmph. Kamu fokus ke tugas atau ke yang lain nih? Aku nggak jaim ya, aku cemburu 😒'],
+fl:['{u}, kamu tuh kalau lagi fokus, charming banget tau 😏','Kamu udah cakep, rajin pula. Jangan bikin aku jatuh cinta terus dong 🥰','Cieee yang semangat… sini deket-deket, aku mau semangatin langsung 💕','Kalau kamu selesai tugasnya, aku kasih pelukan gratis. Deal? 😘'],
+car:['Udah minum air belum, {u}? Jangan sampai dehidrasi, aku khawatir 💧','Mata udah capek belum? Lihat yang jauh 20 detik dulu yuk 👀','Pelan-pelan aja nggak apa-apa, yang penting jalan terus. Aku bangga sama kamu 🫶','Jangan lupa napas dalem-dalem. Kamu udah hebat banget loh hari ini ✨'],
+todo:{pagi:['Pagi {u}! Ada {n} tugas hari ini. Sarapan dulu, abis itu kita sikat bareng ☀️💪','Bangun-bangun langsung kerja? Keren! {n} tugas nunggu, gaspol 🔥'],siang:['Siang, {u}! Masih {n} tugas nih. Makan siang dulu biar nggak lemes 🍛','Setengah hari udah lewat, sisa {n} tugas. Dikit lagi, ayo! 💪'],sore:['Sore {u}! Sisa {n} tugas. Dikit lagi hari ini kelar, semangat 🌇','Hei, {n} tugas lagi belum kelar nih. Jangan ditunda, nanti nyesel lho 😏'],malam:['Malem {u}. Masih {n} tugas nih, kerjain yang penting aja terus istirahat ya 🌙','{n} tugas belum kelar… aku kesel dikit, tapi aku tetep nemenin kamu 😤💙']},
+done:['YEAAAH semua tugas hari ini kelar! 🥳 Kamu keren banget, {u}!','Gila, {u} produktif parah! Aku bangga, sini aku peluk 🤗','Semua beres! Waktunya santai, kamu udah layak dapet reward 🎉'],
+idle:['Hai {u}! Yuk bikin rencana hari ini ✨','Lagi ngapain? Cerita dong, aku kepo 👀','Aku di sini kok, kapan pun kamu butuh 💙']};
+const F=(s,p,n)=>s.replace(/\{u\}/g,esc((S.set.name||'').split(' ')[0]||'kamu')).replace(/\{n\}/g,n);
+const _pm15=petMood;
+petMood=function(p){const n=tdTasks().filter(x=>x.st!=='selesai').length,all=tdTasks().length,pr=per(),now=Date.now();
+ if(p.nap>now||(night()&&!(p.wk>now)))return['😴',F(R(L.slp[pr]),p,n)];
+ if(p.wk>now)return['😠',F(R(L.wk),p,n)];
+ if(p.hp!=null&&p.hp<30)return['🤒',F(R(L.sick),p,n)];
+ if(p.full<25)return['😭',F(R(L.hun),p,n)];
+ if(p.joy<25)return['🥺',F(R(L.lon),p,n)];
+ const r=Math.random();
+ if(r<.1)return['😒',F(R(L.jea),p,n)];if(r<.25)return['😏',F(R(L.fl),p,n)];if(r<.4)return['🫶',F(R(L.car),p,n)];
+ if(all&&!n)return['🥳',F(R(L.done),p,n)];if(n)return['💪',F(R(L.todo[pr]),p,n)];return['😊',F(R(L.idle),p,n)]};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-v8="nap"]');if(!b||!S.pet||!night())return;e.stopImmediatePropagation();e.preventDefault();
+ const p=S.pet,now=Date.now(),awake=p.wk>now;p.nap=0;p.wk=awake?0:now+3e5;toast(awake?'😴 '+p.name+' tidur lagi':'😠 '+p.name+' dibangunin… bakal tidur lagi 5 menit lagi');sv();render()},true);
+
+/* ---------- Nama wajib saat pertama join ---------- */
+setInterval(()=>{if(!window.FN||!FN.email||document.getElementById('nmo')||(S.set.name||'').trim())return;
+ const o=document.createElement('div');o.id='nmo';o.innerHTML='<div class="c"><h2>👋 Selamat datang di FocusNest!</h2><p class="mu">Sebelum mulai, isi nama kamu dulu ya. Nama ini dipakai di sapaan, pet, dan laporan PDF.</p><input id="nmi" maxlength="40" placeholder="Nama kamu" style="width:100%;margin:8px 0" autocomplete="name"><p id="nme" class="mu" style="color:var(--rd);min-height:1.2em;margin:0"></p><button class="b" id="nmb" style="width:100%">Simpan & mulai</button></div>';
+ document.body.appendChild(o);const go=()=>{const v=o.querySelector('#nmi').value.trim().replace(/\s+/g,' ');if(v.length<2){o.querySelector('#nme').textContent='Isi nama minimal 2 huruf ya.';return}S.set.name=v.slice(0,40);sv();o.remove();render();toast('Halo, '+v+'! 🎉')};
+ o.querySelector('#nmb').onclick=go;o.querySelector('#nmi').onkeydown=e=>{if(e.key==='Enter')go()};setTimeout(()=>o.querySelector('#nmi').focus(),50)},1500);
+
+/* ---------- PDF: sama seperti Progress, tampilan rapi ---------- */
+window.pdfCal=n=>{const I=info(),T=TD(),a=new Date(T+'T12:00:00'),z=new Date(T+'T12:00:00');a.setDate(a.getDate()-(n-1)),MN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];let h='<h2>🗓️ Kalender & tanda tracker</h2><p class="lg"><i class="d g"></i>semua selesai <i class="d r"></i>ada yang belum dikerjakan <i class="d p"></i>goal selesai <i class="d b"></i>deadline goal</p>';
+ for(let y=a.getFullYear(),m=a.getMonth();y<z.getFullYear()||(y===z.getFullYear()&&m<=z.getMonth());m++>=11&&(m=0,y++)){const f=new Date(y,m,1).getDay(),nn=new Date(y,m+1,0).getDate();let r='',days='';
+  for(let i=0;i<f;i++)r+='<td></td>';
+  for(let i=1;i<=nn;i++){const d=iso(new Date(y,m,i)),x=I.map[d],H=hasOf(d,I);if((f+i-1)%7===0&&i>1)r+='</tr><tr>';
+   const cl=H.gdn?'p':H.ok?'g':H.miss?'r':x?'n':'',tk=x?x.l.map(t=>`<span class="${t.st==='selesai'?'ok':'no'}">${t.st==='selesai'?'✓':'✗'} ${esc(t.t)}</span>`).join(''):'';
+   r+=`<td class="${cl}"><b>${i}</b>${x?`<small>${x.d}/${x.n}</small>`:''}${H.gdl?'<i class="d b"></i>':''}</td>`;if(x)days+=`<div class="dy"><b>${i}</b> ${tk}</div>`}
+  h+=`<div class="mo"><h3>${MN[m]} ${y}</h3><table class="mc"><tr>${['Min','Sen','Sel','Rab','Kam','Jum','Sab'].map(x=>`<th>${x}</th>`).join('')}</tr><tr>${r}</tr></table>${days?`<div class="dl">${days}</div>`:''}</div>`}
+ return h};
+window.pdfDoc=(h,n,tk,dn,fm2,kind)=>{const T=TD(),pc=tk.length?Math.round(dn.length/tk.length*100):0,gd=S.goals.filter(g=>g.fin).length,
+ css='*{box-sizing:border-box}body{font-family:"Segoe UI",Arial,sans-serif;color:#1b2a4a;padding:22px;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.cv{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(120deg,#4F7CF0,#7C5CF0);color:#fff;border-radius:14px;padding:18px 22px}.cv h1{margin:0;font-size:26px;color:#fff}.cv p{margin:2px 0 0;opacity:.9}.cv .w{text-align:right}.sc{display:flex;gap:10px;margin:14px 0}.sc div{flex:1;background:#f3f6ff;border:1px solid #dfe6fb;border-radius:12px;padding:10px 12px}.sc b{display:block;font-size:20px;color:#4F7CF0}.sc small{color:#6B7A99}h2{font-size:16px;margin:22px 0 8px;padding-left:10px;border-left:5px solid #4F7CF0;page-break-after:avoid}h3{font-size:13px;margin:14px 0 6px;color:#3b4d78;page-break-after:avoid}table{border-collapse:collapse;width:100%;margin:6px 0;page-break-inside:auto}tr{page-break-inside:avoid}td,th{border:1px solid #dfe6fb;padding:5px 7px;text-align:left;vertical-align:top}th{background:#4F7CF0;color:#fff;font-weight:600}tr:nth-child(even) td{background:#f8faff}small{color:#6B7A99}.d{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 3px 0 8px}.d.g{background:#25A57A}.d.r{background:#E5484D}.d.p{background:#8B5CF6}.d.b{background:#A66BFF;border-radius:2px}.mo{page-break-inside:avoid;margin-bottom:14px}.mc td{height:38px;width:14.2%;text-align:center;position:relative;padding:3px}.mc td b{display:block}.mc td small{font-size:9px}.mc td.g{background:#d9f4ea!important}.mc td.r{background:#fde2e3!important}.mc td.p{background:#e8dcff!important}.mc td.n{background:#eef2ff!important}.dl{columns:2;font-size:10.5px;margin-top:4px}.dy{break-inside:avoid;margin:2px 0}.dy span{display:block;padding-left:8px}.ok{color:#25A57A}.no{color:#E5484D}.ft{margin-top:22px;text-align:center;color:#8a97b5;font-size:10px;border-top:1px solid #dfe6fb;padding-top:8px}';
+ return `<style>${css}</style></head><body><div class="cv"><div><h1>FocusNest</h1><p>Laporan ${n} hari terakhir</p></div><div class="w"><b>${esc(S.set.name||'Pengguna')}</b><br>${T}</div></div><div class="sc"><div><b>${dn.length}/${tk.length}</b><small>tugas selesai</small></div><div><b>${pc}%</b><small>persentase</small></div><div><b>${fm2}</b><small>menit fokus</small></div><div><b>${gd}/${S.goals.length}</b><small>goal tercapai</small></div></div>${h}${kind==='mood'?'':window.pdfCal(n)}<div class="ft">Dibuat dengan FocusNest · ${T}</div></body>`};
+})();
+</script>
 </body>
 </html>
