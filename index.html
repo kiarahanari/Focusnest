@@ -551,10 +551,8 @@ const TIPS=['Mulai dari tugas terkecil — 2 menit pertama biasanya yang tersuli
 const tip=()=>TIPS[Math.floor(Date.now()/864e5)%TIPS.length];
 
 /* ---------- tag prioritas / kesulitan ---------- */
-function tags(t,ed,sm){const p=t.pri||'Sedang',d=t.dif||'Sedang',g=!sm&&t.gid&&gT(t.gid);
-  const a=ed?`<button class="tag ${p}" data-a="cyp" data-i="${t.id}" title="Prioritas — klik untuk ganti">${PRI_I[p]} ${p}</button>`:`<span class="tag ${p}" title="Prioritas">${PRI_I[p]} ${p}</span>`;
-  const b=ed?`<button class="tag df-${d}" data-a="cyd" data-i="${t.id}" title="Level kesulitan — klik untuk ganti">Kesulitan ${d}</button>`:`<span class="tag df-${d}" title="Level kesulitan">Kesulitan ${d}</span>`;
-  return a+`<span class="tag pt" title="Poin saat selesai">✨ +${t.rw||ptsOf(t)}</span>`+(g?`<span class="tag gl" title="Goal terkait">🎯 ${esc(g.t)}</span>`:'')}
+function tags(t,ed,sm){const g=!sm&&t.gid&&gT(t.gid);
+  return `<span class="tag pt" title="Poin saat selesai">✨ +${t.rw||ptsOf(t)}</span>`+(g?`<span class="tag gl" title="Goal terkait">🎯 ${esc(g.t)}</span>`:'')}
 
 /* ---------- toast & konfeti ---------- */
 function toast(m,big){const e=document.createElement('div');e.className='toast'+(big?' big':'');e.textContent=m;const h=$('#toasts');if(!h)return;h.appendChild(e);setTimeout(()=>e.remove(),big?4200:2600)}
@@ -765,11 +763,10 @@ function editor(T){const L=(k,l,h)=>`<label><span class="mu">${l}</span>${h}</la
   ${L('t','Nama tugas',`<input ${F('t')} value="${esc(T.t)}">`)}
   <div class="f">${L('gid','🎯 Goal terkait',`<select ${F('gid')}>${goalOpts(T.gid)}</select>`)}</div>
   <div class="f">${L('cat','Kategori',`<select ${F('cat')}>${opt(CAT,T.cat)}</select>`)}${L('st','Status',`<select ${F('st')}>${opt(ST,T.st)}</select>`)}</div>
-  <div class="f">${L('pri','Prioritas',`<select ${F('pri')}>${PRI.map(p=>`<option value="${p}" ${p===(T.pri||'Sedang')?'selected':''}>${PRI_I[p]} ${p}</option>`).join('')}</select>`)}</div>
   <div class="f">${L('due','Tanggal',`<input type="date" ${F('due')} value="${T.due||''}">`)}${L('time','Jam',`<input type="time" ${F('time')} value="${T.time||''}">`)}${L('est','Estimasi (menit)',`<input type="number" min="0" ${F('est')} value="${T.est||''}">`)}</div>
   <div class="f">${L('rm','🔔 Pengingat',`<select ${F('rm')}>${rmOpts(T.rm||'')}</select>`)}</div>
   <p class="mu" style="margin:0">✨ Poin saat selesai: <b>+${T.rw||ptsOf(T)}</b></p>
-  <h3>☑️ Checklist progress</h3>${clBox(T,1)}
+  <h3>☑️ Checklist</h3>${clBox(T,1)}
   ${L('nt','📝 Catatan',`<textarea ${F('nt')} placeholder="Catatan, link, atau detail tambahan…">${esc(T.nt||'')}</textarea>`)}
   <div class="tabs"><button class="b" data-a="edone" data-i="${T.id}">${T.st==='selesai'?'↩️ Tandai belum selesai':'✅ Tandai selesai'}</button><button class="b s" style="color:var(--rd)" data-a="edel" data-i="${T.id}">🗑 Hapus</button></div></aside>`}
 function drawer(){const e=$('#dr');if(!e)return;const T=edt&&S.tasks.find(x=>x.id===edt);if(edt&&!T)edt=null;
@@ -1187,7 +1184,7 @@ function vProg(){const R=pRange(),st=pStats(R.a,R.b),pc=st.n?Math.round(st.d/st.
   else B=MN.map((m,i)=>({l:m.slice(0,3),a:iso(new Date(+R.a.slice(0,4),i,1)),b:iso(new Date(+R.a.slice(0,4),i+1,0))}));
   const per=PTB.find(x=>x[0]===pgt)[2],gl=S.goals.filter(x=>x.per===per||(x.due&&inR(x.due,R.a,R.b))),ttl={day:'7 hari berakhir di tanggal ini',week:'Per hari dalam minggu ini',month:'Per hari dalam bulan ini',year:'Per bulan dalam tahun ini'}[pgt];
   const cats=CAT.map(c=>{const x=st.ts.filter(t=>t.cat===c),d=x.filter(t=>t.st==='selesai').length;return x.length?`<div class="rw"><div><b>${esc(c)}</b><div class="bar"><i style="width:${Math.round(d/x.length*100)}%"></i></div></div><span class="mu n">${d}/${x.length}</span></div>`:''}).join('');
-  const msg=!st.n?'Belum ada rencana di periode ini. Tambahkan tugas agar progresmu terlacak.':pc>=80?'Hebat! Realisasimu tinggi, pertahankan ritmenya 🎉':pc>=50?'Sudah di jalur yang benar. Selesaikan sisa tugas prioritas 🔴 dulu.':'Realisasi masih rendah. Kurangi jumlah tugas & pilih 1–3 prioritas utama.';
+  const msg=!st.n?'Belum ada rencana di periode ini. Tambahkan tugas agar progresmu terlacak.':pc>=80?'Hebat! Realisasimu tinggi, pertahankan ritmenya 🎉':pc>=50?'Sudah di jalur yang benar. Selesaikan sisa tugas hari ini dulu.':'Realisasi masih rendah. Kurangi jumlah tugas & pilih 1–3 tugas utama.';
   const w=wk(),r=S.rev[w]||{};
   return `<h1>Progres & Review</h1><div class="tabs">${PTB.map(([k,l])=>`<button class="b ${pgt===k?'':'s'} sm" data-a="xpt" data-k="${k}" aria-pressed="${pgt===k}">${l}</button>`).join('')}</div>
   <div class="c"><div class="pnv"><button class="b s sm n" data-a="xpn" data-v="-1" aria-label="Sebelumnya">‹</button><h2>${R.lb}</h2><button class="b s sm n" data-a="xpn" data-v="1" aria-label="Berikutnya">›</button><button class="b s sm n" data-a="xpn" data-v="0">Sekarang</button></div>
@@ -1299,7 +1296,7 @@ render();
 const DN=['Min','Sen','Sel','Rab','Kam','Jum','Sab'],ORD=[1,2,3,4,5,6,0],E=esc,ALL=[0,1,2,3,4,5,6];
 const addD=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)};
 const isHab=r=>r.kind?r.kind==='habit':!r.goal;
-let gf=null,pf=null,gtab='all',scr=false,tf='all';window.__pfClear=()=>{pf=null};
+let gf=null,pf=null,gtab='all',scr=false,tf='all',gfold=false;window.__pfClear=()=>{pf=null};
 window.tfOk=t=>tf==='all'||(tf==='habit'?!!t.hb:tf==='plan'?!!t.rid:!t.rid);
 
 /* ---------- migrasi: Rencana lama → Goals, tandai kebiasaan ---------- */
@@ -1345,7 +1342,7 @@ const gForm=g=>{g=g||{};const ty=g.type||'short';return `<div class="c gform" st
 <input id="g-t" style="margin-top:8px" placeholder="Goal utama — mis. Lulus TOEFL" value="${E(g.t||'')}" aria-label="Goal">
 <p class="mu" style="margin:4px 0 0">Contoh: <b>Lulus TOEFL</b> → Reading (Sen, Sel, Rab), Writing (Kam, Jum), Listening (Sab).</p>
 <div class="f" style="margin-top:8px"><label class="mu">Tenggat / tanggal tes <small>(kosongkan jika belum tahu)</small><input id="g-due" type="date" value="${g.due||''}"></label><button type="button" class="b s sm n" data-n="gdueclr" style="align-self:flex-end">✕ Hapus tenggat</button><label class="mu">Target progress <small>(jumlah sesi selesai)</small><input id="g-tg" type="number" min="0" value="${g.tgt||''}"></label></div>
-<div class="f" style="margin-top:10px"><button class="b n" data-n="gsave" data-i="${g.id||''}">${g.id?'Simpan perubahan':'Simpan & lanjut atur rencana ›'}</button><button class="b s n" data-n="gx">Batal</button>${g.id?`<button class="b s n" data-n="gdel" data-i="${g.id}" style="margin-left:auto;color:var(--rd)">🗑 Hapus goal</button>`:''}</div></div>`};
+${g.id&&g.fin?`<div class="f" style="margin-top:10px"><button class="b n" data-n="gfin" data-i="${g.id}">↩ Buka & lanjutkan goal ini</button></div>`:''}<div class="f" style="margin-top:10px"><button class="b n" data-n="gsave" data-i="${g.id||''}">${g.id?'Simpan perubahan':'Simpan & lanjut atur rencana ›'}</button><button class="b s n" data-n="gx">Batal</button>${g.id?`<button class="b s n" data-n="gdel" data-i="${g.id}" style="margin-left:auto;color:var(--rd)">🗑 Hapus goal</button>`:''}</div></div>`};
 const pForm=(gid,r)=>{r=r||{rep:'week',days:[1,2,3,4,5]};const rp=r.rep||'week',sh=s=>s.split(',').includes(rp)?'':'display:none';
 return `<div class="c pform" style="background:var(--bg);margin:10px 0 0;border-color:var(--ac)"><h3>${r.id?'✏️ Edit jadwal tugas':'📅 Langkah 2 — Jadwal tugas'}</h3>
 <div class="f"><input id="p-t" placeholder="Aktivitas — mis. Reading (Sen, Sel, Rab)" value="${E(r.t||'')}" style="flex:2 1 200px"><select id="p-rep" onchange="fnRep(this)">${[['day','Setiap hari'],['week','Hari tertentu (mingguan)'],['month','Tiap bulan'],['year','Tiap tahun'],['once','Sekali saja']].map(([v,l])=>`<option value="${v}" ${v===rp?'selected':''}>${l}</option>`).join('')}</select></div>
@@ -1368,11 +1365,11 @@ function gCard(g){const pl=S.rt.filter(r=>r.goal===g.id),pc=gPct(g),dn=S.tasks.f
  ${pf&&pf.g===g.id?pWrap(g,pf):''}
  <div class="tabs" style="margin-bottom:0"><button class="b s sm" data-n="padd" data-i="${g.id}">＋ Rencana jadwal</button><button class="b s sm" data-n="gtask" data-i="${g.id}">＋ Tugas sekali</button><button class="b s sm" data-n="gfin" data-i="${g.id}">${g.fin?'↩ Buka lagi':'🏁 Tandai selesai'}</button></div></div>`}
 
-V.goals=function(){mig();const gs=S.goals;
+V.goals=function(){mig();const gs=S.goals.filter(g=>!g.fin),dg=S.goals.filter(g=>g.fin);
  return `<h1>Goals 🎯</h1>
  <details class="c" style="margin-top:12px" ${S.goals.length?'':'open'}><summary style="cursor:pointer"><b>🧭 Cara kerja — 3 langkah mudah</b></summary><ol class="mu" style="padding-left:18px;margin:8px 0 0"><li><b>Tulis Goal utama</b>: apa yang ingin kamu capai. Pilih kategori (Akademik, Karir, Kesehatan, Keterampilan), isi tenggat/tanggal tes (boleh kosong) dan target progress.</li><li><b>Atur Rencana jadwal</b>: pecah goal jadi aktivitas kecil. Pilih hari & jam, ulangi tiap hari/minggu/bulan/tahun, lalu pilih <b>pengingat</b> (🔔 aktif atau 🔕 tanpa pengingat). Opsinya sama persis dengan menu Tugas.</li><li><b>Jalankan & pantau</b>: rencana otomatis jadi tugas di Tugas, Kalender & Tahunan. Centang tugas yang selesai → progres Goal naik. Lihat Tracker di menu Progres.</li></ol><p class="mu" style="margin:8px 0 0">Contoh: Goal <i>Lulus TOEFL</i> → rencana <i>Reading</i> (Sen, Sel, Rab), <i>Writing</i> (Kam, Jum), <i>Listening</i> (Sab).</p><p class="mu" style="margin:8px 0 0"><b>Tips pemula:</b> mulai dari 1–3 goal saja, buat tugas kecil 15–60 menit, pasang pengingat 10 menit sebelumnya, dan cek progres tiap akhir pekan. Banyak goal? Bedakan lewat kategori & jadwalkan di hari berbeda agar waktu tidak bentrok.</p></details>
- ${gf?gForm(gf==='new'?null:S.goals.find(g=>g.id===gf)):`<div class="f" style="margin-bottom:12px"><button class="b" data-n="gnew" style="flex:0 0 auto">＋ Goal baru</button></div>`}
- ${gs.length?gs.map(gCard).join(''):(gf?'':`<div class="c mu">Belum ada goal${gtab==='all'?'':' di kategori ini'}. Klik <b>＋ Goal baru</b> untuk mulai. Tips: 1–3 goal aktif sudah cukup.</div>`)}`};
+ ${gf?gForm(gf==='new'?null:S.goals.find(g=>g.id===gf)):`<div class="f" style="margin-bottom:12px"><button class="b" data-n="gnew" style="flex:0 0 auto">＋ Goal baru</button><button class="b s" data-n="gfold" style="flex:0 0 auto">📁 Goal selesai (${dg.length})</button></div>`}
+ ${gfold&&!gf?`<div class="c" style="border-color:#8B5CF6"><div class="f" style="flex-wrap:nowrap"><h2 style="margin:0;flex:1">📁 Goal selesai</h2><button class="b s sm n" data-n="gfold">✕ Tutup</button></div><p class="mu" style="margin:6px 0 0">Klik ✏️ lalu “Buka & lanjutkan” untuk melanjutkan goal beserta tugas & jadwalnya.</p></div>${dg.length?dg.map(gCard).join(''):'<div class="c mu">Belum ada goal yang selesai.</div>'}`:''}${!gfold&&gs.length?gs.map(gCard).join(''):(gf||gfold?'':`<div class="c mu">Belum ada goal${gtab==='all'?'':' di kategori ini'}. Klik <b>＋ Goal baru</b> untuk mulai. Tips: 1–3 goal aktif sudah cukup.</div>`)}`};
 V.plan=V.goals;
 
 /* ---------- beranda, tugas, progres, kalender ---------- */
@@ -1398,7 +1395,14 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b
  else if(n==='gsave'){const t=gv('g-t');if(!t){toast('Isi nama goal dulu');return}const ty=(G&&G.type)||'short',o={t,type:ty,cat:gv('g-cat'),why:gv('g-why'),measure:gv('g-ms'),due:gv('g-due'),tgt:+gv('g-tg')||0,unit:gv('g-un')};
   if(G){Object.assign(G,o);gf=null;ok('Goal diperbarui ✅')}else{const id=uid();S.goals.push({id,...o,log:[],s0:TD(),ms:[]});gf=null;pf={g:id,id:''};scr=true;ok('Goal tersimpan 🎯 — sekarang atur rencana jadwalnya')}}
  else if(n==='gdel'&&G){if(!confirm('Hapus goal ini beserta rencana jadwalnya?'))return;S.rt.filter(r=>r.goal===i).forEach(r=>{regen(r)});S.rt=S.rt.filter(r=>r.goal!==i);S.tasks.forEach(t=>{if(t.gid===i)t.gid=''});S.goals=S.goals.filter(x=>x.id!==i);gf=null;ok('Goal dihapus')}
- else if(n==='gfin'&&G){G.fin=!G.fin;if(G.fin){G.finD=TD();try{gain(50,'Goal tercapai: '+G.t);if(S.pet)petPlus(10,10);burst(b,'🏆🎉✨',16)}catch(x){}toast('🏆 Goal selesai! Tercatat di '+G.finD+' — tanggalnya jadi ungu di Kalender & Tahunan',true)}else delete G.finD;ok()}
+ else if(n==='gfold'){gfold=!gfold;gf=null;pf=null;render()}
+ else if(n==='gfin'&&G){if(!G.fin){
+   if(!confirm('Tandai goal ini selesai?\nSemua tugas goal ini berhenti dan jadwal terkaitnya dihapus. Goal pindah ke folder “Goal selesai” dan bisa dibuka lagi.'))return;
+   G.fin=true;G.finD=TD();G.arch=S.tasks.filter(t=>t.gid===i&&t.st!=='selesai'&&!t.rid);
+   S.rt.filter(r=>r.goal===i).forEach(r=>{r.gen={}});
+   S.tasks=S.tasks.filter(t=>!(t.st!=='selesai'&&(t.gid===i||S.rt.some(r=>r.goal===i&&r.id===t.rid))));
+   try{gain(50,'Goal tercapai: '+G.t);if(S.pet)petPlus(10,10);burst(b,'🏆🎉✨',16)}catch(x){}gf=null;pf=null;ok();toast('🏆 Goal selesai! Pindah ke folder “Goal selesai” · tanggal '+G.finD+' jadi ungu di Kalender & Tahunan',true)}
+  else{G.fin=false;delete G.finD;(G.arch||[]).forEach(t=>S.tasks.push(t));delete G.arch;S.rt.filter(r=>r.goal===i).forEach(r=>{r.gen={}});gf=null;gfold=false;ensureRt2();ok('Goal dibuka lagi — tugas & jadwalnya dilanjutkan ✅')}}
  else if(n==='glog'&&G){const v=parseFloat(prompt('Tambah progres berapa '+(G.unit||'')+'?','1'));if(v){G.log.push({d:TD(),v});ok('Progres dicatat ✅')}}
  else if(n==='gtask'&&G){pf={g:i,id:'',mode:'once'};gf=null;scr=true;render()}
  else if(n==='padd'){pf={g:i,id:'',mode:'plan'};gf=null;scr=true;render()}
@@ -1478,7 +1482,7 @@ const gs=(k,d)=>S.set[k]==null||S.set[k]===''?d:+S.set[k];
 /* ---------- navigasi: alarm & kebiasaan sudah digabung ---------- */
 ['alarm','habit'].forEach(k=>{const i=P.findIndex(x=>x[0]===k);if(i>=0)P.splice(i,1)});
 const pg0=P.find(x=>x[0]==='goals');if(pg0)pg0[2]='Goals';
-window.dashHab=()=>{const g=S.goals.filter(x=>!x.fin).slice(0,3);return `<div class="c"><div class="f" style="flex-wrap:nowrap"><h2 style="margin:0;flex:1">🎯 Goals</h2><button class="b s sm n" data-a="pg" data-k="goals">Kelola ›</button></div>${g.length?g.map(x=>`<div class="tk"><div><b>${E(x.t)}</b><br><span class="mu">${gDueTxt(x)}</span><div class="bar"><i style="width:${gp(x)}%"></i></div></div><span class="mu">${gp(x)}%</span></div>`).join(''):'<p class="mu">Belum ada goal. Tentukan satu goal dulu, lalu atur jadwal tugasnya 💫</p>'}</div>`};
+window.dashHab=()=>{const g=S.goals.filter(x=>!x.fin).slice(0,3);return `<div class="c"><div class="f" style="flex-wrap:nowrap;justify-content:flex-end"><h2 style="margin:0;flex:1">🎯 Goals</h2><button class="b s sm n" data-a="pg" data-k="goals">Kelola ›</button></div>${g.length?g.map(x=>`<div class="tk"><div><b>${E(x.t)}</b><br><span class="mu">${gDueTxt(x)}</span><div class="bar"><i style="width:${gp(x)}%"></i></div></div><span class="mu">${gp(x)}%</span></div>`).join(''):'<p class="mu">Belum ada goal. Tentukan satu goal dulu, lalu atur jadwal tugasnya 💫</p>'}</div>`};
 
 /* ---------- PET: kebersihan, mandi, tidur siang, sapaan waktu ---------- */
 const _pt=petTick;petTick=function(){const p=S.pet;if(!p)return _pt();if(p.cl==null)p.cl=80;const h=Math.max(0,(Date.now()-p.last)/36e5);_pt();p.cl=Math.max(0,p.cl-h*2)};
@@ -1709,7 +1713,7 @@ const dom=h=>{const t=document.createElement('template');t.innerHTML=h;return t.
 const html=f=>{const d=document.createElement('div');d.appendChild(f);return d.innerHTML};
 const hx=c=>{const h=c.querySelector('h2,h3');return h?h.textContent.trim():''};
 function mk(c,key,title,body,open){return `<details class="c cl" data-ck="${key}" ${(OP[key]??open)?'open':''}><summary>${title}</summary>${body}</details>`}
-function fold(h,rules,open){const f=dom(h);f.querySelectorAll('.c').forEach(c=>{const h2=c.querySelector('h2');if(!h2)return;const t=h2.textContent;for(const [re,key,ttl] of rules){if(re.test(t)){const k=document.createElement('template');if(h2.parentNode===c){const T=ttl||h2.innerHTML;h2.remove();k.innerHTML=mk(c,key,T,c.innerHTML,open&&open[key])}else k.innerHTML=mk(c,key,ttl||t,c.innerHTML,open&&open[key]);c.replaceWith(k.content);break}}});return html(f)}
+function fold(h,rules,open){const f=dom(h);f.querySelectorAll('.c').forEach(c=>{const h2=c.querySelector('h2');if(!h2)return;const t=h2.textContent;for(const [re,key,ttl] of rules){if(re.test(t)){const k=document.createElement('template');if(h2.parentNode===c||key==='d-goal'){const T=ttl||h2.innerHTML;h2.remove();k.innerHTML=mk(c,key,T,c.innerHTML,open&&open[key])}else k.innerHTML=mk(c,key,ttl||t,c.innerHTML,open&&open[key]);c.replaceWith(k.content);break}}});return html(f)}
 function shopSplit(h){const f=dom(h),d=f.querySelector('details[data-ck=toko]');if(!d)return h;const parts=[];let cur=null;[...d.childNodes].forEach(n=>{if(n.nodeName==='H3'){cur={t:n.textContent,k:[]};parts.push(cur)}else if(cur)cur.k.push(n.outerHTML||n.textContent);else if(n.nodeName!=='SUMMARY')parts.push({p:n.outerHTML||''})});
  const s=d.querySelector('summary').outerHTML;d.innerHTML=s+parts.map(p=>p.p!==undefined?p.p:mk(0,'shop-'+p.t,p.t,p.k.join(''),false).replace('class="c cl"','class="sub cl"')).join('');return html(f)}
 const wrap=(k,fn)=>{const o=V[k];V[k]=()=>fn(o())};
@@ -1880,7 +1884,17 @@ const goalCal=()=>{
     (done.length?`<p class="mu" style="margin:8px 0 0">Selesai pada tanggal ini (ungu)</p>${done.map(row).join('')}`:'')+
     (rest.length?`<p class="mu" style="margin:8px 0 0">Goal aktif lainnya — tandai selesai dicatat di tanggal hari ini</p>${rest.map(row).join('')}`:'')+`</details>`};
 
-(()=>{const o=V.prog;V.prog=()=>o()+goalDone()})();
+/* Progres: kalender bulanan — satu sumber data dengan Kalender & Tahunan (goal selesai = tanggal ungu) */
+const progCal=()=>{const T=TD(),y=cm.getFullYear(),m=cm.getMonth(),f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate(),map={},DL=['Min','Sen','Sel','Rab','Kam','Jum','Sab'],nm=cm.toLocaleDateString('id-ID',{month:'long'}),op=(window.__op||{})['prog-cal']??true;
+  S.tasks.forEach(t=>{const d=t.due||T,x=map[d]=map[d]||{n:0,d:0,h:0};x.n++;if(t.st==='selesai')x.d++;else if(d<=T)x.h++});
+  let mn=0,md=0,c=DL.map(x=>`<small>${x}</small>`).join('')+'<span></span>'.repeat(f);
+  for(let i=1;i<=n;i++){const d=iso(new Date(y,m,i)),x=map[d]||{n:0,d:0,h:0};mn+=x.n;md+=x.d;const lv=x.n?x.n>=8?4:x.n>=5?3:x.n>=3?2:1:0,gdue=S.goals.some(g=>!g.fin&&g.due===d),lb=i+' '+nm+' '+y+': '+(x.n?x.n+' tugas, '+x.d+' selesai':'kosong')+(gDn(d)?' · goal selesai':'');
+    c+=`<button class="yd ${lv?'ht'+lv:''} ${d===T?'td':''} ${d===cs?'sl':''} ${x.n&&x.d===x.n?'ok':''}${gDn(d)?' gdn':''}" data-a="cd" data-d="${d}" title="${esc(lb)}" aria-label="${esc(lb)}">${i}${x.h?'<i class="hi"></i>':''}${gdue?'<i class="gi"></i>':''}</button>`}
+  const ts=S.tasks.filter(t=>(t.due||T)===cs),dn=ts.filter(t=>t.st==='selesai').length,gf=S.goals.filter(g=>g.fin&&fin(g)===cs);
+  return `<details class="c cl" data-ck="prog-cal" ${op?'open':''}><summary><b>🗓️ Kalender progres</b></summary><div class="f" style="justify-content:space-between;margin-top:8px"><button class="b s n" data-a="cp" data-v="-1" aria-label="Bulan sebelumnya">‹</button><h3 style="margin:0;flex:1;text-align:center;text-transform:capitalize">${cm.toLocaleDateString('id-ID',{month:'long',year:'numeric'})}</h3><button class="b s n" data-a="cp" data-v="1" aria-label="Bulan berikutnya">›</button></div><p class="mu" style="margin:6px 0 0;text-align:center">${mn} tugas · ${md} selesai</p><div class="bar" style="margin:4px 0 8px"><i style="width:${mn?Math.round(md/mn*100):0}%"></i></div><div class="ycal yc-big">${c}</div>
+  <div class="leg"><span>Padat:</span><span><b class="ht1"></b>1–2</span><span><b class="ht2"></b>3–4</span><span><b class="ht3"></b>5–7</span><span><b class="ht4"></b>8+</span><span><b style="background:#8B5CF6"></b>goal selesai</span><span><b style="box-shadow:inset 0 0 0 2px var(--ok)"></b>semua selesai</span></div>
+  <p class="mu" style="margin:8px 0 0"><b>${cs===T?'Hari ini':fd(cs)}</b>: ${dn}/${ts.length} tugas selesai${gf.length?' · 🏆 goal selesai: <b>'+gf.map(g=>E(g.t)).join(', ')+'</b>':''}</p><div class="tabs" style="margin-top:8px"><button class="b s sm" data-v12="tocal" data-d="${cs}">📅 Buka di kalender ›</button></div></details>`};
+(()=>{const o=V.prog;V.prog=()=>{const h=o();const k=h.indexOf('<details class="c cl" data-ck="tracker"');return (k>0?h.slice(0,k)+progCal()+h.slice(k):h+progCal())+goalDone()}})();
 (()=>{const o=V.cal;V.cal=()=>o()+goalCal()})();
 render();
 })();
@@ -2015,6 +2029,19 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
 
       try { localStorage.setItem('focusnest_uid', user.uid); } catch (e) {}
       ready = true;
+      if (unExp) unExp();
+      let warned2 = false;
+      const sched = d => {
+        clearTimeout(expT); const ex = tsNum(d.expiresAt); if (!ex) return;
+        const left = ex - Date.now();
+        if (!warned2 && left > 0 && left < 3 * DAY) { warned2 = true; FN.toast('⏳ Langgananmu berakhir ' + fmtD2(ex) + ' (sisa ' + Math.ceil(left / DAY) + ' hari)'); }
+        expT = setTimeout(() => { if (ex > Date.now()) { sched(d); return; } push().finally(() => location.reload()); }, Math.min(Math.max(left, 0) + 500, 2e9));
+      };
+      unExp = F.onSnapshot(F.doc(db, 'members', (user.email || '').toLowerCase()), sn => {
+        if (admPass || !sn.exists()) return; const d = sn.data();
+        if (!isLive(d)) { push().finally(() => location.reload()); return; }   // dinonaktifkan / langganan habis → data disimpan lalu masuk gerbang
+        sched(d);
+      }, () => {});
       FN.email = user.email || user.displayName || 'akunmu';
       FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 15000); };
       FN.reset = async () => { dead = true; clearTimeout(timer); await F.deleteDoc(ref); };
@@ -2036,6 +2063,259 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       return true;
     }
 
+    /* ================= UI CHAT PRIVAT (layar penuh, warna terpisah dari aplikasi utama) ================= */
+    const cs0 = document.createElement('style');
+    cs0.textContent = `
+.cx{position:fixed;inset:0;z-index:2147483100;display:flex;flex-direction:column;background:#dff3ee;color:#0f172a;font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.cx *{box-sizing:border-box}
+.cxh{display:flex;align-items:center;gap:6px;padding:10px 10px;padding-top:max(10px,env(safe-area-inset-top));background:#0f766e;color:#fff}
+.cxh .t{flex:1;min-width:0}.cxh .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cxh .t small{opacity:.85}
+.cxb2{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:10px;min-width:38px;height:38px;font-size:18px;cursor:pointer;flex:none}
+.cxb2:hover{background:rgba(255,255,255,.3)}
+.cxs{display:flex;gap:6px;padding:8px 10px;background:#ccebe4;flex-wrap:wrap}.cxs[hidden]{display:none}
+.cxs input{flex:1 1 140px;min-width:0;padding:8px 10px;border:1px solid #99d3c7;border-radius:10px;font:inherit;background:#fff;color:#0f172a}
+.cxs button{border:0;border-radius:10px;padding:8px 12px;background:#0f766e;color:#fff;cursor:pointer}
+.cxm{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:6px;max-width:900px;width:100%;margin:0 auto}
+.cxd{align-self:center;background:#b7e0d7;color:#0b4f48;border-radius:20px;padding:2px 12px;font-size:12px;margin:8px 0 2px}
+.cxg{max-width:82%;padding:8px 11px;border-radius:14px;white-space:pre-wrap;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.cxg.me{align-self:flex-end;background:#0f766e;color:#fff;border-bottom-right-radius:4px}
+.cxg.ot{align-self:flex-start;background:#fff;color:#0f172a;border-bottom-left-radius:4px}
+.cxg small{display:block;font-size:11px;opacity:.7;margin-top:2px}
+.cxg img{max-width:100%;max-height:260px;border-radius:10px;display:block;margin-bottom:4px;cursor:zoom-in}
+.cxg a.fl{display:flex;gap:6px;align-items:center;padding:8px 10px;border-radius:10px;background:rgba(0,0,0,.08);color:inherit;text-decoration:none;margin-bottom:4px;word-break:break-all}
+.cxa{display:flex;gap:4px;margin-top:4px}.cxa button{border:0;background:rgba(0,0,0,.12);color:inherit;border-radius:8px;padding:2px 8px;cursor:pointer;font-size:13px}
+.cxg textarea{width:100%;min-width:200px;border:1px solid #99d3c7;border-radius:8px;padding:6px;font:inherit;color:#0f172a;background:#fff}
+.cxe{margin:auto;color:#4b6b66;text-align:center;font-size:14px;padding:20px}
+.cxf{background:#fff;padding:8px 10px;padding-bottom:max(8px,env(safe-area-inset-bottom));border-top:1px solid #b7e0d7}
+.cxf .in{display:flex;gap:8px;align-items:flex-end;max-width:900px;margin:0 auto}
+.cxf textarea{flex:1;min-width:0;max-height:120px;border:1px solid #99d3c7;border-radius:14px;padding:9px 12px;font:inherit;resize:none;color:#0f172a;background:#f4fbf9}
+.cxf .bt{border:0;border-radius:50%;width:42px;height:42px;background:#0f766e;color:#fff;font-size:18px;cursor:pointer;flex:none}
+.cxf .bt.g{background:#ccebe4;color:#0f766e}
+.cxf .bt:disabled{opacity:.5}
+.cxp{display:flex;gap:8px;align-items:center;max-width:900px;margin:0 auto 6px;padding:6px 10px;background:#ccebe4;border-radius:10px;font-size:13px}.cxp span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cxp button{border:0;background:none;cursor:pointer;font-size:16px}
+.cxn{max-width:900px;margin:0 auto;text-align:center;color:#7a3b00;background:#fff3d6;border-radius:10px;padding:8px;font-size:13px}
+.cxz{position:fixed;inset:0;z-index:2147483200;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px}.cxz img{max-width:100%;max-height:80vh}.cxz a,.cxz button{color:#fff;background:#0f766e;border:0;border-radius:10px;padding:8px 14px;text-decoration:none;cursor:pointer}
+#admnote{position:fixed;left:8px;right:8px;top:max(8px,env(safe-area-inset-top));z-index:2147483150;max-width:460px;margin:0 auto;background:#0f766e;color:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 8px 30px rgba(0,0,0,.3);cursor:pointer}
+#admnote b{display:block}#admnote span{opacity:.9;font-size:13px}
+.mr{cursor:default}.mr .mdt{margin-top:8px;padding:8px;border-radius:10px;background:var(--as)}.mr .mdt .ic{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.mr .ib{min-width:40px;height:36px;border-radius:10px;border:1px solid var(--ln);background:var(--card);cursor:pointer;font-size:17px}
+`;
+    document.head.appendChild(cs0);
+
+    const pad = n => String(n).padStart(2, '0');
+    const dayKey = ts => { const d = new Date(ts); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+    const fmtDay = ts => new Date(ts).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const fmtHM = ts => new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    const fmtDt = ts => ts ? new Date(ts).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + ', ' + fmtHM(ts) : '';
+    const tsNum = v => (v && v.toMillis) ? v.toMillis() : (typeof v === 'number' ? v : 0);
+    const fmtSize = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+    /* ===== LANGGANAN: waktu aktif otomatis berakhir ===== */
+    const DAY = 864e5;
+    const fmtD2 = ts => new Date(ts).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const isLive = x => !!x && String(x.active) === 'true' && (!tsNum(x.expiresAt) || tsNum(x.expiresAt) > Date.now());
+    const subTxt = x => { const ex = tsNum(x && x.expiresAt); if (!ex) return 'tanpa batas waktu'; const d = Math.ceil((ex - Date.now()) / DAY); return d > 0 ? 'sampai ' + fmtD2(ex) + ' (sisa ' + d + ' hari)' : 'berakhir ' + fmtD2(ex); };
+    const addMonths = (base, n) => { const d = new Date(base); d.setMonth(d.getMonth() + n); return d.getTime(); };
+    const askMonths = () => { const v = prompt('Lama langganan (bulan), mis. 1, 3, 6, 12.\nKosongkan = tanpa batas waktu.', '1'); if (v === null) return null; const n = parseInt(v, 10); return isNaN(n) || n <= 0 ? 0 : n; };
+    /* months: 0 = tanpa batas; untilTs = tanggal akhir tertentu. Perpanjangan menambah dari tanggal berakhir bila masih aktif. */
+    async function setSub(e, months, untilTs) {
+      const d = (await F.getDoc(F.doc(db, 'members', e))).data() || {}, live = isLive(d), now = Date.now(), cur = tsNum(d.expiresAt);
+      const exp = untilTs != null ? untilTs : !months ? 0 : addMonths(live && cur > now ? cur : now, months);
+      const patch = { active: true, expiresAt: exp }; if (!live) patch.activeAt = now;
+      await F.setDoc(F.doc(db, 'members', e), patch, { merge: true }); return patch;
+    }
+    async function activateMember(e) {
+      const d = (await F.getDoc(F.doc(db, 'members', e))).data() || {}, ex = tsNum(d.expiresAt);
+      if (!ex || ex > Date.now()) { await F.setDoc(F.doc(db, 'members', e), { active: true, activeAt: Date.now() }, { merge: true }); return true; }
+      const mo = askMonths(); if (mo === null) return false; await setSub(e, mo); return true;
+    }
+    const MAXRAW = 650 * 1024;      // file non-gambar (disimpan langsung di dokumen pesan, batas Firestore 1 MB)
+
+    function readFile(file) {
+      return new Promise((res, rej) => {
+        const done = d => d.length > 900000 ? rej(new Error('File terlalu besar. Maksimal sekitar 650 KB (gambar otomatis diperkecil).')) : res({ name: file.name || 'file', type: file.type || 'application/octet-stream', size: file.size, data: d });
+        if (/^image\/(jpeg|png|webp)$/.test(file.type)) {
+          const url = URL.createObjectURL(file), im = new Image();
+          im.onload = () => {
+            let w = im.width, h = im.height, mx = 1280, q = .8, d;
+            for (let i = 0; i < 4; i++) {
+              const r = Math.min(1, mx / Math.max(w, h)), c = document.createElement('canvas');
+              c.width = Math.round(w * r); c.height = Math.round(h * r);
+              const cx = c.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, c.width, c.height); cx.drawImage(im, 0, 0, c.width, c.height);
+              d = c.toDataURL('image/jpeg', q); if (d.length < 850000) break; mx = Math.round(mx * .75); q = .65;
+            }
+            URL.revokeObjectURL(url); done(d);
+          };
+          im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Gambar tidak bisa dibaca.')); };
+          im.src = url; return;
+        }
+        if (file.size > MAXRAW) { rej(new Error('File terlalu besar. Maksimal 650 KB (gambar otomatis diperkecil).')); return; }
+        const fr = new FileReader(); fr.onload = () => done(String(fr.result)); fr.onerror = () => rej(new Error('File tidak bisa dibaca.')); fr.readAsDataURL(file);
+      });
+    }
+
+    const toast0 = m => { try { FN.toast(m); } catch (e) {} };
+    let chatOpenFor = null;
+    function openChat(o) {
+      const email = o.email, adm = !!o.admin;
+      const old = document.getElementById('cx'); if (old) old.remove();
+      chatOpenFor = email;
+      const root = document.createElement('div'); root.id = 'cx'; root.className = 'cx';
+      root.innerHTML = '<div class="cxh"></div><div class="cxs" hidden><input id="cxq" type="search" placeholder="Cari kata…" autocomplete="off"><input id="cxday" type="date" aria-label="Cari per tanggal"><button id="cxclr">Reset</button></div><div class="cxm" id="cxm"></div><div class="cxf"></div>';
+      document.body.appendChild(root);
+      const $c = x => root.querySelector(x), H = $c('.cxh'), SB = $c('.cxs'), M = $c('#cxm'), FT = $c('.cxf');
+      const st = { msgs: [], req: null, mem: undefined, q: '', day: '', edit: null, editVal: '', att: null, busy: false, last: 0 };
+      const unsubs = [];
+      const markRead = () => F.setDoc(F.doc(db, 'requests', email), adm ? { unreadAdmin: false } : { unreadUser: false }, { merge: true }).catch(() => {});
+
+      const closed = () => st.req && st.req.status === 'closed';
+      function drawHead() {
+        const stt = st.req ? (st.req.status === 'approved' ? '✅ disetujui' : st.req.status === 'closed' ? '🔒 ditutup' : '⏳ menunggu') : '';
+        const memOn = st.mem && st.mem.live;
+        H.innerHTML = '<button class="cxb2" id="cxback" aria-label="Kembali" title="Kembali">‹</button><div class="t"><b>' + (adm ? E2(email) : '💬 Konfirmasi admin') + '</b><small>' + (adm ? (stt + (st.mem !== undefined ? (st.mem ? (memOn ? ' · member aktif ' + (st.mem.exp ? 'sampai ' + fmtD2(st.mem.exp) : '(tanpa batas)') : st.mem.active && st.mem.exp ? ' · langganan berakhir' : ' · member nonaktif') : ' · bukan member') : '')) : 'Percakapan privat dengan admin' + (stt ? ' · ' + stt : '')) + '</small></div>' +
+          (adm ? '<button class="cxb2" id="cxsr" aria-label="Cari" title="Cari pesan / tanggal">🔍</button>' +
+            (memOn ? '' : '<button class="cxb2" id="cxok" aria-label="Setujui & aktifkan" title="Setujui & aktifkan member">✅</button>') +
+            (st.mem ? '<button class="cxb2" id="cxoff" aria-label="' + (memOn ? 'Nonaktifkan member' : 'Aktifkan member') + '" title="' + (memOn ? 'Nonaktifkan member' : 'Aktifkan member') + '">' + (memOn ? '⏻' : '▶️') + '</button>' : '') +
+            '<button class="cxb2" id="cxcl" aria-label="' + (closed() ? 'Buka permintaan' : 'Tutup permintaan') + '" title="' + (closed() ? 'Buka permintaan' : 'Tutup permintaan') + '">' + (closed() ? '🔓' : '🔒') + '</button>' +
+            '<button class="cxb2" id="cxdel" aria-label="Hapus percakapan" title="Hapus percakapan">🗑</button>' : '');
+      }
+      function bubble(m) {
+        const me = adm ? m.from === 'admin' : m.from !== 'admin';
+        let b = '';
+        if (st.edit === m.id) {
+          b = '<textarea id="cxet" rows="3" maxlength="500">' + E2(st.editVal) + '</textarea><div class="cxa"><button data-sv="' + m.id + '">✓ Simpan</button><button data-ec="1">Batal</button></div>';
+        } else {
+          if (m.file) b += /^image\//.test(m.file.type) ? '<img src="' + E2(m.file.data) + '" alt="' + E2(m.file.name) + '" data-zm="' + m.id + '">' :
+            '<a class="fl" download="' + E2(m.file.name) + '" href="' + E2(m.file.data) + '">📎 <span>' + E2(m.file.name) + '<br><small>' + fmtSize(m.file.size || 0) + ' · ketuk untuk unduh</small></span></a>';
+          if (m.text) b += E2(m.text);
+          b += '<small>' + fmtHM(m.ts) + (m.edited ? ' · diedit' : '') + '</small>';
+          if (adm) b += '<div class="cxa"><button data-ed="' + m.id + '" title="Edit pesan" aria-label="Edit pesan">✏️</button><button data-dl="' + m.id + '" title="Hapus pesan" aria-label="Hapus pesan">🗑</button></div>';
+        }
+        return '<div class="cxg ' + (me ? 'me' : 'ot') + '">' + b + '</div>';
+      }
+      function drawMsgs(scroll) {
+        const q = st.q.trim().toLowerCase(), L = st.msgs.filter(m => (!q || String(m.text || '').toLowerCase().includes(q) || String((m.file && m.file.name) || '').toLowerCase().includes(q)) && (!st.day || dayKey(m.ts) === st.day));
+        let h = '', last = '';
+        L.forEach(m => { const k = dayKey(m.ts); if (k !== last) { last = k; h += '<div class="cxd">' + fmtDay(m.ts) + '</div>'; } h += bubble(m); });
+        const near = M.scrollHeight - M.scrollTop - M.clientHeight < 120;
+        M.innerHTML = h || '<div class="cxe">' + (st.msgs.length ? 'Tidak ada pesan yang cocok.' : adm ? 'Belum ada pesan.' : 'Belum ada pesan. Tulis nomor order / bukti bayar di bawah, lalu tunggu balasan admin.<br>Setelah disetujui kamu otomatis masuk.') + '</div>';
+        if (scroll || near) M.scrollTop = M.scrollHeight;
+        if (st.edit) { const t = $c('#cxet'); if (t && document.activeElement !== t && !t.dataset.f) { t.dataset.f = 1; t.focus(); } }
+      }
+      function drawFoot() {
+        const keepTx = $c('#cxtx') ? $c('#cxtx').value : '';
+        if (!adm && closed()) { FT.innerHTML = '<div class="cxn">🔒 Permintaan ini ditutup oleh admin. Hubungi admin lewat jalur lain bila perlu.</div>'; return; }
+        FT.innerHTML = (st.att ? '<div class="cxp"><span>📎 ' + E2(st.att.name) + ' · ' + fmtSize(st.att.size) + '</span><button id="cxrm" aria-label="Batal lampiran">✕</button></div>' : '') +
+          '<div class="in"><button class="bt g" id="cxat" aria-label="Lampirkan file" title="Kirim file">📎</button><input type="file" id="cxfi" hidden><textarea id="cxtx" rows="1" maxlength="500" placeholder="' + (adm ? 'Tulis balasan…' : 'Tulis pesan ke admin…') + '"></textarea><button class="bt" id="cxsd" aria-label="Kirim" title="Kirim">➤</button></div>';
+        $c('#cxtx').value = keepTx;
+      }
+      const redrawAll = () => { drawHead(); drawMsgs(); drawFoot(); };
+      drawHead(); drawMsgs(true); drawFoot();
+
+      unsubs.push(F.onSnapshot(F.query(F.collection(db, 'requests', email, 'msgs'), F.orderBy('ts')), sn => {
+        st.msgs = sn.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (!st.edit) drawMsgs(); else { const v = $c('#cxet'); if (v) st.editVal = v.value; drawMsgs(); }
+        if (st.msgs.length && st.msgs[st.msgs.length - 1].from !== (adm ? 'admin' : 'user')) markRead();
+      }, e => { M.innerHTML = '<div class="cxe" style="color:#b91c1c">Gagal memuat percakapan (' + E2(e.code || e.message) + '). Pastikan Firestore Rules terbaru sudah dipublish.</div>'; }));
+      unsubs.push(F.onSnapshot(F.doc(db, 'requests', email), sn => { st.req = sn.exists() ? sn.data() : null; drawHead(); drawFoot(); }, () => {}));
+      if (adm) unsubs.push(F.onSnapshot(F.doc(db, 'members', email), sn => { st.mem = sn.exists() ? { active: String(sn.data().active) === 'true', live: isLive(sn.data()), exp: tsNum(sn.data().expiresAt) } : null; drawHead(); }, () => {}));
+      markRead();
+
+      const close = () => { unsubs.forEach(u => { try { u(); } catch (e) {} }); chatOpenFor = null; root.remove(); if (o.onClose) o.onClose(); };
+      const fail = e => alert('Gagal: ' + (e.code || e.message) + (e.code === 'permission-denied' ? '\n\nRules menolak. Pastikan Firestore Rules terbaru sudah dipublish.' : ''));
+      const sysMsg = async (text, patch) => {
+        await F.addDoc(F.collection(db, 'requests', email, 'msgs'), { from: 'admin', text, ts: Date.now() });
+        await F.setDoc(F.doc(db, 'requests', email), { lastMsg: text, lastFrom: 'admin', unreadUser: true, ts: Date.now(), ...(patch || {}) }, { merge: true });
+      };
+
+      async function send() {
+        const tx = $c('#cxtx'); if (!tx || st.busy) return;
+        const text = tx.value.trim(), att = st.att; if (!text && !att) { tx.focus(); return; }
+        if (Date.now() - st.last < 500) return; st.last = Date.now(); st.busy = true;
+        try {
+          const msg = { from: adm ? 'admin' : 'user', text, ts: Date.now() }; if (att) msg.file = att;
+          await F.addDoc(F.collection(db, 'requests', email, 'msgs'), msg);
+          const lm = text || ('📎 ' + att.name);
+          if (adm) await F.setDoc(F.doc(db, 'requests', email), { lastMsg: lm, lastFrom: 'admin', unreadUser: true, ts: Date.now() }, { merge: true });
+          else await F.setDoc(F.doc(db, 'requests', email), { email, name: o.name || '', status: closed() ? 'closed' : 'pending', lastMsg: lm, lastFrom: 'user', unreadAdmin: true, ts: Date.now() }, { merge: true });
+          st.att = null; tx.value = ''; drawFoot();
+        } catch (e) { alert('Pesan belum terkirim (' + (e.code || e.message) + '). Coba lagi.'); }
+        st.busy = false;
+      }
+
+      root.addEventListener('input', ev => {
+        const t = ev.target;
+        if (t.id === 'cxq') st.q = t.value; else if (t.id === 'cxday') st.day = t.value; else if (t.id === 'cxet') { st.editVal = t.value; return; } else return;
+        drawMsgs();
+      });
+      root.addEventListener('keydown', ev => { if (ev.target.id === 'cxtx' && ev.key === 'Enter' && !ev.shiftKey && !('ontouchstart' in window)) { ev.preventDefault(); send(); } });
+      root.addEventListener('change', async ev => {
+        if (ev.target.id !== 'cxfi') return;
+        const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
+        try { st.att = await readFile(f); drawFoot(); } catch (e) { alert(e.message); }
+      });
+      root.addEventListener('click', async ev => {
+        const b = ev.target.closest('button,img[data-zm]'); if (!b) return;
+        try {
+          if (b.id === 'cxback') { close(); return; }
+          if (b.id === 'cxsr') { SB.hidden = !SB.hidden; if (!SB.hidden) $c('#cxq').focus(); return; }
+          if (b.id === 'cxclr') { st.q = ''; st.day = ''; $c('#cxq').value = ''; $c('#cxday').value = ''; drawMsgs(true); return; }
+          if (b.id === 'cxat') { $c('#cxfi').click(); return; }
+          if (b.id === 'cxrm') { st.att = null; drawFoot(); return; }
+          if (b.id === 'cxsd') { send(); return; }
+          if (b.dataset.zm) { const m = st.msgs.find(x => x.id === b.dataset.zm); if (!m) return; const z = document.createElement('div'); z.className = 'cxz'; z.innerHTML = '<img src="' + E2(m.file.data) + '" alt=""><div><a download="' + E2(m.file.name) + '" href="' + E2(m.file.data) + '">⬇ Unduh</a> <button>Tutup</button></div>'; z.addEventListener('click', e2 => { if (e2.target.tagName !== 'A') z.remove(); }); document.body.appendChild(z); return; }
+          if (b.dataset.ed) { const m = st.msgs.find(x => x.id === b.dataset.ed); st.edit = b.dataset.ed; st.editVal = m ? m.text || '' : ''; drawMsgs(); return; }
+          if (b.dataset.ec) { st.edit = null; drawMsgs(); return; }
+          if (b.dataset.sv) { const v = ($c('#cxet') || {}).value; if (v == null) return; const m = st.msgs.find(x => x.id === b.dataset.sv); if (!v.trim() && !(m && m.file)) { alert('Pesan tidak boleh kosong. Gunakan tombol hapus untuk menghapus.'); return; } await F.setDoc(F.doc(db, 'requests', email, 'msgs', b.dataset.sv), { text: v.trim(), edited: Date.now() }, { merge: true }); st.edit = null; drawMsgs(); return; }
+          if (b.dataset.dl) { if (!confirm('Hapus pesan ini? Tindakan ini tidak bisa dibatalkan.')) return; await F.deleteDoc(F.doc(db, 'requests', email, 'msgs', b.dataset.dl)); return; }
+          if (!adm) return;
+          if (b.id === 'cxok') {
+            if (!confirm('Setujui dan aktifkan ' + email + ' sebagai member?')) return;
+            const mo = askMonths(); if (mo === null) return;
+            await F.setDoc(F.doc(db, 'members', email), { addedAt: F.serverTimestamp() }, { merge: true });
+            const pt = await setSub(email, mo);
+            await sysMsg('✅ Akses kamu sudah aktif' + (pt.expiresAt ? ' sampai ' + fmtD2(pt.expiresAt) : '') + '. Silakan masuk ke aplikasi.', { status: 'approved' });
+          } else if (b.id === 'cxoff') {
+            const on = st.mem && st.mem.live;
+            if (on) {
+              if (!confirm('Nonaktifkan member ' + email + '?\n\nOrang ini tidak bisa masuk sampai kamu mengaktifkannya lagi.')) return;
+              if (!confirm('Yakin sekali? Konfirmasi sekali lagi untuk MENONAKTIFKAN ' + email + '.')) return;
+              await F.setDoc(F.doc(db, 'members', email), { active: false, inactiveAt: Date.now() }, { merge: true });
+              await sysMsg('⛔ Akses kamu dinonaktifkan oleh admin.');
+            } else {
+              if (!confirm('Aktifkan kembali ' + email + '?')) return;
+              if (!(await activateMember(email))) return;
+              await sysMsg('✅ Akses kamu sudah aktif kembali.', { status: 'approved' });
+            }
+          } else if (b.id === 'cxcl') {
+            const toOpen = closed();
+            await F.setDoc(F.doc(db, 'requests', email), { status: toOpen ? (st.mem && st.mem.live ? 'approved' : 'pending') : 'closed', ts: Date.now() }, { merge: true });
+          } else if (b.id === 'cxdel') {
+            if (!confirm('Hapus seluruh percakapan dengan ' + email + '?')) return;
+            (await F.getDocs(F.collection(db, 'requests', email, 'msgs'))).forEach(d => F.deleteDoc(d.ref));
+            await F.deleteDoc(F.doc(db, 'requests', email)); close();
+          }
+        } catch (e) { fail(e); }
+      });
+      return { close };
+    }
+
+    /* ================= NOTIFIKASI ADMIN (pesan privat masuk) ================= */
+    function notifyAdmin(id, r) {
+      const title = '💬 ' + (r.email || id), body = String(r.lastMsg || 'Pesan baru').slice(0, 120);
+      const old = document.getElementById('admnote'); if (old) old.remove();
+      const n = document.createElement('div'); n.id = 'admnote'; n.innerHTML = '<b>' + E2(title) + '</b><span>' + E2(body) + '</span>';
+      n.onclick = () => { n.remove(); openChat({ email: id, admin: true }); };
+      document.body.appendChild(n); setTimeout(() => n.remove(), 9000);
+      try {
+        if ('Notification' in window && Notification.permission === 'granted' && document.visibilityState !== 'visible') {
+          const opts = { body, tag: 'chat-' + id, renotify: true, vibrate: [200, 100, 200], data: { chat: id } };
+          const plain = () => { try { new Notification(title, opts); } catch (e) {} };
+          if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistration().then(reg => reg && reg.showNotification ? reg.showNotification(title, opts) : plain()).catch(plain); else plain();
+        }
+      } catch (e) {}
+    }
+    const askNotifPerm = () => { try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch (e) {} };
+
     /* ================= PANEL ADMIN: member, admin, kotak masuk ================= */
     function setupAdmin(user) {
       const em = (user.email || '').toLowerCase();
@@ -2044,9 +2324,17 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
         FN.isAdmin = true; FN.openAdmin = openAdmin; try { FN.refresh && FN.refresh(); } catch (e) {}
         const bt = document.createElement('button'); bt.id = 'admbtn'; bt.textContent = '🛡️ Admin';
         bt.setAttribute('style', 'position:fixed;right:12px;bottom:84px;z-index:9998;padding:8px 12px;border-radius:20px;border:0;background:#4F7CF0;color:#fff;font-weight:700;cursor:pointer');
-        bt.onclick = openAdmin; document.body.appendChild(bt);
-        F.onSnapshot(F.query(F.collection(db, 'requests'), F.where('status', '==', 'pending'), F.limit(99)),
-          s => { bt.textContent = '🛡️ Admin' + (s.size ? ' (' + s.size + ')' : ''); }, e => console.warn('[FocusNest] requests', e));
+        bt.onclick = () => { askNotifPerm(); openAdmin(); }; document.body.appendChild(bt);
+        const t0 = Date.now(), base = document.title;
+        F.onSnapshot(F.query(F.collection(db, 'requests'), F.orderBy('ts', 'desc'), F.limit(60)), s => {
+          const un = s.docs.filter(d => d.data().unreadAdmin === true).length;
+          bt.textContent = '🛡️ Admin' + (un ? ' (' + un + ')' : '');
+          document.title = (un ? '(' + un + ') ' : '') + base.replace(/^\(\d+\)\s*/, '');
+          s.docChanges().forEach(ch => {
+            if (ch.type === 'removed') return; const r = ch.doc.data();
+            if (r.lastFrom === 'user' && r.unreadAdmin === true && (r.ts || 0) >= t0 && chatOpenFor !== ch.doc.id) notifyAdmin(ch.doc.id, { ...r, email: r.email || ch.doc.id });
+          });
+        }, e => console.warn('[FocusNest] requests', e));
       }).catch(e => console.warn('[FocusNest] admin check', e));
 
       function openAdmin() {
@@ -2060,10 +2348,10 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
           '<div class="tabs"><button class="b sm" data-tab="member">👥 Member</button><button class="b s sm" data-tab="inbox" id="atb">📥 Kotak masuk</button></div>' +
           '<div id="abody"></div></div>';
         document.body.appendChild(o);
-        const s = { tab: 'member', q: '', rows: [], last: null, more: false, total: null, ads: new Set([em]), req: [], th: null, msgs: [], busy: false };
-        let unReq = null, unMsg = null, deb = null;
+        const s = { tab: 'member', q: '', day: '', rows: [], last: null, more: false, total: null, ads: new Set([em]), req: [], busy: false, open: null };
+        let unReq = null, deb = null;
         const $o = x => o.querySelector(x);
-        const close = () => { if (unReq) unReq(); if (unMsg) unMsg(); o.remove(); };
+        const close = () => { if (unReq) unReq(); o.remove(); };
 
         async function loadAds() { try { (await F.getDocs(F.collection(db, 'admins'))).forEach(d => s.ads.add(d.id)); } catch (e) { console.warn(e); } }
         async function loadTotal() { try { s.total = (await F.getCountFromServer(F.collection(db, 'members'))).data().count; } catch (e) { s.total = null; } draw(); }
@@ -2075,81 +2363,88 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
             if (more && s.last) c.push(F.startAfter(s.last));
             c.push(F.limit(30));
             const qs = await F.getDocs(F.query(F.collection(db, 'members'), ...c));
-            const add = []; qs.forEach(d => add.push({ id: d.id, active: d.data().active === true }));
+            const add = []; qs.forEach(d => { const x = d.data(); add.push({ id: d.id, active: x.active === true, at: tsNum(x.activeAt) || tsNum(x.addedAt), exp: tsNum(x.expiresAt) }); });
             s.rows = more ? s.rows.concat(add) : add; s.last = qs.docs[qs.docs.length - 1] || null; s.more = qs.size === 30;
           } catch (e) { alert('Gagal membaca daftar member: ' + (e.code || e.message) + '\n\nPeriksa Firestore Rules dan pastikan dokumen admins/' + em + ' ada.'); }
           s.busy = false; draw();
         }
         function listenReq() {
           if (unReq) unReq();
-          unReq = F.onSnapshot(F.query(F.collection(db, 'requests'), F.orderBy('ts', 'desc'), F.limit(60)),
+          unReq = F.onSnapshot(F.query(F.collection(db, 'requests'), F.orderBy('ts', 'desc'), F.limit(200)),
             sn => { s.req = sn.docs.map(d => ({ id: d.id, ...d.data() })); draw(); }, e => alert('Gagal membaca kotak masuk: ' + (e.code || e.message)));
         }
-        function openThread(id) {
-          s.th = id; s.msgs = []; if (unMsg) unMsg();
-          unMsg = F.onSnapshot(F.query(F.collection(db, 'requests', id, 'msgs'), F.orderBy('ts')), sn => { s.msgs = sn.docs.map(d => d.data()); draw(); const b = $o('#thm'); if (b) b.scrollTop = b.scrollHeight; }, e => console.warn(e));
-          F.setDoc(F.doc(db, 'requests', id), { unreadAdmin: false }, { merge: true }).catch(() => {});
-          draw();
-        }
 
-        const row = (e, adm, active) => {
-          const me = e === em;
-          return '<div class="tk"><div><b>' + E2(e) + '</b> ' + (adm ? '<span class="tag" style="background:#E5484D22;color:#E5484D">🛡️ Admin</span>' : '<span class="tag">👤 Member</span>') +
-            (adm ? '' : ' <span class="tag">' + (active ? 'aktif' : 'nonaktif') + '</span>') + (me ? ' <span class="mu">(kamu)</span>' : '') + '</div>' +
-            (me ? '' : '<div class="tabs" style="margin:6px 0 0">' +
-              (adm ? '' : '<button class="b s sm" data-t="' + E2(e) + '" data-v="' + (active ? 0 : 1) + '">' + (active ? 'Nonaktifkan' : 'Aktifkan') + '</button>') +
-              '<button class="b s sm" data-r="' + E2(e) + '" data-v="' + (adm ? 0 : 1) + '">' + (adm ? 'Jadikan member' : 'Jadikan admin') + '</button>' +
-              '<button class="b x sm" data-d="' + E2(e) + '">Hapus</button></div>') + '</div>';
+        const ib = (attrs, ic, label, cls) => '<button class="ib ' + (cls || '') + '" ' + attrs + ' title="' + label + '" aria-label="' + label + '">' + ic + '</button>';
+        const row = (e, adm, active0, at, exp) => {
+          const me = e === em, open = s.open === e, now = Date.now(), expd = !adm && active0 && exp && exp <= now, active = active0 && !expd, soon = active && exp && exp - now < 7 * DAY, on = adm || active;
+          const sub = adm ? '' : active ? 'Aktif ' + subTxt({ expiresAt: exp }) : expd ? 'Langganan berakhir ' + fmtD2(exp) : 'Nonaktif';
+          return '<div class="tk mr"><div data-mx="' + E2(e) + '" style="cursor:pointer;display:flex;gap:8px;align-items:center" role="button" tabindex="0" aria-expanded="' + open + '">' +
+            '<span title="' + (adm ? 'Admin' : sub) + '" style="flex:none;width:10px;height:10px;border-radius:50%;background:' + (on ? (soon ? '#f59e0b' : '#16a34a') : expd ? '#ef4444' : '#9ca3af') + '"></span>' +
+            '<div style="min-width:0;flex:1"><b style="word-break:break-all">' + E2(e) + '</b>' + (adm ? ' 🛡️' : '') + (me ? ' <span class="mu">(kamu)</span>' : '') +
+            (adm ? '' : '<div class="mu" style="font-size:.78rem">' + sub + '</div>') + '</div><span class="mu">' + (open ? '▴' : '▾') + '</span></div>' +
+            (open ? '<div class="mdt">' + (adm ? '<div class="mu">Admin (tidak dibatasi langganan)</div>' : '<div class="mu">Status: <b>' + (active ? 'Aktif' : expd ? 'Kedaluwarsa' : 'Nonaktif') + '</b></div><div class="mu">Diaktifkan: <b>' + (at ? fmtDt(at) : 'tanggal belum tercatat') + '</b></div><div class="mu">Langganan: <b>' + subTxt({ expiresAt: exp }) + '</b></div>' +
+              '<div class="ic">' + [1, 3, 6, 12].map(n => '<button class="b s sm" data-ex="' + E2(e) + '" data-m="' + n + '">+' + n + ' bln</button>').join('') + '<button class="b s sm" data-ex="' + E2(e) + '" data-m="0">♾️ tanpa batas</button></div>' +
+              '<div class="ic"><input type="date" data-exd="' + E2(e) + '" value="' + (exp ? dayKey(exp) : '') + '" aria-label="Aktif sampai tanggal" style="flex:1;min-width:140px"><button class="b sm" data-exs="' + E2(e) + '">Set sampai tanggal</button></div>') +
+              (me ? '<div class="mu">Ini akunmu.</div>' : '<div class="ic">' +
+                (adm ? '' : ib('data-t="' + E2(e) + '" data-v="' + (active ? 0 : 1) + '"', active ? '⏻' : '▶️', active ? 'Nonaktifkan' : 'Aktifkan', active ? 'x' : '')) +
+                ib('data-r="' + E2(e) + '" data-v="' + (adm ? 0 : 1) + '"', adm ? '👤' : '🛡️', adm ? 'Jadikan member biasa' : 'Jadikan admin') +
+                ib('data-d="' + E2(e) + '"', '🗑', 'Hapus akun member') + ib('data-th="' + E2(e) + '"', '💬', 'Buka percakapan privat') + '</div>') + '</div>' : '') + '</div>';
         };
+        const dstr = r => dayKey(tsNum(r.ts));
 
         function draw() {
           $o('#atl').textContent = '🛡️ Kelola admin & member' + (s.total != null ? ' (' + s.total + ')' : '');
           o.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('s', b.dataset.tab !== s.tab));
           const body = $o('#abody'), q = s.q.trim().toLowerCase();
-          const keep = $o('#rpl') ? $o('#rpl').value : '';
           if (s.tab === 'member') {
-            const ads = [...s.ads].filter(a => !q || a.includes(q)).sort();
-            const mem = s.rows.filter(r => !s.ads.has(r.id));
-            body.innerHTML = '<div class="f" style="margin-top:8px"><input id="ame" type="email" placeholder="email member baru" style="flex:1"><button class="b n" id="aad">Tambah</button></div>' +
-              ads.map(a => row(a, true, true)).join('') + mem.map(r => row(r.id, false, r.active)).join('') +
+            const ads = [...s.ads].filter(a => !q || a.includes(q)).sort(), mem = s.rows.filter(r => !s.ads.has(r.id));
+            body.innerHTML = '<div class="f" style="margin-top:8px"><input id="ame" type="email" placeholder="email member baru" style="flex:1"><select id="amd" aria-label="Lama langganan"><option value="1">1 bulan</option><option value="3">3 bulan</option><option value="6">6 bulan</option><option value="12">12 bulan</option><option value="0">Tanpa batas</option></select><button class="b n" id="aad">Tambah</button></div>' +
+              '<p class="mu" style="margin:6px 0 0">Ketuk email untuk membuka opsi (nonaktifkan, jadikan admin, hapus).</p>' +
+              ads.map(a => row(a, true, true, 0, 0)).join('') + mem.map(r => row(r.id, false, r.active, r.at, r.exp)).join('') +
               (s.busy ? '<p class="mu">Memuat…</p>' : (!ads.length && !mem.length ? '<p class="mu">' + (q ? 'Tidak ada email yang cocok.' : 'Belum ada member.') + '</p>' : '')) +
               (s.more && !s.busy ? '<button class="b s" id="amo" style="margin-top:8px">Muat lagi</button>' : '');
-          } else if (!s.th) {
-            const L = s.req.filter(r => !q || (r.email || r.id).includes(q));
-            body.innerHTML = '<p class="mu" style="margin:8px 0 0">Percakapan privat tiap orang. Ketuk untuk membalas atau menyetujui.</p>' +
-              (L.map(r => '<div class="tk" data-th="' + E2(r.id) + '" style="cursor:pointer"><div><b>' + E2(r.email || r.id) + '</b> ' + (r.unreadAdmin ? '<span class="tag" style="background:#E5484D22;color:#E5484D">baru</span>' : '') +
-                '<span class="tag">' + (r.status === 'approved' ? '✅ disetujui' : r.status === 'closed' ? 'ditutup' : '⏳ menunggu') + '</span><br><span class="mu">' + E2(String(r.lastMsg || '').slice(0, 80)) + ' · ' + fmtT(r.ts) + '</span></div></div>').join('') || '<p class="mu">Belum ada pesan masuk.</p>');
           } else {
-            const r = s.req.find(x => x.id === s.th) || { id: s.th, email: s.th };
-            body.innerHTML = '<div class="f" style="flex-wrap:nowrap;margin-top:8px"><button class="b s sm n" id="thb">‹ Kotak masuk</button><b style="flex:1;word-break:break-all">' + E2(r.email || r.id) + '</b></div>' +
-              '<div id="thm" style="max-height:38vh;overflow:auto;margin:8px 0;display:flex;flex-direction:column;gap:6px">' +
-              s.msgs.map(m => '<div style="align-self:' + (m.from === 'admin' ? 'flex-end' : 'flex-start') + ';max-width:85%;padding:8px 10px;border-radius:12px;background:' + (m.from === 'admin' ? 'var(--ac)' : 'var(--as)') + ';color:' + (m.from === 'admin' ? '#fff' : 'inherit') + ';white-space:pre-wrap;word-break:break-word">' + E2(m.text) + '<div style="font-size:.7rem;opacity:.7">' + fmtT(m.ts) + '</div></div>').join('') + '</div>' +
-              '<div class="f"><textarea id="rpl" rows="2" maxlength="500" placeholder="Tulis balasan…" style="flex:1"></textarea><button class="b n" id="rps">Kirim</button></div>' +
-              '<div class="tabs"><button class="b" id="rap">✅ Setujui & jadikan member</button><button class="b s" id="rcl">Tutup permintaan</button><button class="b x" id="rdl">🗑 Hapus</button></div>';
-            if (keep) $o('#rpl').value = keep;
+            const keepDay = s.day, L = s.req.filter(r => (!q || (r.email || r.id).includes(q)) && (!s.day || dstr(r) === s.day));
+            body.innerHTML = '<p class="mu" style="margin:8px 0 0">Percakapan privat tiap orang. Ketuk untuk membuka layar chat.</p>' +
+              '<div class="f" style="margin:8px 0"><label class="mu" style="flex:1">Cari per tanggal pesan terakhir<input id="ady" type="date" value="' + keepDay + '"></label><button class="b s sm n" id="adc" style="align-self:flex-end">Reset</button></div>' +
+              (L.map(r => '<div class="tk" data-th="' + E2(r.id) + '" style="cursor:pointer"><div><b>' + E2(r.email || r.id) + '</b> ' + (r.unreadAdmin ? '<span class="tag" style="background:#E5484D22;color:#E5484D">baru</span>' : '') +
+                '<span class="tag">' + (r.status === 'approved' ? '✅ disetujui' : r.status === 'closed' ? '🔒 ditutup' : '⏳ menunggu') + '</span><br><span class="mu">' + E2(String(r.lastMsg || '').slice(0, 80)) + ' · ' + fmtDt(tsNum(r.ts)) + '</span></div></div>').join('') || '<p class="mu">' + (s.day || q ? 'Tidak ada percakapan yang cocok.' : 'Belum ada pesan masuk.') + '</p>');
           }
         }
 
         o.addEventListener('click', async ev => {
-          const t = ev.target, b = t.closest('button'), th = t.closest('[data-th]');
-          if (th) { openThread(th.dataset.th); return; }
+          const t = ev.target, b = t.closest('button'), th = t.closest('[data-th]'), mx = t.closest('[data-mx]');
+          if (!b && th) { openChat({ email: th.dataset.th, admin: true }); return; }
+          if (!b && mx) { s.open = s.open === mx.dataset.mx ? null : mx.dataset.mx; draw(); return; }
           if (!b) { if (t === o) close(); return; }
           if (b.id === 'acl') { close(); return; }
           if (b.id === 'asb') { const r = $o('#asr'); r.hidden = !r.hidden; if (!r.hidden) $o('#asq').focus(); return; }
           if (b.dataset.tab) {
-            s.tab = b.dataset.tab; s.th = null; if (unMsg) { unMsg(); unMsg = null; }
+            s.tab = b.dataset.tab;
             if (s.tab === 'inbox') listenReq(); else { if (unReq) { unReq(); unReq = null; } loadMembers(); }
             draw(); return;
           }
-          if (b.id === 'thb') { s.th = null; if (unMsg) { unMsg(); unMsg = null; } draw(); return; }
+          if (b.dataset.th) { openChat({ email: b.dataset.th, admin: true }); return; }
+          if (b.id === 'adc') { s.day = ''; draw(); return; }
           if (b.id === 'amo') { loadMembers(true); return; }
           try {
             if (b.id === 'aad') {
               const v = $o('#ame').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(v)) { alert('Format email salah'); return; }
-              await F.setDoc(F.doc(db, 'members', v), { active: true, addedAt: F.serverTimestamp() }, { merge: true }); s.q = ''; $o('#asq').value = ''; loadMembers(); loadTotal();
+              await F.setDoc(F.doc(db, 'members', v), { addedAt: F.serverTimestamp() }, { merge: true }); await setSub(v, +$o('#amd').value); s.q = ''; $o('#asq').value = ''; loadMembers(); loadTotal();
             } else if (b.dataset.t) {
-              await F.setDoc(F.doc(db, 'members', b.dataset.t), { active: b.dataset.v === '1' }, { merge: true });
-              const r = s.rows.find(x => x.id === b.dataset.t); if (r) r.active = b.dataset.v === '1'; draw();
+              const e = b.dataset.t, on = b.dataset.v === '1';
+              if (!on) {
+                if (!confirm('Nonaktifkan member ' + e + '?\n\nOrang ini tidak bisa masuk sampai kamu mengaktifkannya lagi.')) return;
+                if (!confirm('Yakin sekali? Konfirmasi sekali lagi untuk MENONAKTIFKAN ' + e + '.')) return;
+              }
+              if (on) { if (!(await activateMember(e))) return; } else await F.setDoc(F.doc(db, 'members', e), { active: false, inactiveAt: Date.now() }, { merge: true });
+              loadMembers();
+            } else if (b.dataset.ex) {
+              await setSub(b.dataset.ex, +b.dataset.m); toast0('Langganan diperbarui'); loadMembers();
+            } else if (b.dataset.exs) {
+              const e = b.dataset.exs, v = o.querySelector('[data-exd="' + e + '"]').value; if (!v) { alert('Pilih tanggalnya dulu'); return; }
+              const t = new Date(v + 'T23:59:59').getTime(); if (t <= Date.now() && !confirm('Tanggal itu sudah lewat — member langsung kedaluwarsa. Lanjut?')) return;
+              await setSub(e, null, t); toast0('Langganan diperbarui'); loadMembers();
             } else if (b.dataset.r) {
               const e = b.dataset.r;
               if (b.dataset.v === '1') {
@@ -2164,77 +2459,53 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
               loadMembers();
             } else if (b.dataset.d) {
               const e = b.dataset.d;
-              if (!confirm('Hapus akses ' + e + '? Orang ini tidak bisa masuk lagi (datanya di cloud tidak ikut terhapus).')) return;
+              if (!confirm('Hapus akun member ' + e + '?\n\nOrang ini tidak bisa masuk lagi. Datanya di perangkat/cloud ikut dibersihkan saat ia membuka aplikasi berikutnya.')) return;
               await F.deleteDoc(F.doc(db, 'members', e)); if (s.ads.has(e)) { await F.deleteDoc(F.doc(db, 'admins', e)); s.ads.delete(e); }
-              loadMembers(); loadTotal();
-            } else if (b.id === 'rps') {
-              const v = $o('#rpl').value.trim(); if (!v) return;
-              await F.addDoc(F.collection(db, 'requests', s.th, 'msgs'), { from: 'admin', text: v, ts: Date.now() });
-              await F.setDoc(F.doc(db, 'requests', s.th), { lastMsg: v, lastFrom: 'admin', unreadUser: true, ts: Date.now() }, { merge: true });
-              $o('#rpl').value = '';
-            } else if (b.id === 'rap') {
-              if (!confirm('Setujui dan aktifkan ' + s.th + ' sebagai member?')) return;
-              await F.setDoc(F.doc(db, 'members', s.th), { active: true, addedAt: F.serverTimestamp() }, { merge: true });
-              await F.addDoc(F.collection(db, 'requests', s.th, 'msgs'), { from: 'admin', text: '✅ Akses kamu sudah aktif. Silakan masuk ke aplikasi.', ts: Date.now() });
-              await F.setDoc(F.doc(db, 'requests', s.th), { status: 'approved', lastMsg: '✅ Disetujui', lastFrom: 'admin', unreadUser: true, ts: Date.now() }, { merge: true }); loadTotal();
-            } else if (b.id === 'rcl') {
-              await F.setDoc(F.doc(db, 'requests', s.th), { status: 'closed', ts: Date.now() }, { merge: true });
-            } else if (b.id === 'rdl') {
-              if (!confirm('Hapus percakapan ini?')) return;
-              const id = s.th; (await F.getDocs(F.collection(db, 'requests', id, 'msgs'))).forEach(d => F.deleteDoc(d.ref));
-              await F.deleteDoc(F.doc(db, 'requests', id)); s.th = null; if (unMsg) { unMsg(); unMsg = null; } draw();
+              s.open = null; loadMembers(); loadTotal();
             }
           } catch (e) { alert('Gagal: ' + (e.code || e.message) + (e.code === 'permission-denied' ? '\n\nRules menolak. Pastikan Firestore Rules terbaru sudah dipublish.' : '')); }
         });
-        o.addEventListener('input', ev => { if (ev.target.id === 'asq') { clearTimeout(deb); deb = setTimeout(() => { s.q = ev.target.value; if (s.tab === 'member') loadMembers(); else draw(); }, 350); } });
+        o.addEventListener('input', ev => {
+          if (ev.target.id === 'asq') { clearTimeout(deb); deb = setTimeout(() => { s.q = ev.target.value; if (s.tab === 'member') loadMembers(); else draw(); }, 350); }
+          else if (ev.target.id === 'ady') { s.day = ev.target.value; draw(); }
+        });
         loadAds().then(() => { loadMembers(); loadTotal(); });
       }
     }
 
     /* ================= GERBANG MEMBER & KONFIRMASI ADMIN (chat privat) ================= */
-    let unMember = null;
+    let unMember = null, gHad = false, gExp = 0, admPass = false, unExp = null, expT = null;
     function watchMember(em) {                                   // setelah admin menyetujui → otomatis masuk
       if (unMember) return;
-      unMember = F.onSnapshot(F.doc(db, 'members', em), s => { if (s.exists() && String(s.data().active) === 'true') location.reload(); }, () => {});
+      unMember = F.onSnapshot(F.doc(db, 'members', em), s => { if (s.exists() && isLive(s.data())) location.reload(); }, () => {});
     }
-    const logoutBtn = { label: 'Keluar / ganti akun', fn: async () => { try { await A.signOut(auth); } catch (e) {} location.reload(); } };
+    /* keluar dari gerbang: akun yang BUKAN member dihapus (beserta datanya) — tidak ada data non-member yang tersimpan */
+    const leaveGate = async user => {
+      if (!gHad && user) {
+        try { await F.deleteDoc(F.doc(db, COLLECTION, user.uid)); } catch (e) {}
+        try { await user.delete(); } catch (e) {}
+      }
+      try { await A.signOut(auth); } catch (e) {}
+      try { localStorage.removeItem('focusnest'); localStorage.removeItem('focusnest_uid'); } catch (e) {}
+      location.reload();
+    };
+
+    const logoutBtn = { label: 'Keluar / ganti akun', fn: () => leaveGate(null) };
 
     function gate(user) {
       const em = (user.email || '').toLowerCase();
       watchMember(em);
-      const btns = [{ label: 'Beli akses', primary: true, fn: () => { location.href = BUY_URL; } }, { label: 'Konfirmasi admin', fn: () => support(user) }];
+      const btns = [{ label: 'Beli akses', primary: true, fn: () => { location.href = BUY_URL; } }, { label: '💬 Konfirmasi admin', fn: () => support(user) }];
       if (TG_URL) btns.push({ label: 'Telegram', fn: () => window.open(TG_URL, '_blank', 'noopener') });
-      btns.push(logoutBtn);
-      showBlock('Kamu belum jadi member', 'Gunakan email yang sama saat checkout.', btns, '🔒', 'Masuk sebagai ' + (user.email || ''));
+      btns.push({ label: 'Keluar / ganti akun', fn: () => leaveGate(user) });
+      if (gExp) { const bt = [{ label: 'Perpanjang langganan', primary: true, fn: () => { location.href = BUY_URL; } }, { label: '💬 Konfirmasi admin', fn: () => support(user) }, { label: 'Keluar / ganti akun', fn: () => leaveGate(user) }]; showBlock('Langgananmu sudah berakhir', 'Langganan berakhir pada ' + fmtD2(gExp) + '. Perpanjang, lalu konfirmasi ke admin — akses aktif otomatis setelah diperpanjang. Datamu tetap tersimpan.', bt, '⏳', 'Masuk sebagai ' + (user.email || '')); return; }
+      showBlock('Kamu belum jadi member', 'FocusNest hanya untuk yang sudah membayar. Gunakan email yang sama saat checkout, atau konfirmasi ke admin. Data akun non-member tidak disimpan.', btns, '🔒', 'Masuk sebagai ' + (user.email || ''));
     }
 
     function support(user) {
       const em = (user.email || '').toLowerCase();
       watchMember(em);
-      const b = blkHost();
-      b.innerHTML = '<div style="' + CARD + ';text-align:left"><h2 style="margin:0 0 4px;font-size:19px">💬 Konfirmasi admin</h2>' +
-        '<p style="margin:0 0 10px;font-size:13px;color:#6b7280">Percakapan privat — hanya kamu dan admin. Tulis nomor order / bukti bayar, lalu tunggu balasan. Setelah disetujui kamu otomatis masuk.</p>' +
-        '<div id="smsg" style="height:250px;overflow:auto;background:#f3f4f6;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px"></div>' +
-        '<textarea id="stx" rows="2" maxlength="500" placeholder="Contoh: Saya sudah checkout dengan email ini, order #123" style="width:100%;box-sizing:border-box;margin-top:8px;padding:10px;border:1px solid #cbd5e1;border-radius:10px;font:inherit"></textarea>' +
-        '<button id="ssd" style="' + btnCss(true) + '">Kirim</button><button id="sbk" style="' + btnCss(false) + '">← Kembali</button></div>';
-      const box = b.querySelector('#smsg'), tx = b.querySelector('#stx');
-      let un = null, lastSend = 0;
-      F.setDoc(F.doc(db, 'requests', em), { unreadUser: false }, { merge: true }).catch(() => {});
-      un = F.onSnapshot(F.query(F.collection(db, 'requests', em, 'msgs'), F.orderBy('ts')), sn => {
-        box.innerHTML = sn.empty ? '<p style="margin:auto;color:#9ca3af;font-size:13px;text-align:center">Belum ada pesan. Tulis pesan pertamamu di bawah.</p>' :
-          sn.docs.map(d => { const m = d.data(), me = m.from !== 'admin'; return '<div style="align-self:' + (me ? 'flex-end' : 'flex-start') + ';max-width:85%;padding:8px 10px;border-radius:12px;background:' + (me ? '#4f46e5' : '#e5e7eb') + ';color:' + (me ? '#fff' : '#1f2937') + ';white-space:pre-wrap;word-break:break-word;font-size:14px">' + E2(m.text) + '<div style="font-size:11px;opacity:.7">' + (me ? 'Kamu' : 'Admin') + ' · ' + fmtT(m.ts) + '</div></div>'; }).join('');
-        box.scrollTop = box.scrollHeight;
-      }, e => { box.innerHTML = '<p style="margin:auto;color:#b91c1c;font-size:13px">Gagal memuat percakapan (' + E2(e.code || e.message) + '). Pastikan Firestore Rules terbaru sudah dipublish.</p>'; });
-      b.querySelector('#sbk').onclick = () => { if (un) un(); gate(user); };
-      b.querySelector('#ssd').onclick = async () => {
-        const v = tx.value.trim(); if (!v) { tx.focus(); return; }
-        if (Date.now() - lastSend < 3000) return; lastSend = Date.now();
-        try {
-          await F.addDoc(F.collection(db, 'requests', em, 'msgs'), { from: 'user', text: v, ts: Date.now() });
-          await F.setDoc(F.doc(db, 'requests', em), { email: em, name: user.displayName || '', status: 'pending', lastMsg: v, lastFrom: 'user', unreadAdmin: true, ts: Date.now() }, { merge: true });
-          tx.value = '';
-        } catch (e) { alert('Pesan belum terkirim (' + (e.code || e.message) + '). Coba lagi.'); }
-      };
+      openChat({ email: em, admin: false, name: user.displayName || '', onClose: () => gate(user) });
     }
 
     /* ================= LAYAR LOGIN ================= */
@@ -2242,7 +2513,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
     const MODES = {
       login:    { t: 'Masuk', s: 'Masuk untuk membuka rencana dan goals-mu di perangkat mana pun.', b: 'Masuk', pw: 'current-password',
                   ft: 'Belum punya akun? <button type="button" class="ln" data-m="register">Daftar</button> · <button type="button" class="ln" data-m="reset">Lupa kata sandi?</button>' },
-      register: { t: 'Buat akun', s: 'Gunakan email yang sama saat checkout.', b: 'Daftar', pw: 'new-password',
+      register: { t: 'Buat akun', s: 'Khusus yang sudah membeli — gunakan email yang sama saat checkout. Akun non-member tidak menyimpan data.', b: 'Daftar', pw: 'new-password',
                   ft: 'Sudah punya akun? <button type="button" class="ln" data-m="login">Masuk</button>' },
       reset:    { t: 'Reset kata sandi', s: 'Masukkan email-mu, kami kirim tautan untuk membuat kata sandi baru.', b: 'Kirim tautan reset', pw: null,
                   ft: '<button type="button" class="ln" data-m="login">← Kembali ke halaman masuk</button>' }
@@ -2298,16 +2569,17 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       showLoad();
       const em = (user.email || '').toLowerCase();
       const retryBtn = { label: 'Coba lagi', primary: true, fn: () => location.reload() };
-      let ok = false;
+      let ok = false, hadDoc = false;
       try {
         const m = await F.getDoc(F.doc(db, 'members', em));
-        ok = m.exists() && String(m.data().active) === 'true';
-        if (!ok) { try { ok = (await F.getDoc(F.doc(db, 'admins', em))).exists(); } catch (e2) {} }   // admin selalu boleh masuk
+        hadDoc = m.exists();
+        const md = m.exists() ? m.data() : null; ok = isLive(md); gExp = (md && String(md.active) === 'true' && !ok) ? tsNum(md.expiresAt) : 0;
+        if (!ok) { try { ok = (await F.getDoc(F.doc(db, 'admins', em))).exists(); admPass = ok; } catch (e2) {} }   // admin selalu boleh masuk
       } catch (e) {
         console.error('[FocusNest] Gagal cek member:', e);
         showBlock('Gagal memeriksa status member', 'Cek koneksi internetmu lalu coba lagi.' + (e && e.code === 'permission-denied' ? ' (Firestore Rules menolak — periksa Rules di Firebase Console.)' : ''), [retryBtn, logoutBtn], '⚠️'); return;
       }
-      if (!ok) { gate(user); return; }                               // bukan member: akun TIDAK dihapus, hanya ditahan di gerbang
+      if (!ok) { gHad = hadDoc; try { FN.apply(null); localStorage.removeItem('focusnest'); localStorage.removeItem('focusnest_uid'); } catch (e2) {} gate(user); return; }   // non-member: data lokal dibersihkan, tidak ada yang disimpan                               // bukan member: akun TIDAK dihapus, hanya ditahan di gerbang
       let good = false;
       try { good = await start(user); } catch (e) { console.error('[FocusNest] Gagal memulai sesi:', e); }
       if (!good) { showBlock('Data belum bisa dimuat', 'Datamu aman di cloud. Cek koneksi lalu coba lagi — aplikasi sengaja tidak dibuka agar data tidak tertimpa.', [retryBtn, logoutBtn], '☁️'); return; }
