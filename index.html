@@ -2174,6 +2174,8 @@ const BUY_URL = 'https://kiarahanari.myscalev.com/p/focusnest';   // link checko
 const TG_URL = '';                                // opsional: link Telegram (mis. 'https://t.me/namakanal'); kosong = tombol disembunyikan
 const FN = window.FN, OV = document.getElementById('lgn'), $q = s => OV.querySelector(s);
 const E2 = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+/* keamanan: lampiran chat hanya boleh berupa data: URL (cegah link javascript:/http dari dokumen yang dimanipulasi) */
+const safeU = u => /^data:[a-z0-9.+\/-]+;base64,/i.test(String(u == null ? '' : u)) ? u : '';
 const fmtT = ts => { try { return new Date(ts).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
 
 const lock = on => ['#side', '#app'].forEach(s => { const e = document.querySelector(s); if (e) e.inert = !!on; });
@@ -2467,6 +2469,18 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
     };
     const unreadMap = {};
     const setBadge = n => { FN.unreadN = n; window.__chatBadge && window.__chatBadge(n); };
+    /* ===== Tombol Back (HP/browser) menutup chat, bukan keluar web app ===== */
+    let chatPushed = false, chatPopFn = null;
+    function chatHistOpen(closeFn) {
+      if (chatPopFn) window.removeEventListener('popstate', chatPopFn);
+      if (!chatPushed) { try { history.pushState({ fnchat: 1 }, ''); chatPushed = true; } catch (e) {} }
+      chatPopFn = () => { window.removeEventListener('popstate', chatPopFn); chatPopFn = null; chatPushed = false; closeFn(); };
+      window.addEventListener('popstate', chatPopFn);
+    }
+    function chatHistClose() {
+      if (chatPopFn) { window.removeEventListener('popstate', chatPopFn); chatPopFn = null; }
+      if (chatPushed) { chatPushed = false; try { history.back(); } catch (e) {} }
+    }
     let chatOpenFor = null;
     function openChat(o) {
       const email = o.email, adm = !!o.admin;
@@ -2501,8 +2515,8 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
         if (st.edit === m.id) {
           b = '<textarea id="cxet" rows="3" maxlength="500">' + E2(st.editVal) + '</textarea><div class="cxa"><button data-sv="' + m.id + '">✓ Simpan</button><button data-ec="1">Batal</button></div>';
         } else {
-          if (m.file) b += /^image\//.test(m.file.type) ? '<img src="' + E2(m.file.data) + '" alt="' + E2(m.file.name) + '" data-zm="' + m.id + '">' :
-            '<a class="fl" download="' + E2(m.file.name) + '" href="' + E2(m.file.data) + '">📎 <span>' + E2(m.file.name) + '<br><small>' + fmtSize(m.file.size || 0) + ' · ketuk untuk unduh</small></span></a>';
+          if (m.file) b += /^image\//.test(m.file.type) ? '<img src="' + E2(safeU(m.file.data)) + '" alt="' + E2(m.file.name) + '" data-zm="' + m.id + '">' :
+            '<a class="fl" download="' + E2(m.file.name) + '" href="' + E2(safeU(m.file.data)) + '">📎 <span>' + E2(m.file.name) + '<br><small>' + fmtSize(m.file.size || 0) + ' · ketuk untuk unduh</small></span></a>';
           if (m.text) b += E2(m.text);
           b += '<small>' + fmtHM(m.ts) + (m.edited ? ' · diedit' : '') + '</small>';
           if (adm) b += '<div class="cxa"><button data-ed="' + m.id + '" title="Edit pesan" aria-label="Edit pesan">✏️</button><button data-dl="' + m.id + '" title="Hapus pesan" aria-label="Hapus pesan">🗑</button></div>';
@@ -2534,7 +2548,9 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       }, e => { M.innerHTML = '<div class="cxe" style="color:#b91c1c">Gagal memuat percakapan (' + E2(e.code || e.message) + '). Pastikan Firestore Rules terbaru sudah dipublish.</div>'; }));
       unsubs.push(F.onSnapshot(F.doc(db, 'requests', email), sn => { st.req = sn.exists() ? sn.data() : null; drawHead(); drawFoot(); if (document.visibilityState === 'visible' && unread(st.req)) markRead(); }, () => {}));
       if (adm) unsubs.push(F.onSnapshot(F.doc(db, 'members', email), sn => { st.mem = sn.exists() ? { active: String(sn.data().active) === 'true', live: isLive(sn.data()), exp: tsNum(sn.data().expiresAt) } : null; drawHead(); }, () => {}));
-      const close = () => { unsubs.forEach(u => { try { u(); } catch (e) {} }); document.removeEventListener('visibilitychange', onVis); chatOpenFor = null; root.remove(); if (o.onClose) o.onClose(); };
+      let closedOnce = false;
+      const close = (fromPop) => { if (closedOnce) return; closedOnce = true; if (fromPop !== true) chatHistClose(); unsubs.forEach(u => { try { u(); } catch (e) {} }); document.removeEventListener('visibilitychange', onVis); chatOpenFor = null; root.remove(); if (o.onClose) o.onClose(); };
+      chatHistOpen(() => close(true));
       const fail = e => alert('Gagal: ' + (e.code || e.message) + (e.code === 'permission-denied' ? '\n\nRules menolak. Pastikan Firestore Rules terbaru sudah dipublish.' : ''));
       const sysMsg = async (text, patch) => {
         await F.addDoc(F.collection(db, 'requests', email, 'msgs'), { from: 'admin', text, ts: Date.now() });
@@ -2545,16 +2561,27 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
         const tx = $c('#cxtx'); if (!tx || st.busy) return;
         const text = tx.value.trim(), att = st.att; if (!text && !att) { tx.focus(); return; }
         if (Date.now() - st.last < 500) return; st.last = Date.now(); st.busy = true;
+        /* kosongkan kolom ketik SEKARANG (jangan menunggu server), keyboard tetap terbuka */
+        tx.value = '';
+        if (att) { st.att = null; drawFoot(); }
+        try { const t1 = $c('#cxtx'); if (t1) t1.focus(); } catch (e) {}
         try {
           const msg = { from: adm ? 'admin' : 'user', text, ts: Date.now() }; if (att) msg.file = att;
           await F.addDoc(F.collection(db, 'requests', email, 'msgs'), msg);
           const lm = text || ('📎 ' + att.name);
           if (adm) await reqW(email, { lastMsg: lm, lastFrom: 'admin', unreadUser: true, ts: Date.now() }, 'unreadUserN');
           else await reqW(email, { email, name: o.name || '', status: o.member ? 'approved' : (closed() ? 'closed' : 'pending'), lastMsg: lm, lastFrom: 'user', unreadAdmin: true, ts: Date.now() }, 'unreadAdminN');
-          st.att = null; tx.value = ''; drawFoot();
-        } catch (e) { alert('Pesan belum terkirim (' + (e.code || e.message) + '). Coba lagi.'); }
+        } catch (e) {
+          /* gagal kirim: kembalikan tulisan & lampiran supaya tidak hilang */
+          const t2 = $c('#cxtx'); if (t2 && !t2.value) t2.value = text;
+          if (att && !st.att) { st.att = att; drawFoot(); const t3 = $c('#cxtx'); if (t3 && !t3.value) t3.value = text; }
+          alert('Pesan belum terkirim (' + (e.code || e.message) + '). Coba lagi.');
+        }
         st.busy = false;
       }
+
+      /* tombol kirim tidak mencuri fokus → keyboard HP tidak menutup */
+      root.addEventListener('mousedown', ev => { if (ev.target.closest && ev.target.closest('#cxsd')) ev.preventDefault(); });
 
       root.addEventListener('input', ev => {
         const t = ev.target;
@@ -2576,7 +2603,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
           if (b.id === 'cxat') { $c('#cxfi').click(); return; }
           if (b.id === 'cxrm') { st.att = null; drawFoot(); return; }
           if (b.id === 'cxsd') { send(); return; }
-          if (b.dataset.zm) { const m = st.msgs.find(x => x.id === b.dataset.zm); if (!m) return; const z = document.createElement('div'); z.className = 'cxz'; z.innerHTML = '<img src="' + E2(m.file.data) + '" alt=""><div><a download="' + E2(m.file.name) + '" href="' + E2(m.file.data) + '">⬇ Unduh</a> <button>Tutup</button></div>'; z.addEventListener('click', e2 => { if (e2.target.tagName !== 'A') z.remove(); }); document.body.appendChild(z); return; }
+          if (b.dataset.zm) { const m = st.msgs.find(x => x.id === b.dataset.zm); if (!m) return; const z = document.createElement('div'); z.className = 'cxz'; z.innerHTML = '<img src="' + E2(safeU(m.file.data)) + '" alt=""><div><a download="' + E2(m.file.name) + '" href="' + E2(safeU(m.file.data)) + '">⬇ Unduh</a> <button>Tutup</button></div>'; z.addEventListener('click', e2 => { if (e2.target.tagName !== 'A') z.remove(); }); document.body.appendChild(z); return; }
           if (b.dataset.ed) { const m = st.msgs.find(x => x.id === b.dataset.ed); st.edit = b.dataset.ed; st.editVal = m ? m.text || '' : ''; drawMsgs(); return; }
           if (b.dataset.ec) { st.edit = null; drawMsgs(); return; }
           if (b.dataset.sv) { const v = ($c('#cxet') || {}).value; if (v == null) return; const m = st.msgs.find(x => x.id === b.dataset.sv); if (!v.trim() && !(m && m.file)) { alert('Pesan tidak boleh kosong. Gunakan tombol hapus untuk menghapus.'); return; } await F.setDoc(F.doc(db, 'requests', email, 'msgs', b.dataset.sv), { text: v.trim(), edited: Date.now() }, { merge: true }); st.edit = null; drawMsgs(); return; }
