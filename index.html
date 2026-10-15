@@ -405,7 +405,7 @@ details[open]>summary .gsum{display:none}
 <body>
 <div id="bgd" aria-hidden="true"><span style="top:8%;left:0;animation-duration:34s;animation-delay:-6s">☁️</span><span style="top:22%;left:0;animation-duration:42s;animation-delay:-20s">✨</span><span style="top:46%;left:0;animation-duration:38s;animation-delay:-12s">🌸</span><span style="top:68%;left:0;animation-duration:46s;animation-delay:-30s">☁️</span><span style="top:84%;left:0;animation-duration:36s;animation-delay:-3s">⭐</span></div>
 <aside id="side"></aside><main id="app"></main><div id="mp"></div><div id="dr"></div><div id="toasts" role="status" aria-live="polite"></div><div id="rmb" role="alert" aria-live="assertive"></div><div id="gd"></div><div id="tp"></div>
-<div id="dw"><div class="mu" id="dws"></div><div class="tm" id="dwt"></div><div class="mu" style="font-size:.74rem">🔗 Terhubung ke timer Fokus</div><div class="f" style="justify-content:center;flex-wrap:nowrap"><button class="b" id="dwgo" data-a="go">▶ Mulai</button><button class="b s" data-a="sv">✔ Selesai</button><button class="b s" data-a="dw">Keluar</button></div></div>
+<div id="dw"><div class="mu" id="dws"></div><div class="tm" id="dwt"></div><div class="f" style="justify-content:center;flex-wrap:nowrap"><button class="b" id="dwgo" data-a="go">▶ Mulai</button><button class="b s" data-a="sv">✔ Selesai</button><button class="b s" data-a="dw">Keluar</button></div></div>
 <style>
 #lgn{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;padding:16px;overflow:auto}
 #lgn[hidden],#lgn [hidden]{display:none!important}
@@ -893,7 +893,7 @@ function openFood(){const p=S.pet;if(!p)return;petTick();let o=document.getEleme
  o.addEventListener('click',e=>{const t=e.target.closest('[data-fi]');if(!t){if(e.target===o)o.remove();return}if(t.dataset.fi==='x'){o.remove();return}const f=FOODS[+t.dataset.fi];if(p.full>=98){toast(p.name+' sudah kenyang 😋');return}if(S.pts<f[2]){toast('Poin belum cukup (butuh '+f[2]+' ⭐)');return}spend(f[2],f[1]+' untuk '+p.name);p.full=Math.min(100,p.full+f[3]);p.joy=Math.min(100,Math.max(0,p.joy+f[4]));p.hp=Math.min(100,Math.max(0,(p.hp==null?100:p.hp)+f[5]));p.xp+=2;sv();render();toast(f[0]+' Nyam nyam! '+p.name+' senang 😋');o.remove()});document.body.appendChild(o)}
 let MPR='w';const ld=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 function moodProg(){const N={d:1,w:7,m:30,y:365}[MPR],now=new Date(),ds=[];for(let i=N-1;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);ds.push(ld(d))}
- const es=ds.map(d=>[d,S.mood[d]]).filter(x=>x[1]&&x[1].m),av=k=>es.length?(es.reduce((a,x)=>a+(x[1][k]||0),0)/es.length).toFixed(1):'–';let bars;
+ const es=ds.map(d=>[d,S.mood[d]]).filter(x=>x[1]&&x[1].m),av=k=>es.length?String(Math.round(es.reduce((a,x)=>a+(x[1][k]||0),0)/es.length)):'–';let bars;
  if(MPR==='y'){const g={};es.forEach(([d,x])=>{(g[d.slice(0,7)]=g[d.slice(0,7)]||[]).push(x.m)});bars=Object.entries(g).map(([k,v])=>[k.slice(5),v.reduce((a,b)=>a+b,0)/v.length])}else bars=es.map(([d,x])=>[d.slice(8),x.m]);
  const nt=es.filter(x=>x[1].n).slice(-10).reverse();
  return `<div class="c"><h2>📈 Progres mood</h2><div class="tabs">${[['d','Harian'],['w','Mingguan'],['m','Bulanan'],['y','Tahunan']].map(([k,l])=>`<button class="b ${MPR===k?'':'s'} sm" data-fn="mpr" data-v="${k}">${l}</button>`).join('')}</div><p class="mu">Rata-rata mood <b>${av('m')}/5</b> · energi <b>${av('e')}/5</b> · ${es.length} hari tercatat</p><div class="bars" style="overflow-x:auto">${bars.map(([l,v])=>`<div><span>${EM[Math.round(v)-1]||''}</span><i style="height:${v*18}px"></i>${l}</div>`).join('')||'<p class="mu">Belum ada data.</p>'}</div>${nt.length?'<h3>📝 Catatan suasana</h3>'+nt.map(([d,x])=>`<p class="mu" style="margin:4px 0"><b>${d}</b> ${EM[x.m-1]||''} ${esc(x.n)}</p>`).join(''):''}</div>`}
@@ -1177,7 +1177,7 @@ function pRange(){const n=new Date();let a,b,lb;
   return{a,b,lb}}
 const inR=(d,a,b)=>d>=a&&d<=b,tDay=t=>t.due||TD();
 function pStats(a,b){const ts=S.tasks.filter(t=>inR(tDay(t),a,b)&&(t.st==='selesai'||tDay(t)<=TD())),dn2=ts.filter(t=>t.st==='selesai'),fs=S.focus.filter(f=>inR(f.d,a,b)),md=Object.entries(S.mood).filter(([d,x])=>inR(d,a,b)&&x.m);
-  return{n:ts.length,d:dn2.length,fm:fs.reduce((s,f)=>s+f.m,0),mo:md.length?(md.reduce((s,[,x])=>s+x.m,0)/md.length).toFixed(1):'–',gm:S.gl.filter(x=>inR(x.d,a,b)).length,ts}}
+  return{n:ts.length,d:dn2.length,fm:fs.reduce((s,f)=>s+f.m,0),mo:md.length?String(Math.round(md.reduce((s,[,x])=>s+x.m,0)/md.length)):'–',gm:S.gl.filter(x=>inR(x.d,a,b)).length,ts}}
 const doneIn=(a,b)=>S.tasks.filter(t=>t.st==='selesai'&&inR(t.doneAt||tDay(t),a,b)).length,focIn=(a,b)=>S.focus.filter(f=>inR(f.d,a,b)).reduce((s,f)=>s+f.m,0);
 function pChart(B,f,t){const v=B.map(x=>f(x.a,x.b)),mx=Math.max(1,...v);return `<div class="bars2" role="img" aria-label="${t}">${B.map((x,i)=>`<div title="${x.l}: ${v[i]}"><span>${v[i]||''}</span><i style="height:${v[i]/mx*90}px"></i>${x.l}</div>`).join('')}</div>`}
 function vProg(){const R=pRange(),st=pStats(R.a,R.b),pc=st.n?Math.round(st.d/st.n*100):0;let B;
@@ -1257,7 +1257,7 @@ return`<h1>Alarm ⏰</h1><div class="c" style="margin-top:12px"><p class="mu">No
 /* ---------- PDF (cetak → Simpan sebagai PDF) ---------- */
 function pdf(kind,n){init();const ds=[...Array(n)].map((_,i)=>addD(TD(),-(n-1-i))),tk=S.tasks.filter(t=>ds.includes(t.due||TD())),dn=tk.filter(t=>t.st==='selesai'),fo=S.focus.filter(f=>ds.includes(f.d)),fm2=fo.reduce((a,f)=>a+f.m,0);let h='';const tb=(hd,rows)=>`<table><tr>${hd.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${E(x)}</td>`).join('')}</tr>`).join('')}</table>`;
 const prog=()=>window.pdfProg(ds,tk,dn,fm2,n);
-const mood=()=>{const r=ds.filter(d=>S.mood[d]&&S.mood[d].m);const av=k=>r.length?(r.reduce((a,d)=>a+(+S.mood[d][k]||0),0)/r.length).toFixed(1):'-';return`<h2>😊 Mood & Energi</h2><p>Rata-rata mood <b>${av('m')}/5</b> · energi <b>${av('e')}/5</b></p>${tb(['Tanggal','Mood','Energi','Catatan'],r.map(d=>[d,EM[S.mood[d].m-1]+' '+S.mood[d].m,S.mood[d].e||'-',S.mood[d].n||S.mood[d].note||'']))}`};
+const mood=()=>{const r=ds.filter(d=>S.mood[d]&&S.mood[d].m);const av=k=>r.length?String(Math.round(r.reduce((a,d)=>a+(+S.mood[d][k]||0),0)/r.length)):'-';return`<h2>😊 Mood & Energi</h2><p>Rata-rata mood <b>${av('m')}/5</b> · energi <b>${av('e')}/5</b></p>${tb(['Tanggal','Mood','Energi','Catatan'],r.map(d=>[d,EM[S.mood[d].m-1]+' '+S.mood[d].m,S.mood[d].e||'-',S.mood[d].n||S.mood[d].note||'']))}`};
 h=(kind==='progres'||kind==='semua'?prog():'')+(kind==='mood'||kind==='semua'?mood():'');
 const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0';document.body.appendChild(f);f.srcdoc=`<html><head><meta charset=utf-8><style>body{font-family:sans-serif;padding:20px;color:#1b2a4a}table{border-collapse:collapse;width:100%;margin:8px 0;page-break-inside:auto}tr{page-break-inside:avoid}.g{color:#25A57A}.r{color:#E5484D}.n{color:#6B7A99}small{color:#6B7A99}h2,h3{page-break-after:avoid}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}td,th{border:1px solid #ccc;padding:4px 6px;font-size:12px;text-align:left}th{background:#eef2ff}h1{color:#4F7CF0}</style></head><body><h1>FocusNest · Laporan ${n} hari</h1><p>${E(S.set.name||'')} · ${TD()}</p>${h}</body></html>`;f.onload=()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){toast('Gagal membuka cetak')}setTimeout(()=>f.remove(),60000)}}
 /* ---------- Enhance setelah render ---------- */
@@ -1779,7 +1779,7 @@ const oldSet=V.set;
 V.set=()=>{const s=S.set,F=window.FN||{},f=dom(oldSet()),data=[...f.querySelectorAll('.c')].find(c=>hx(c)==='Data'),ad=!!F.isAdmin,role=ad?'<span class="rb ad">🛡️ Admin</span>':F.email?'<span class="rb">👤 Member</span>':'<span class="rb">👤 Tamu (lokal)</span>';
  const ac=dom(acctCard()),rm=dom(rmCard()),mu=dom(vMusic());mu.querySelectorAll('h1,h2').forEach(x=>x.remove());const rh=rm.querySelector('h2');if(rh)rh.textContent='🔔 Pengingat';
  const aBox=ac.querySelector('.c');
- return `<h1>Pengaturan</h1><div class="c"><h2>👤 Profil</h2><div class="f"><label>Nama<input data-a="sf" data-k="name" value="${esc(s.name)}"></label></div><p class="mu" style="margin:8px 0 0">${role}${F.email?' '+esc(F.email):''}</p>${ad?'<div class="tabs"><button class="b s sm" data-v10="adm">🛡️ Kelola member (Admin)</button></div>':''}${aBox?aBox.innerHTML.replace(/<h2>Akun<\/h2>/,''):''}</div>`
+ return `<h1>Pengaturan</h1><div class="c"><h2>👤 Profil</h2><div class="f"><label>Nama<input data-a="sf" data-k="name" value="${esc(s.name)}"></label></div><p class="mu" style="margin:8px 0 0">${role}${F.email?' '+esc(F.email):''}</p>${aBox?aBox.innerHTML.replace(/<h2>Akun<\/h2>/,''):''}</div>`
  +`<div class="c"><h2>🎨 Tema</h2><div class="tabs"><button class="b" data-a="th">Tema: ${s.theme==='dark'?'Gelap 🌙':'Terang ☀️'}</button></div></div>`
  +`<div class="c"><h2>🎵 Musik</h2>${html(mu)}</div>`+html(rm)+(data?data.outerHTML:'')};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-v10=adm]');if(b&&window.FN&&window.FN.openAdmin)window.FN.openAdmin()});
@@ -2227,9 +2227,54 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
   setTimeout(() => { if (!resolved) failOpen('Firebase terlalu lama dimuat.'); }, 12000);
 
   try {
-    const [{ initializeApp }, A, F] = await Promise.all([
+    const [{ initializeApp }, A, F0] = await Promise.all([
       import(G + 'firebase-app.js'), import(G + 'firebase-auth.js'), import(G + 'firebase-firestore.js')
     ]);
+
+    /* ================= PELACAK PENGGUNAAN =================
+       Menghitung write yang dikirim aplikasi per hari, durasi akses, dan ukuran data tiap user.
+       Disimpan di usage/{email} (dikirim digabung & dibatasi, bukan tiap write) → hemat kuota 20.000 write/hari. */
+    const F = { ...F0 };
+    const U = { email: '', p: {}, size: 0, lastFlush: 0, tick: 0, denied: false, on: false, busy: false };
+    const uDay = ts => { const d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+    const UK = 'focusnest_usage';
+    const uSave = () => { try { localStorage.setItem(UK, JSON.stringify({ e: U.email, p: U.p, s: U.size })); } catch (e) {} };
+    const uAdd = (k, n) => { if (!U.on) return; const d = uDay(Date.now()), x = U.p[d] || (U.p[d] = { w: 0, sec: 0 }); x[k] += n; };
+    ['setDoc', 'addDoc', 'updateDoc', 'deleteDoc'].forEach(k => { if (typeof F0[k] === 'function') F[k] = (...a) => { uAdd('w', 1); return F0[k](...a); }; });
+
+    async function flushUsage(force) {
+      if (!U.on || U.denied || U.busy) return;
+      const now = Date.now(); if (!force && now - U.lastFlush < 300000) return;
+      uAdd('w', 1);                                   // kiriman ini sendiri dihitung 1 write
+      const snap = U.p; U.p = {}; U.busy = true; U.lastFlush = now; uSave();
+      const w = {}, sec = {}; let tw = 0, ts = 0;
+      Object.keys(snap).forEach(d => { const x = snap[d]; if (x.w) { w[d] = F0.increment(x.w); tw += x.w; } if (x.sec) { sec[d] = F0.increment(x.sec); ts += x.sec; } });
+      const data = { email: U.email, last: now, size: U.size || 0, tw: F0.increment(tw), ts: F0.increment(ts) };
+      if (Object.keys(w).length) data.w = w; if (Object.keys(sec).length) data.sec = sec;
+      try { await F0.setDoc(F0.doc(db, 'usage', U.email), data, { merge: true }); }
+      catch (e) {
+        Object.keys(snap).forEach(d => { const x = U.p[d] || (U.p[d] = { w: 0, sec: 0 }); x.w += snap[d].w; x.sec += snap[d].sec; });   // kembalikan, kirim lagi nanti
+        if (e && e.code === 'permission-denied') { U.denied = true; console.warn('[FocusNest] usage: Rules menolak. Tambahkan aturan untuk usage/{email}.'); }
+      }
+      U.busy = false; uSave();
+    }
+    function usageInit(user) {
+      const em = (user.email || '').toLowerCase(); if (!em || U.on) return;
+      U.email = em; U.on = true;
+      try {
+        const r = JSON.parse(localStorage.getItem(UK) || 'null');
+        if (r && r.e === em) { U.size = +r.s || 0; Object.keys(r.p || {}).forEach(d => { const x = U.p[d] || (U.p[d] = { w: 0, sec: 0 }); x.w += +r.p[d].w || 0; x.sec += +r.p[d].sec || 0; }); }
+      } catch (e) {}
+      U.tick = Date.now();
+      setInterval(() => {
+        const now = Date.now(), dt = Math.min(30000, now - U.tick); U.tick = now;
+        if (document.visibilityState === 'visible') uAdd('sec', Math.round(dt / 1000));
+        uSave(); if (now - U.lastFlush >= 900000) flushUsage(false);
+      }, 15000);
+      document.addEventListener('visibilitychange', () => { U.tick = Date.now(); if (document.visibilityState === 'hidden') flushUsage(false); });
+      window.addEventListener('pagehide', () => { uSave(); flushUsage(false); });
+      setTimeout(() => flushUsage(true), 4000);       // catat waktu akses saat sesi dimulai
+    }
     const app = initializeApp(firebaseConfig), auth = A.getAuth(app);
     let db;
     try { db = F.initializeFirestore(app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
@@ -2241,7 +2286,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
     function push() {
       if (dead || !ref) return Promise.resolve();
       clearTimeout(timer); timer = null;
-      const S = FN.get(), json = JSON.stringify(S);
+      const S = FN.get(), json = JSON.stringify(S); U.size = json.length;
       if (json.length > 800000) FN.toast('⚠️ Data hampir penuh (' + Math.round(json.length / 1024) + ' KB). Hapus catatan/tugas lama yang selesai.');
       inflight++;
       last = F.setDoc(ref, { userId: ref.id, state: json, clientTs: S.ts || Date.now(), updatedAt: F.serverTimestamp() })
@@ -2265,7 +2310,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       let remote = null;
       try { const snap = await F.getDoc(rf); if (snap.exists()) remote = snap.data(); }
       catch (e) { console.error('[FocusNest] Gagal ambil dari Firestore:', e); return false; }   // gagal ambil → JANGAN sinkron (cegah menimpa cloud)
-      started = true; ref = rf;
+      started = true; ref = rf; usageInit(user);
 
       if (owner && owner !== user.uid) {                            // cache milik akun lain → jangan dipakai/diunggah
         try { localStorage.removeItem('focusnest'); } catch (e) {}
@@ -2306,6 +2351,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       FN.logout = async () => {
         clearTimeout(timer);
         FN.toast('Menyimpan data ke cloud…');
+        try { await Promise.race([flushUsage(true), new Promise(r => setTimeout(r, 3000))]); } catch (e) {}
         await push();
         await Promise.race([last, new Promise(r => setTimeout(r, 8000))]);
         if ((inflight > 0 || failed) && !confirm('Perubahan terakhir belum berhasil tersimpan ke cloud dan bisa hilang jika kamu keluar sekarang. Tetap keluar?')) return;
@@ -2413,7 +2459,12 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
 
     const toast0 = m => { try { FN.toast(m); } catch (e) {} };
     const sysNotify = (title, body, tag, data) => { try { if (!('Notification' in window) || Notification.permission !== 'granted') return; const opts = { body, tag, renotify: true, vibrate: [200, 100, 200], data: data || {} }; const plain = () => { try { new Notification(title, opts); } catch (e) {} }; if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistration().then(reg => reg && reg.showNotification ? reg.showNotification(title, opts) : plain()).catch(plain); else plain(); } catch (e) {} };
-    const bump = (id, toAdmin) => F.setDoc(F.doc(db, 'requests', id), toAdmin ? { unreadAdminN: F.increment(1) } : { unreadUserN: F.increment(1) }, { merge: true }).catch(() => {});
+    /* 1 write per pesan: penanda belum-dibaca + penghitung digabung dalam satu setDoc (dulu 2 write & angka bisa meleset) */
+    const reqW = async (id, data, incKey) => {
+      const rf = F.doc(db, 'requests', id);
+      try { await F.setDoc(rf, incKey ? { ...data, [incKey]: F.increment(1) } : data, { merge: true }); }
+      catch (e) { if (incKey && e && e.code === 'permission-denied') await F.setDoc(rf, data, { merge: true }); else throw e; }
+    };
     const unreadMap = {};
     const setBadge = n => { FN.unreadN = n; window.__chatBadge && window.__chatBadge(n); };
     let chatOpenFor = null;
@@ -2427,7 +2478,11 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       const $c = x => root.querySelector(x), H = $c('.cxh'), SB = $c('.cxs'), M = $c('#cxm'), FT = $c('.cxf');
       const st = { msgs: [], req: null, mem: undefined, q: '', day: '', edit: null, editVal: '', att: null, busy: false, last: 0 };
       const unsubs = [];
-      const markRead = () => F.setDoc(F.doc(db, 'requests', email), adm ? { unreadAdmin: false, unreadAdminN: 0 } : { unreadUser: false, unreadUserN: 0 }, { merge: true }).catch(() => {});
+      let mrBusy = false;
+      const unread = r => !!r && (adm ? (r.unreadAdmin === true || (r.unreadAdminN || 0) > 0) : (r.unreadUser === true || (r.unreadUserN || 0) > 0));
+      const markRead = () => { if (mrBusy) return; mrBusy = true; F.setDoc(F.doc(db, 'requests', email), adm ? { unreadAdmin: false, unreadAdminN: 0 } : { unreadUser: false, unreadUserN: 0 }, { merge: true }).catch(() => {}).finally(() => { mrBusy = false; }); };
+      const onVis = () => { if (document.visibilityState === 'visible' && unread(st.req)) markRead(); };
+      document.addEventListener('visibilitychange', onVis);
 
       const closed = () => st.req && st.req.status === 'closed';
       function drawHead() {
@@ -2476,17 +2531,14 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       unsubs.push(F.onSnapshot(F.query(F.collection(db, 'requests', email, 'msgs'), F.orderBy('ts')), sn => {
         st.msgs = sn.docs.map(d => ({ id: d.id, ...d.data() }));
         if (!st.edit) drawMsgs(); else { const v = $c('#cxet'); if (v) st.editVal = v.value; drawMsgs(); }
-        if (st.msgs.length && st.msgs[st.msgs.length - 1].from !== (adm ? 'admin' : 'user')) markRead();
       }, e => { M.innerHTML = '<div class="cxe" style="color:#b91c1c">Gagal memuat percakapan (' + E2(e.code || e.message) + '). Pastikan Firestore Rules terbaru sudah dipublish.</div>'; }));
-      unsubs.push(F.onSnapshot(F.doc(db, 'requests', email), sn => { st.req = sn.exists() ? sn.data() : null; drawHead(); drawFoot(); }, () => {}));
+      unsubs.push(F.onSnapshot(F.doc(db, 'requests', email), sn => { st.req = sn.exists() ? sn.data() : null; drawHead(); drawFoot(); if (document.visibilityState === 'visible' && unread(st.req)) markRead(); }, () => {}));
       if (adm) unsubs.push(F.onSnapshot(F.doc(db, 'members', email), sn => { st.mem = sn.exists() ? { active: String(sn.data().active) === 'true', live: isLive(sn.data()), exp: tsNum(sn.data().expiresAt) } : null; drawHead(); }, () => {}));
-      markRead();
-
-      const close = () => { unsubs.forEach(u => { try { u(); } catch (e) {} }); chatOpenFor = null; root.remove(); if (o.onClose) o.onClose(); };
+      const close = () => { unsubs.forEach(u => { try { u(); } catch (e) {} }); document.removeEventListener('visibilitychange', onVis); chatOpenFor = null; root.remove(); if (o.onClose) o.onClose(); };
       const fail = e => alert('Gagal: ' + (e.code || e.message) + (e.code === 'permission-denied' ? '\n\nRules menolak. Pastikan Firestore Rules terbaru sudah dipublish.' : ''));
       const sysMsg = async (text, patch) => {
         await F.addDoc(F.collection(db, 'requests', email, 'msgs'), { from: 'admin', text, ts: Date.now() });
-        await F.setDoc(F.doc(db, 'requests', email), { lastMsg: text, lastFrom: 'admin', unreadUser: true, ts: Date.now(), ...(patch || {}) }, { merge: true }); bump(email, false);
+        await reqW(email, { lastMsg: text, lastFrom: 'admin', unreadUser: true, ts: Date.now(), ...(patch || {}) }, 'unreadUserN');
       };
 
       async function send() {
@@ -2497,9 +2549,9 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
           const msg = { from: adm ? 'admin' : 'user', text, ts: Date.now() }; if (att) msg.file = att;
           await F.addDoc(F.collection(db, 'requests', email, 'msgs'), msg);
           const lm = text || ('📎 ' + att.name);
-          if (adm) await F.setDoc(F.doc(db, 'requests', email), { lastMsg: lm, lastFrom: 'admin', unreadUser: true, ts: Date.now() }, { merge: true });
-          else await F.setDoc(F.doc(db, 'requests', email), { email, name: o.name || '', status: o.member ? 'approved' : (closed() ? 'closed' : 'pending'), lastMsg: lm, lastFrom: 'user', unreadAdmin: true, ts: Date.now() }, { merge: true });
-          bump(email, !adm); st.att = null; tx.value = ''; drawFoot();
+          if (adm) await reqW(email, { lastMsg: lm, lastFrom: 'admin', unreadUser: true, ts: Date.now() }, 'unreadUserN');
+          else await reqW(email, { email, name: o.name || '', status: o.member ? 'approved' : (closed() ? 'closed' : 'pending'), lastMsg: lm, lastFrom: 'user', unreadAdmin: true, ts: Date.now() }, 'unreadAdminN');
+          st.att = null; tx.value = ''; drawFoot();
         } catch (e) { alert('Pesan belum terkirim (' + (e.code || e.message) + '). Coba lagi.'); }
         st.busy = false;
       }
@@ -2584,7 +2636,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       const em = (user.email || '').toLowerCase();
       F.getDoc(F.doc(db, 'admins', em)).then(snap => {
         if (!snap.exists()) return;
-        FN.isAdmin = true; FN.openAdmin = openAdmin; try { FN.refresh && FN.refresh(); } catch (e) {}
+        FN.isAdmin = true; FN.openAdmin = openAdmin; FN.openUsage = openUsage; try { FN.refresh && FN.refresh(); } catch (e) {}
         const bt = document.createElement('button'); bt.id = 'admbtn'; bt.textContent = '🛡️ Admin';
         bt.setAttribute('style', 'position:fixed;right:12px;bottom:84px;z-index:9998;padding:8px 12px;border-radius:20px;border:0;background:#4F7CF0;color:#fff;font-weight:700;cursor:pointer');
         bt.onclick = () => { askNotifPerm(); openAdmin(); }; document.body.appendChild(bt);
@@ -2600,10 +2652,105 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
         }, e => console.warn('[FocusNest] requests', e));
       }).catch(e => console.warn('[FocusNest] admin check', e));
 
+      /* ---------- statistik penggunaan (write / durasi / data) ---------- */
+      const nf = n => (+n || 0).toLocaleString('id-ID');
+      const fmtDur = s => { s = Math.round(+s || 0); if (s < 60) return s + ' dtk'; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? h + ' j ' + m + ' m' : m + ' mnt'; };
+      const tenure = ms => { const d = Math.max(0, Math.floor(ms / DAY)); if (d < 31) return d + ' hari'; const m = Math.floor(d / 30.44), r = Math.round(d - m * 30.44); return m + ' bln' + (r ? ' ' + r + ' hr' : ''); };
+      const dLabel = d => new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+      const uStats = u => {
+        u = u || {}; const w = u.w || {}, sec = u.sec || {}, now = Date.now(), td = uDay(now);
+        const wk = Object.keys(w).filter(k => +w[k] > 0), sk = Object.keys(sec).filter(k => +sec[k] > 0);
+        const tw = Object.keys(w).reduce((a, k) => a + (+w[k] || 0), 0), ts = Object.keys(sec).reduce((a, k) => a + (+sec[k] || 0), 0);
+        let w7 = 0; for (let i = 0; i < 7; i++) w7 += +w[uDay(now - i * DAY)] || 0;
+        const act = new Set([...wk, ...sk]).size;
+        return { today: +w[td] || 0, w7, tw, avgW: wk.length ? Math.round(tw / wk.length) : 0, act, ts, secToday: +sec[td] || 0, avgSec: sk.length ? ts / sk.length : 0, last: tsNum(u.last), size: +u.size || 0, w };
+      };
+      function usageCard(u, err) {
+        const pr = (k, v) => '<div class="pr"><span>' + k + '</span><b>' + v + '</b></div>';
+        if (err) return '<p class="mu">Belum bisa membaca data aktivitas (' + E2(err) + '). Pastikan Rules untuk <b>usage/{email}</b> sudah dipublish.</p>';
+        if (!u) return '<p class="mu">Belum ada data aktivitas. Data muncul setelah member ini membuka aplikasi versi terbaru.</p>';
+        const x = uStats(u), now = Date.now(), days = []; for (let i = 13; i >= 0; i--) days.push(uDay(now - i * DAY));
+        const mx = Math.max(1, ...days.map(d => +x.w[d] || 0));
+        return pr('Tulis (write) hari ini', '<span style="color:var(--ac)">' + nf(x.today) + '</span>') + pr('Write 7 hari terakhir', nf(x.w7)) + pr('Rata-rata write / hari aktif', nf(x.avgW)) + pr('Total write tercatat', nf(x.tw)) +
+          pr('Terakhir akses', x.last ? fmtDt(x.last) : '–') + pr('Durasi akses hari ini', fmtDur(x.secToday)) + pr('Total durasi akses', fmtDur(x.ts)) + pr('Rata-rata durasi / hari', fmtDur(x.avgSec)) + pr('Data tersimpan', x.size ? fmtSize(x.size) : '–') +
+          '<h3 style="margin:12px 0 4px;font-size:.84rem">Write per hari (14 hari)</h3><div class="bars" style="overflow-x:auto;height:110px">' + days.map(d => { const v = +x.w[d] || 0; return '<div style="min-width:26px" title="' + d + ': ' + v + ' write"><span>' + (v || '') + '</span><i style="height:' + Math.max(2, Math.round(v / mx * 70)) + 'px"></i>' + d.slice(8) + '</div>'; }).join('') + '</div>';
+      }
+
+      /* ---------- panel: total write project + peringkat user ---------- */
+      function openUsage() {
+        const old = document.getElementById('usg'); if (old) old.remove();
+        const o = document.createElement('div'); o.id = 'usg';
+        o.setAttribute('style', 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:14px');
+        o.innerHTML = '<div class="c" style="max-width:580px;width:100%;max-height:90vh;overflow:auto;margin:0"><div class="f" style="flex-wrap:nowrap;align-items:center"><h2 style="margin:0;flex:1">📊 Write project & peringkat user</h2><button class="b s sm n" id="urf" title="Muat ulang" aria-label="Muat ulang">🔄</button><button class="b s sm n" id="ucl" aria-label="Tutup">✕</button></div><div id="ubody"><p class="mu">Memuat…</p></div></div>';
+        document.body.appendChild(o);
+        const s = { rows: [], use: {}, tab: 'w', all: false, err: '', busy: true, at: 0 };
+        const LIM = 20, QUOTA = 20000;
+        const TABS = [['w', '✍️ Paling banyak write'], ['m', '🏅 Paling lama member'], ['a', '⏱️ Durasi akses'], ['i', '😴 Lama tak akses'], ['d', '💾 Data terbanyak']];
+        const close = () => o.remove();
+
+        async function load() {
+          s.busy = true; s.err = ''; draw();
+          const mem = {}, use = {};
+          try { (await F.getDocs(F.query(F.collection(db, 'members'), F.limit(2000)))).forEach(d => { mem[d.id] = d.data(); }); } catch (e) { s.err += 'members: ' + (e.code || e.message) + ' '; }
+          try { (await F.getDocs(F.query(F.collection(db, 'usage'), F.limit(2000)))).forEach(d => { use[d.id] = d.data(); }); } catch (e) { s.err += 'usage: ' + (e.code || e.message); }
+          const ids = new Set([...Object.keys(mem), ...Object.keys(use)]);
+          s.use = use; s.at = Date.now();
+          s.rows = [...ids].map(id => { const m = mem[id], x = uStats(use[id]); return { id, hasM: !!m, hasU: !!use[id], since: m ? (tsNum(m.firstActiveAt) || tsNum(m.activeAt) || tsNum(m.addedAt)) : 0, live: m ? isLive(m) : false, st: x }; });
+          s.busy = false; draw();
+        }
+
+        const rowH = (i, r, right, sub) => '<div class="tk" data-mx="' + E2(r.id) + '" style="cursor:pointer;gap:8px" role="button" tabindex="0"><span class="mu" style="flex:none;width:26px;text-align:right">' + (i + 1) + '.</span><div style="min-width:0;flex:1"><b style="word-break:break-all">' + E2(r.id) + '</b>' + (r.hasM && !r.live ? ' <span class="mu">(nonaktif)</span>' : '') + '<div class="mu" style="font-size:.76rem">' + sub + '</div></div><b style="flex:none;text-align:right">' + right + '</b></div>';
+
+        function summary() {
+          const now = Date.now(), days = []; for (let i = 0; i < 14; i++) days.push(uDay(now - i * DAY));
+          const tot = days.map(d => { let t = 0, n = 0; s.rows.forEach(r => { const v = +r.st.w[d] || 0; if (v > 0) { t += v; n++; } }); return { d, t, n }; });
+          const td = tot[0].t, pct = td / QUOTA * 100, col = pct >= 85 ? 'var(--rd)' : pct >= 60 ? 'var(--wn)' : 'var(--ok)';
+          const a7 = Math.round(tot.slice(0, 7).reduce((a, x) => a + x.t, 0) / 7), peak = tot.reduce((a, x) => x.t > a.t ? x : a, tot[0]), mx = Math.max(1, peak.t);
+          return '<div class="mdt" style="margin:10px 0"><div class="f" style="flex-wrap:nowrap;align-items:baseline"><b style="font-size:1.6rem;color:var(--ac)">' + nf(td) + '</b><span class="mu" style="flex:1">write hari ini dari ' + nf(QUOTA) + ' (' + pct.toFixed(1).replace('.', ',') + '%)</span></div>' +
+            '<div class="bar" style="height:10px"><i style="width:' + Math.min(100, pct) + '%;background:' + col + '"></i></div>' +
+            '<div class="mu" style="font-size:.78rem">Rata-rata 7 hari: <b>' + nf(a7) + '</b>/hari · Tertinggi 14 hari: <b>' + nf(peak.t) + '</b> (' + dLabel(peak.d) + ') · User aktif hari ini: <b>' + tot[0].n + '</b></div></div>' +
+            '<h3 style="margin:12px 0 4px;font-size:.9rem">Total write semua user per hari</h3>' +
+            tot.map(x => '<div class="pr"><span>' + dLabel(x.d) + (x.n ? ' <small class="mu">· ' + x.n + ' user</small>' : '') + '</span><b style="min-width:46%;text-align:right"><span style="display:inline-block;height:7px;border-radius:4px;background:var(--ac);vertical-align:middle;margin-right:6px;width:' + Math.round(x.t / mx * 60) + '%;min-width:' + (x.t ? 2 : 0) + 'px"></span>' + nf(x.t) + ' <small class="mu">(' + (x.t / QUOTA * 100).toFixed(1).replace('.', ',') + '%)</small></b></div>').join('');
+        }
+
+        function ranking() {
+          const now = Date.now(); let L = s.rows.slice(), fn;
+          if (s.tab === 'w') { L.sort((a, b) => b.st.tw - a.st.tw || b.st.today - a.st.today); fn = r => rowH(L.indexOf(r), r, nf(r.st.tw), 'hari ini <b>' + nf(r.st.today) + '</b> · 7 hari ' + nf(r.st.w7) + ' · rata² ' + nf(r.st.avgW) + '/hari aktif'); }
+          else if (s.tab === 'm') { L = L.filter(r => r.hasM); L.sort((a, b) => (a.since || 9e15) - (b.since || 9e15)); fn = r => rowH(L.indexOf(r), r, r.since ? tenure(now - r.since) : '–', r.since ? 'member sejak ' + fmtD2(r.since) : 'tanggal belum tercatat'); }
+          else if (s.tab === 'a') { L.sort((a, b) => b.st.ts - a.st.ts); fn = r => rowH(L.indexOf(r), r, fmtDur(r.st.ts), r.st.act + ' hari akses · rata² <b>' + fmtDur(r.st.avgSec) + '</b>/hari · hari ini ' + fmtDur(r.st.secToday)); }
+          else if (s.tab === 'i') { L.sort((a, b) => (a.st.last || 0) - (b.st.last || 0)); fn = r => { const l = r.st.last, d = l ? Math.floor((now - l) / DAY) : 0; return rowH(L.indexOf(r), r, l ? (d === 0 ? 'hari ini' : d + ' hari') : '–', l ? 'terakhir akses: <b>' + fmtDt(l) + '</b>' : 'belum ada catatan akses'); }; }
+          else { L.sort((a, b) => b.st.size - a.st.size); fn = r => rowH(L.indexOf(r), r, r.st.size ? fmtSize(r.st.size) : '–', 'rata² write ' + nf(r.st.avgW) + '/hari aktif · total ' + nf(r.st.tw)); }
+          if (!L.length) return '<p class="mu">Belum ada data.</p>';
+          const shown = s.all ? L : L.slice(0, LIM);
+          return shown.map(fn).join('') + (L.length > LIM ? '<button class="b s sm" id="uall" style="margin-top:8px">' + (s.all ? 'Ringkas (20 teratas)' : 'Tampilkan semua (' + L.length + ')') + '</button>' : '');
+        }
+
+        function draw() {
+          const b = o.querySelector('#ubody');
+          if (s.busy) { b.innerHTML = '<p class="mu">Memuat…</p>'; return; }
+          const hint = /permission/.test(s.err) ? '<p class="mu" style="color:var(--rd)">Rules menolak membaca (' + E2(s.err) + '). Tambahkan aturan untuk koleksi <b>usage</b> lalu muat ulang.</p>' : (s.err ? '<p class="mu" style="color:var(--rd)">' + E2(s.err) + '</p>' : '');
+          const none = !Object.keys(s.use).length && !s.err ? '<p class="mu">Belum ada data. Data mulai terisi setelah member membuka aplikasi versi ini.</p>' : '';
+          b.innerHTML = hint + none + summary() +
+            '<h3 style="margin:14px 0 6px;font-size:.9rem">Peringkat user</h3><div class="tabs" style="margin:0 0 8px">' + TABS.map(([k, l]) => '<button class="b ' + (s.tab === k ? '' : 's') + ' sm" data-ut="' + k + '">' + l + '</button>').join('') + '</div>' + ranking() +
+            '<p class="mu" style="margin-top:12px;font-size:.72rem">Dihitung dari write yang dikirim aplikasi (per tanggal lokal), termasuk chat & aksi admin. Angka resmi ada di Firebase Console → Usage; kuota harian Firebase reset tengah malam waktu Pasifik. Diperbarui ' + fmtHM(s.at) + '.</p>';
+        }
+
+        o.addEventListener('click', ev => {
+          const t = ev.target, b = t.closest('button'), mx = t.closest('[data-mx]');
+          if (!b && mx) { openProfile(mx.dataset.mx); return; }
+          if (!b) { if (t === o) close(); return; }
+          if (b.id === 'ucl') { close(); return; }
+          if (b.id === 'urf') { load(); return; }
+          if (b.id === 'uall') { s.all = !s.all; draw(); return; }
+          if (b.dataset.ut) { s.tab = b.dataset.ut; s.all = false; draw(); }
+        });
+        load();
+      }
+
       function openProfile(e, onClose) {
         const old = document.getElementById('mpf'); if (old) old.remove();
         const p = document.createElement('div'); p.id = 'mpf'; document.body.appendChild(p);
-        const st = { m: null, a: false, r: null }, uns = [];
+        const st = { m: null, a: false, r: null, u: null, ue: '' }, uns = [];
         const pr = (k, v) => '<div class="pr"><span>' + k + '</span><b>' + v + '</b></div>';
         const draw = () => {
           const m = st.m, now = Date.now(), exp = tsNum(m && m.expiresAt), live = isLive(m), hist = ((m && m.hist) || []).slice().sort((a, b) => b.ts - a.ts);
@@ -2616,6 +2763,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
           p.innerHTML = '<div class="ph"><button class="b s sm n" id="pb" aria-label="Kembali">‹ Kembali</button><b class="pt2">' + E2(e) + '</b><span class="mu">' + status + '</span></div><div class="pbd">' +
             '<div class="c"><h2>Profil</h2>' + pr('Email', E2(e)) + pr('Nama', E2(rq.name || '–')) + pr('Peran', st.a ? 'Admin' : 'Member') + pr('Status', status) + pr('Terakhir chat', rq.ts ? fmtDt(tsNum(rq.ts)) : '–') + '</div>' +
             '<div class="c"><h2>Membership</h2><div class="pg">' + pr('Aktif sejak', first ? fmtD2(first) : 'belum tercatat') + pr('Berlaku sampai', st.a ? 'tanpa batas (admin)' : (exp ? fmtD2(exp) : (live ? 'tanpa batas' : '–'))) + pr('Sisa', st.a ? '–' : (exp ? (exp > now ? Math.ceil((exp - now) / DAY) + ' hari' : 'berakhir') : '–')) + pr('Total langganan', (subs.length || (first ? 1 : 0)) + '×') + pr('Total durasi', mo + ' bulan' + (inf ? ' + tanpa batas' : '')) + pr('Nonaktif terakhir', tsNum(m && m.inactiveAt) ? fmtDt(tsNum(m.inactiveAt)) : '–') + '</div></div>' +
+            '<div class="c"><h2>📊 Aktivitas & write</h2>' + usageCard(st.u, st.ue) + '</div>' +
             '<div class="c"><h2>Riwayat membership</h2>' + hl + '</div>' +
             (st.a ? '' : '<div class="c"><h2>Kelola langganan</h2><div class="f">' + [1, 3, 6, 12].map(n => '<button class="b s sm n" data-m="' + n + '">+' + n + ' bln</button>').join('') + '<button class="b s sm n" data-m="0">♾️ tanpa batas</button></div><div class="f" style="margin-top:8px"><input type="date" id="pdt" value="' + (exp ? dayKey(exp) : '') + '" aria-label="Aktif sampai tanggal"><button class="b sm n" id="pds">Set tanggal</button></div></div>') +
             '<div class="c"><h2>Aksi</h2><div class="f"><button class="b n" id="pch">💬 Buka chat</button>' + (me ? '' : (st.a ? '' : (live ? '<button class="b s n" id="poff" style="color:var(--rd)">⏻ Nonaktifkan</button>' : '<button class="b s n" id="pon">▶️ Aktifkan</button>')) + '<button class="b s n" id="prl">' + (st.a ? '👤 Jadikan member biasa' : '🛡️ Jadikan admin') + '</button><button class="b s n" id="pdl" style="color:var(--rd)">🗑 Hapus akun</button>') + '</div></div></div>';
@@ -2623,6 +2771,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
         const close = () => { uns.forEach(u => { try { u(); } catch (x) {} }); p.remove(); if (onClose) onClose(); };
         uns.push(F.onSnapshot(F.doc(db, 'members', e), sn => { st.m = sn.exists() ? sn.data() : null; draw(); }, () => {}));
         uns.push(F.onSnapshot(F.doc(db, 'requests', e), sn => { st.r = sn.exists() ? sn.data() : null; draw(); }, () => {}));
+        uns.push(F.onSnapshot(F.doc(db, 'usage', e), sn => { st.u = sn.exists() ? sn.data() : null; st.ue = ''; draw(); }, er => { st.ue = er.code || 'error'; draw(); }));
         F.getDoc(F.doc(db, 'admins', e)).then(sn => { st.a = sn.exists(); draw(); }).catch(() => {});
         draw();
         p.addEventListener('click', async ev => {
@@ -2940,6 +3089,31 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
 .pgr .pst{padding:5px 8px}.pgr .pst .mu{font-size:.56rem}.pgr .pst b{font-size:.8rem}.pgr .pst small{font-size:.5rem}
 #dw .f{gap:8px}
 </style>
+<style id="v18css">
+/* jam digital sedikit lebih naik */
+#clk{margin-top:-4px;line-height:1.1}
+.mclk{margin-top:-4px;line-height:1.2}
+#dw .mclk{margin-top:-10px}
+/* tracker progress: tanda (selesai / belum / mendatang) turun sedikit, isi di bawahnya ikut turun */
+.trbody>.leg{margin:14px 0 6px!important}
+/* tracker progress di HP: 2 baris, atas 3 bawah 3 */
+@media(max-width:820px){
+.trmain{display:grid!important;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px}
+  .trm{flex:none;min-width:0;padding:8px 4px;font-size:.72rem;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+/* bubble chat melayang (muncul hanya saat ada pesan belum dibaca) */
+#chfab{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:9990;width:46px;height:46px;border:0;border-radius:50%;background:#0f766e;color:#fff;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.28);animation:chpulse 2.4s ease-in-out infinite}
+#chfab[hidden]{display:none}
+#chfab .nb{position:absolute;top:-4px;right:-4px;margin:0;min-width:20px;line-height:20px;border:2px solid var(--bg)}
+@keyframes chpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@media(prefers-reduced-motion:reduce){#chfab{animation:none}}
+/* profil member di atas panel write */
+#mpf{z-index:10002}
+#usg .pr{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:5px 0;border-bottom:1px solid var(--ln);font-size:.84rem}#usg .pr:last-child{border:0}
+#usg .pr span{color:var(--mu)}#usg .pr b{text-align:right}
+#usg .mdt{padding:10px;border-radius:12px;background:var(--as)}
+#usg .tk>div{flex:1;min-width:0}
+</style>
 <script>
 /* ===== v17: tema otomatis, timer latar belakang, kartu chat/admin di Atur ===== */
 (()=>{
@@ -2962,14 +3136,18 @@ try{const r=JSON.parse(localStorage.getItem(TK)||'null');if(r&&r.mode){Object.as
  if(r.run&&(r.end||r.st)){tm.run=true;tm.iv=setInterval(tick,1000);if(r.dw){tm.dw=true;$('#dw').classList.add('on')}tick()}}}catch(e){}
 syncDw();
 /* kartu Chat admin / Admin di Atur (di atas Data) + angka pesan belum dibuka */
-window.__chatBadge=n=>{document.querySelectorAll('[data-nb]').forEach(x=>{x.textContent=n||'';x.hidden=!n});const b=document.querySelector('#side button[data-k="set"]');if(b){let i=b.querySelector('.nb2');if(n){if(!i){i=document.createElement('i');i.className='nb nb2';b.appendChild(i)}i.textContent=n}else if(i)i.remove()}};
+function chFab(n){let f=document.getElementById('chfab');if(!f){if(!n)return;f=document.createElement('button');f.id='chfab';f.type='button';f.setAttribute('aria-label','Pesan masuk');f.innerHTML='<span aria-hidden="true">💬</span><i class="nb"></i>';
+ f.addEventListener('click',()=>{const F=window.FN||{};try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission()}catch(x){}
+  if(F.isAdmin&&F.openAdmin){F.openAdmin();setTimeout(()=>{const t=document.querySelector('#adm [data-tab="inbox"]');t&&t.click()},60)}else if(F.support)F.support()});document.body.appendChild(f)}
+ f.hidden=!n;const i=f.querySelector('.nb');if(i)i.textContent=n>99?'99+':(n||'')}
+window.__chatBadge=n=>{chFab(n);document.querySelectorAll('[data-nb]').forEach(x=>{x.textContent=n||'';x.hidden=!n});const b=document.querySelector('#side button[data-k="set"]');if(b){let i=b.querySelector('.nb2');if(n){if(!i){i=document.createElement('i');i.className='nb nb2';b.appendChild(i)}i.textContent=n}else if(i)i.remove()}};
 function place(){const app=document.getElementById('app');app.dataset.pg=pg;if(pg!=='set'||app.querySelector('#c17'))return;const F=window.FN||{};let h='';
- if(F.isAdmin)h='<h2>🛡️ Admin</h2><div class="tabs"><button class="b" data-v17="adm">Kelola admin & member</button><button class="b s" data-v17="inbox">📥 Kotak masuk<i class="nb" data-nb hidden></i></button></div>';
+ if(F.isAdmin)h='<h2>🛡️ Admin</h2><div class="tabs"><button class="b" data-v17="adm">Kelola admin & member</button><button class="b s" data-v17="inbox">📥 Kotak masuk<i class="nb" data-nb hidden></i></button><button class="b s" data-v17="usage">📊 Total write & peringkat user</button></div>';
  else if(F.support)h='<h2>💬 Chat admin</h2><div class="tabs"><button class="b" data-v17="chat">Buka chat<i class="nb" data-nb hidden></i></button></div>';
  if(!h)return;const d=document.createElement('div');d.id='c17';d.className='c';d.innerHTML=h;
  const t=[...app.children].find(x=>/^\s*Data\b/.test((x.querySelector('h2,summary')||{}).textContent||''));t?t.before(d):app.appendChild(d)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-v17]');if(!b)return;const F=window.FN||{};try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission()}catch(x){}
- if(b.dataset.v17==='chat'&&F.support)F.support();else if(F.openAdmin){F.openAdmin();if(b.dataset.v17==='inbox')setTimeout(()=>{const t=document.querySelector('#adm [data-tab="inbox"]');t&&t.click()},60)}});
+ if(b.dataset.v17==='chat'&&F.support)F.support();else if(b.dataset.v17==='usage'){if(F.openUsage)F.openUsage()}else if(F.openAdmin){F.openAdmin();if(b.dataset.v17==='inbox')setTimeout(()=>{const t=document.querySelector('#adm [data-tab="inbox"]');t&&t.click()},60)}});
 const _r=render;render=function(){const r=_r.apply(this,arguments);try{place();window.__chatBadge((window.FN&&FN.unreadN)||0)}catch(e){}return r};
 render();
 })();
