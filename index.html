@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>FocusNest — Plan · Focus · Grow · Achieve</title>
-<!-- build: v10 -->
+<!-- build: v16 -->
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -1194,7 +1194,7 @@ function vProg(){const R=pRange(),st=pStats(R.a,R.b),pc=st.n?Math.round(st.d/st.
   <div class="c"><div class="pnv"><button class="b s sm n" data-a="xpn" data-v="-1" aria-label="Sebelumnya">‹</button><h2>${R.lb}</h2><button class="b s sm n" data-a="xpn" data-v="1" aria-label="Berikutnya">›</button><button class="b s sm n" data-a="xpn" data-v="0">Sekarang</button></div>
   <div class="g g2 pgr" style="margin-top:12px"><button type="button" class="c st pst pgb${window.__gdo?' on':''}" data-v15="gdo" aria-expanded="${!!window.__gdo}"><span class="mu">🏆 Goals selesai</span><b>${gdn.length}</b><small class="mu">${window.__gdo?'ketuk untuk tutup':'ketuk untuk detail'}</small></button><div class="c st pst"><span class="mu">📊 Realisasi</span><b>${pc}%<small class="fr">(${st.d}/${st.n})</small></b><small class="mu">selesai ÷ tugas sampai hari ini</small></div></div>${gdet}
   <div class="g g2 pgr" style="margin-top:12px"><div class="c st pst"><span class="mu">✅ Tugas</span><b>${st.d}/${st.n}</b></div><div class="c st pst"><span class="mu">⏱️ Fokus</span><b>${st.fm>=60?Math.round(st.fm/6)/10+' jam':st.fm+' mnt'}</b></div></div>
-  <div class="g g3 pgr" style="margin-top:12px"><div class="c st pst"><span class="mu">🔥 Konsisten</span><b>${strk()} hari</b></div><div class="c st pst"><span class="mu">😊 Mood</span><b>${st.mo}${st.mo==='–'?'':'/5'}</b></div><div class="c st pst"><span class="mu">🧠 Sesi brain game</span><b>${st.gm}</b></div></div>
+  <div class="g g2 pgr" style="margin-top:12px"><div class="c st pst"><span class="mu">🔥 Konsisten</span><b>${strk()} hari</b></div><div class="c st pst"><span class="mu">😊 Mood</span><b>${st.mo}${st.mo==='–'?'':'/5'}</b></div></div>
   <div class="bar" style="margin-top:12px"><i style="width:${pc}%"></i></div><p class="mu" style="margin:0">${msg}</p></div>`}
 
 /* ---------- Tips ---------- */
@@ -1258,15 +1258,14 @@ return`<h1>Alarm ⏰</h1><div class="c" style="margin-top:12px"><p class="mu">No
 function pdf(kind,n){init();const ds=[...Array(n)].map((_,i)=>addD(TD(),-(n-1-i))),tk=S.tasks.filter(t=>ds.includes(t.due||TD())),dn=tk.filter(t=>t.st==='selesai'),fo=S.focus.filter(f=>ds.includes(f.d)),fm2=fo.reduce((a,f)=>a+f.m,0);let h='';const tb=(hd,rows)=>`<table><tr>${hd.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${E(x)}</td>`).join('')}</tr>`).join('')}</table>`;
 const prog=()=>window.pdfProg(ds,tk,dn,fm2,n);
 const mood=()=>{const r=ds.filter(d=>S.mood[d]&&S.mood[d].m);const av=k=>r.length?(r.reduce((a,d)=>a+(+S.mood[d][k]||0),0)/r.length).toFixed(1):'-';return`<h2>😊 Mood & Energi</h2><p>Rata-rata mood <b>${av('m')}/5</b> · energi <b>${av('e')}/5</b></p>${tb(['Tanggal','Mood','Energi','Catatan'],r.map(d=>[d,EM[S.mood[d].m-1]+' '+S.mood[d].m,S.mood[d].e||'-',S.mood[d].n||S.mood[d].note||'']))}`};
-const rev=()=>{const x=Object.entries(S.rev||{}).slice(-12);return`<h2>📝 Review</h2>${x.length?x.map(([k,v])=>`<h3>${E(k)}</h3>${typeof v==='object'?'<ul>'+Object.entries(v).filter(([a,b])=>b&&typeof b!=='object').map(([a,b])=>`<li><b>${E(a)}</b>: ${E(b)}</li>`).join('')+'</ul>':'<p>'+E(v)+'</p>'}`).join(''):'<p>Belum ada review.</p>'}`};
-h=(kind==='progres'||kind==='semua'?prog():'')+(kind==='review'||kind==='semua'?rev():'')+(kind==='mood'||kind==='semua'?mood():'');
+h=(kind==='progres'||kind==='semua'?prog():'')+(kind==='mood'||kind==='semua'?mood():'');
 const f=document.createElement('iframe');f.style.cssText='position:fixed;width:0;height:0;border:0';document.body.appendChild(f);f.srcdoc=`<html><head><meta charset=utf-8><style>body{font-family:sans-serif;padding:20px;color:#1b2a4a}table{border-collapse:collapse;width:100%;margin:8px 0;page-break-inside:auto}tr{page-break-inside:avoid}.g{color:#25A57A}.r{color:#E5484D}.n{color:#6B7A99}small{color:#6B7A99}h2,h3{page-break-after:avoid}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}td,th{border:1px solid #ccc;padding:4px 6px;font-size:12px;text-align:left}th{background:#eef2ff}h1{color:#4F7CF0}</style></head><body><h1>FocusNest · Laporan ${n} hari</h1><p>${E(S.set.name||'')} · ${TD()}</p>${h}</body></html>`;f.onload=()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){toast('Gagal membuka cetak')}setTimeout(()=>f.remove(),60000)}}
 /* ---------- Enhance setelah render ---------- */
 function hero(){const p=S.pet,h=$('.hero');if(!p||!h||h.querySelector('.mhero'))return;const sad=p.full<25||p.joy<25;let lv=1;try{lv=pLv(p)}catch(e){}h.insertAdjacentHTML('beforeend',`<div class="mhero"><div class="pv" id="pst">${petSVG(p.sp,sad?'sad':'ok')}</div><div class="mi"><b>${E(p.name)}</b> · Lv ${lv}<div class="bar"><i id="pf" style="width:${p.full}%"></i></div>🍖 <span id="pft">${Math.round(p.full)}</span>% <div class="bar"><i id="pj" style="width:${p.joy}%"></i></div>💖 <span id="pjt">${Math.round(p.joy)}</span>%<div class="bub" id="pbub">${petMood(p)[1]}</div></div><div style="display:flex;flex-direction:column;gap:4px"><button data-a="feed" aria-label="Beri makan">🍖</button><button data-a="play" aria-label="Main">🎾</button></div></div>`)}
 function enh(){init();
 if(pg==='dash')hero();
 if(pg==='focus'){const h=$('#app h1');if(h&&!$('#app .mclk'))h.insertAdjacentHTML('afterend','<div class="mclk"></div>')}
-if(pg==='prog'&&!$('#zpd'))$('#app').insertAdjacentHTML('beforeend',`<div class="c" id="zpd"><h2>📄 Unduh PDF</h2><div class="f"><select id="z-pk"><option value="semua">Semua</option><option value="progres">Progres</option><option value="review">Review</option><option value="mood">Mood & Energi</option></select><select id="z-pn"><option value="7">7 hari</option><option value="30" selected>30 hari</option><option value="90">90 hari</option></select>${window.pdfGoalSel?pdfGoalSel():''}<button class="b" data-z="pdf">Unduh PDF</button></div><p class="mu">Opsi “Progres” berisi tabel tiap goal & tugasnya (total hari, hari pengerjaan, selesai, belum dikerjakan) persis seperti di app. Di jendela cetak pilih “Simpan sebagai PDF”.</p></div>`)}
+if(pg==='prog'&&!$('#zpd'))$('#app').insertAdjacentHTML('beforeend',`<div class="c" id="zpd"><h2>📄 Unduh PDF</h2><div class="f"><select id="z-pk"><option value="semua">Semua</option><option value="progres">Progres</option><option value="mood">Mood & Energi</option></select><select id="z-pn"><option value="7">7 hari</option><option value="30" selected>30 hari</option><option value="90">90 hari</option></select>${window.pdfGoalSel?pdfGoalSel():''}<button class="b" data-z="pdf">Unduh PDF</button></div><p class="mu">Opsi “Progres” berisi tabel tiap goal & tugasnya (total hari, hari pengerjaan, selesai, belum dikerjakan) persis seperti di app. Di jendela cetak pilih “Simpan sebagai PDF”.</p></div>`)}
 const _rd=render;render=function(){(window.ensureRt2||ensureRt)();_rd();enh()};
 const _pm=petMini;petMini=function(){return S.pet?'':_pm()};
 const _cl=clock;clock=function(){_cl();mclk()};
@@ -1998,6 +1997,164 @@ button.pgb{font:inherit;color:inherit;cursor:pointer;width:100%}button.pgb.on{bo
 document.addEventListener('click',e=>{const b=e.target.closest('[data-v15="gdo"]');if(b){window.__gdo=!window.__gdo;render()}});
 render()})();
 </script>
+<style id="v16css">
+/* ===== v16 · tampilan minimalis, rapi, profesional ===== */
+:root{--sub:color-mix(in srgb,var(--ac) 5%,var(--card));--sub2:color-mix(in srgb,var(--ac) 10%,var(--card));--sc:var(--ac)}
+body{font-size:13.5px;line-height:1.45}
+h1{font-size:1.2rem;font-weight:600;margin-bottom:2px}
+h2{font-size:.92rem;font-weight:600;margin-bottom:8px}
+h3{font-size:.84rem;font-weight:600}
+.mu{font-size:.76rem}
+
+/* sidebar */
+@media(min-width:821px){#side{width:176px;padding:14px 10px}main{margin-left:176px;padding:18px 22px;max-width:960px}}
+#side .lg{font-size:1.02rem;padding:0 8px 10px}
+#side button{position:relative;padding:7px 10px;font-size:.8rem;gap:8px;border-radius:8px}
+#side button span{font-size:.85rem}
+#side .cdot{width:7px;height:7px;border-radius:50%;background:var(--rd);margin-left:auto;flex:0 0 auto}
+#side .cdot[hidden]{display:none}
+@media(max-width:820px){#side button{font-size:.6rem;padding:5px 9px}#side .cdot{position:absolute;top:4px;right:6px;margin:0}main{padding:12px 12px 84px}.tm{font-size:2.6rem}}
+
+/* kartu & pemisah antar bagian */
+.c{padding:12px 14px;border-radius:12px;margin-bottom:14px;box-shadow:0 1px 2px rgba(20,40,90,.05)}
+.g{gap:10px}.g>.c{margin:0}
+#app>.c:nth-child(4n+2){--sc:#8B5CF6}#app>.c:nth-child(4n+3){--sc:var(--ok)}#app>.c:nth-child(4n){--sc:var(--wn)}
+#app>.c>h2:first-child::before{content:"";display:inline-block;width:3px;height:.85em;border-radius:2px;background:var(--sc);margin-right:7px;vertical-align:-.08em}
+details.c.cl>summary{padding:9px 14px;font-size:.86rem}
+details.c.cl[open]>summary{border-bottom:1px solid var(--ln);margin-bottom:10px}
+details.cl>summary>.hint{margin-left:6px;margin-right:auto}
+
+/* kotak bersarang: warna latar dibedakan */
+.c.st,.pst{background:var(--sub);border:0;box-shadow:none;padding:8px 10px;border-radius:10px}
+.st:hover{transform:none}
+.st b{font-size:1.05rem;font-weight:700}
+.pst{min-height:54px;gap:1px}.pst b{font-size:1.05rem}.pst small{font-size:.64rem}
+button.pgb.on{box-shadow:0 0 0 2px #8B5CF633}
+.gib{padding:8px 10px;border-radius:10px;background:var(--sub);margin:6px 0}.gim{font-size:.7rem}.gix{font-size:.76rem}.gtg{font-size:.62rem}
+.hero{padding:12px 14px}#clk{font-size:1.6rem}
+
+/* kontrol */
+.b{padding:6px 11px;font-size:.8rem;border-radius:8px;box-shadow:none}
+.b:hover{transform:none}.b.sm{padding:3px 8px;font-size:.72rem}.b.x{padding:3px 6px}
+input,select,textarea{padding:6px 9px;font-size:.82rem;border-radius:8px}
+textarea{min-height:52px}
+.tabs{gap:5px;margin:8px 0}
+.chip{font-size:.7rem;padding:3px 9px;margin:2px 3px 2px 0}
+.tag{font-size:.64rem;padding:0 7px}button.tag{font-size:.64rem}
+.tk{padding:7px 0;gap:8px}.tk input[type=checkbox]{width:16px;height:16px}.tk input[type=number]{width:54px}
+.bar{height:5px;margin:5px 0}
+.tm{font-size:3rem}#dw .tm{font-size:4.5rem}
+.mo{gap:6px}.mo button,.moodc .mo button{font-size:1.4rem;padding:4px 8px;border-radius:10px}
+.mc{padding:12px}.mc .me{font-size:1.5rem}
+.sn div{font-size:.78rem;padding:8px}
+.toast{font-size:.78rem;padding:7px 14px}.toast.big{font-size:.9rem}
+.gq{font-size:1.05rem}.gq.big{font-size:1.7rem}.gcard{font-size:1.05rem}.mmc{font-size:1.4rem}
+#admbtn{padding:6px 10px!important;font-size:.72rem!important}
+
+/* kalender: angka tanggal lebih kecil */
+.cal{gap:3px}.cal button{font-size:.66rem;border-radius:8px}
+.cal button i{width:4px;height:4px;margin-left:-2px;bottom:3px}.cal small{font-size:.6rem}
+.yg{gap:10px}.ym{padding:10px}.mh{font-size:.86rem}
+.ycal{gap:2px}.ycal small{font-size:.54rem}.yd{font-size:.56rem;border-radius:5px}
+.yd .hi,.yd .gi{width:4px;height:4px;top:1px}.yd .hi{right:1px}.yd .gi{left:1px}
+.yc-big .yd{font-size:.78rem}.yc-big small{font-size:.66rem}
+.leg{gap:5px 10px;font-size:.66rem;margin-top:8px}.leg b{width:10px;height:10px;border-radius:3px}.leg em{width:6px;height:6px}
+
+/* tracker progress: ringkas, kecil, hemat ruang */
+.trmain{gap:3px;padding:3px;border-radius:10px;margin:8px 0 10px;background:var(--sub2)}
+.trm{padding:5px 9px;font-size:.7rem;border-radius:8px}
+.trbody{padding:10px;gap:10px;border-radius:10px;background:var(--sub);border-color:transparent}
+.trbody .c.st{background:var(--card)}
+.trbody .g4{grid-template-columns:repeat(auto-fit,minmax(86px,1fr))!important;gap:6px}
+.trbody .g4 .c.st{padding:6px 8px;align-items:flex-start;text-align:left;gap:0}
+.trbody .g4 .c.st .mu{font-size:.6rem;line-height:1.25}
+.trbody .g4 .c.st b{font-size:.9rem;line-height:1.25}
+.trbody .g4 .c.st b .fr{font-size:.6em}
+.trbody h2{font-size:.84rem}
+.trp{max-height:110px;margin:4px 0}
+.trg{gap:3px}.trg small{font-size:.56rem}.trg.s{gap:2px}
+.trc{min-height:44px;padding:3px 4px;border-radius:6px;gap:3px}
+.trc>b{font-size:.6rem;font-weight:600}
+.trn{font-size:.48rem;line-height:1.15}
+.trc.sm{min-height:26px;padding:1px;border-radius:4px}.trc.sm>b{font-size:.48rem}.trc.sm .trn{font-size:.38rem}
+.trc .hi,.trc .gi{width:5px;height:5px}.trc.sm .hi,.trc.sm .gi{width:3px;height:3px}
+.tryg{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.tryg>div>b{font-size:.76rem}
+@media(max-width:600px){.trc{min-height:38px}.trn{font-size:.44rem}}
+
+/* tanda di kalender */
+.trmk{padding:8px 10px;border-radius:10px}
+.trmh{margin-bottom:6px;font-size:.68rem;gap:2px 8px}
+.trmc{grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:5px}
+.trmb{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 6px;padding:5px 8px;border-radius:8px;font-size:.66rem;background:var(--sub)}
+.trmb small{grid-column:1/-1;font-size:.58rem}
+.trmb b{font-size:.84rem}
+.trmb .sw{width:10px;height:10px;margin-right:5px}
+.trmb.all{display:flex;justify-content:center;font-size:.68rem}
+.trmb.on{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--ac) 45%,transparent)}
+
+/* ikon petunjuk (pengganti paragraf keterangan) */
+.hint{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--as);color:var(--ac);font:700 .6rem/1 "Plus Jakarta Sans",system-ui,sans-serif;cursor:pointer;vertical-align:middle;margin-left:6px;flex:0 0 auto;user-select:none;text-transform:none}
+.hint::before{content:"i"}
+.hint:hover,.hint:focus-visible{background:var(--ac);color:#fff}
+.hint.solo{display:flex;margin:4px 0 0 auto}
+.cal button{aspect-ratio:auto;height:34px}
+#hintpop{position:fixed;z-index:90;max-width:min(280px,calc(100vw - 16px));background:var(--ink);color:var(--bg);font-size:.74rem;line-height:1.45;padding:8px 11px;border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:500}
+#hintpop *{color:inherit}
+</style>
+<script>
+/* ===== v16 · ikon petunjuk, tombol Chat Admin di sidebar ===== */
+(()=>{
+const HS=new Map();let hn=0,pop=null,cur=null;
+const SKIP='#lgn,#cx,#adm,#dw,.cx,#hintpop';
+const KEEP=/^(Tidak ada|Belum ada|Belum punya|Goal ini belum|Folder ini masih|Hebat!|Sudah di jalur|Realisasi masih)/;
+function okP(p){
+  if(p.closest(SKIP)||p.dataset.keep!==undefined||p.id)return false;
+  if(p.querySelector('[id],input,button,select,textarea,a,canvas,svg'))return false;
+  const t=p.textContent.trim();
+  if(t.length<45||t.split(/\s+/).length<7)return false;
+  if(KEEP.test(t)||/^\d/.test(t))return false;
+  if(/^\p{Extended_Pictographic}/u.test(t)&&t.includes(' · '))return false;
+  return true}
+function mkHint(html,solo){const b=document.createElement('span');b.className='hint'+(solo?' solo':'');b.tabIndex=0;b.setAttribute('role','button');b.setAttribute('aria-label','Petunjuk');b.title='Petunjuk';const id='h'+(++hn);b.dataset.h=id;HS.set(id,html);return b}
+function conv(root){
+  if(!root)return;
+  root.querySelectorAll('p.mu').forEach(p=>{
+    if(!okP(p))return;
+    const card=p.closest('details.c,.c');let h=null;
+    if(card)h=[...card.children].find(x=>/^(H1|H2|H3|SUMMARY)$/.test(x.tagName))||null;
+    else{const pv=p.previousElementSibling;if(pv&&/^H[123]$/.test(pv.tagName))h=pv}
+    const html=p.innerHTML;
+    if(h){let b=h.querySelector(':scope>.hint');if(b)HS.set(b.dataset.h,HS.get(b.dataset.h)+'<br><br>'+html);else h.appendChild(mkHint(html));p.remove()}
+    else p.replaceWith(mkHint(html,true))});
+  root.querySelectorAll('.trmh>span.mu').forEach(sp=>{const t=sp.textContent.trim();if(/^Ketuk satu tanda/.test(t)){const h=sp.parentElement.querySelector('b');if(h){h.appendChild(mkHint(sp.innerHTML));sp.remove()}}});
+  if(HS.size>300){const live=new Set([...document.querySelectorAll('.hint')].map(x=>x.dataset.h));[...HS.keys()].forEach(k=>{if(!live.has(k))HS.delete(k)})}}
+function show(b){hide();const t=HS.get(b.dataset.h);if(!t)return;pop=document.createElement('div');pop.id='hintpop';pop.setAttribute('role','tooltip');pop.innerHTML=t;document.body.appendChild(pop);cur=b;
+  const r=b.getBoundingClientRect(),w=pop.offsetWidth,hh=pop.offsetHeight;let x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8),y=r.bottom+6;if(y+hh>innerHeight-8)y=Math.max(8,r.top-hh-6);pop.style.left=x+'px';pop.style.top=y+'px'}
+function hide(){if(pop){pop.remove();pop=null;cur=null}}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.hint');
+  if(b){e.preventDefault();e.stopPropagation();cur===b?hide():show(b);return}
+  const c=e.target.closest('[data-v16="chat"]');
+  if(c){hide();try{window.FN.support()}catch(x){}return}
+  if(pop&&!e.target.closest('#hintpop'))hide()},true);
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')hide();
+  if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('hint')){e.preventDefault();cur===e.target?hide():show(e.target)}});
+window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);
+function chatBtn(){
+  const s=document.getElementById('side'),F=window.FN;
+  if(!s||!F||!F.support||F.isAdmin||s.querySelector('.chbtn'))return;
+  const b=document.createElement('button');b.className='chbtn';b.type='button';b.dataset.v16='chat';b.setAttribute('aria-label','Chat privat ke admin');
+  b.innerHTML='<span>💬</span>Chat Admin<i class="cdot"'+(F.unreadChat?'':' hidden')+'></i>';
+  const st=s.querySelector('button[data-k="set"]');st?st.before(b):s.appendChild(b)}
+function polish(){conv(document.getElementById('app'));conv(document.getElementById('dr'));chatBtn()}
+const _r16=render;render=function(){const r=_r16.apply(this,arguments);try{hide();polish()}catch(e){console.warn('[v16]',e)}return r};
+let tmr=null;const mo=new MutationObserver(()=>{clearTimeout(tmr);tmr=setTimeout(()=>{try{polish()}catch(e){}},40)});
+['app','dr','side'].forEach(id=>{const e=document.getElementById(id);if(e)mo.observe(e,{childList:true,subtree:true})});
+polish()})();
+</script>
+
 <script type="module">
 /* ===== Firebase Auth (Google + Email) & Firestore — SDK modular v10 ===== */
 const firebaseConfig = {
@@ -2141,6 +2298,8 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
         sched(d);
       }, () => {});
       FN.email = user.email || user.displayName || 'akunmu';
+      FN.support = () => { const em0 = (user.email || '').toLowerCase(); if (!em0 || document.getElementById('cx')) return; openChat({ email: em0, admin: false, member: true, name: user.displayName || '' }); };
+      try { let un0 = false; F.onSnapshot(F.doc(db, 'requests', (user.email || '').toLowerCase()), sn => { const u = sn.exists() && sn.data().unreadUser === true; FN.unreadChat = u; document.querySelectorAll('.cdot').forEach(x => { x.hidden = !u; }); if (u && !un0 && chatOpenFor === null) FN.toast('💬 Ada balasan baru dari admin'); un0 = u; }, () => {}); } catch (e) {}
       FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 15000); };
       FN.reset = async () => { dead = true; clearTimeout(timer); await F.deleteDoc(ref); };
       FN.logout = async () => {
@@ -2269,7 +2428,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       function drawHead() {
         const stt = st.req ? (st.req.status === 'approved' ? '✅ disetujui' : st.req.status === 'closed' ? '🔒 ditutup' : '⏳ menunggu') : '';
         const memOn = st.mem && st.mem.live;
-        H.innerHTML = '<button class="cxb2" id="cxback" aria-label="Kembali" title="Kembali">‹</button><div class="t"><b>' + (adm ? E2(email) : '💬 Konfirmasi admin') + '</b><small>' + (adm ? (stt + (st.mem !== undefined ? (st.mem ? (memOn ? ' · member aktif ' + (st.mem.exp ? 'sampai ' + fmtD2(st.mem.exp) : '(tanpa batas)') : st.mem.active && st.mem.exp ? ' · langganan berakhir' : ' · member nonaktif') : ' · bukan member') : '')) : 'Percakapan privat dengan admin' + (stt ? ' · ' + stt : '')) + '</small></div>' +
+        H.innerHTML = '<button class="cxb2" id="cxback" aria-label="Kembali" title="Kembali">‹</button><div class="t"><b>' + (adm ? E2(email) : (o.member ? '💬 Chat admin' : '💬 Konfirmasi admin')) + '</b><small>' + (adm ? (stt + (st.mem !== undefined ? (st.mem ? (memOn ? ' · member aktif ' + (st.mem.exp ? 'sampai ' + fmtD2(st.mem.exp) : '(tanpa batas)') : st.mem.active && st.mem.exp ? ' · langganan berakhir' : ' · member nonaktif') : ' · bukan member') : '')) : 'Percakapan privat dengan admin' + (stt && !o.member ? ' · ' + stt : '')) + '</small></div>' +
           (adm ? '<button class="cxb2" id="cxsr" aria-label="Cari" title="Cari pesan / tanggal">🔍</button>' +
             (memOn ? '' : '<button class="cxb2" id="cxok" aria-label="Setujui & aktifkan" title="Setujui & aktifkan member">✅</button>') +
             (st.mem ? '<button class="cxb2" id="cxoff" aria-label="' + (memOn ? 'Nonaktifkan member' : 'Aktifkan member') + '" title="' + (memOn ? 'Nonaktifkan member' : 'Aktifkan member') + '">' + (memOn ? '⏻' : '▶️') + '</button>' : '') +
@@ -2295,13 +2454,13 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
         let h = '', last = '';
         L.forEach(m => { const k = dayKey(m.ts); if (k !== last) { last = k; h += '<div class="cxd">' + fmtDay(m.ts) + '</div>'; } h += bubble(m); });
         const near = M.scrollHeight - M.scrollTop - M.clientHeight < 120;
-        M.innerHTML = h || '<div class="cxe">' + (st.msgs.length ? 'Tidak ada pesan yang cocok.' : adm ? 'Belum ada pesan.' : 'Belum ada pesan. Tulis nomor order / bukti bayar di bawah, lalu tunggu balasan admin.<br>Setelah disetujui kamu otomatis masuk.') + '</div>';
+        M.innerHTML = h || '<div class="cxe">' + (st.msgs.length ? 'Tidak ada pesan yang cocok.' : adm ? 'Belum ada pesan.' : o.member ? 'Belum ada pesan. Tulis pertanyaan atau kendalamu di bawah, admin akan membalas di sini.' : 'Belum ada pesan. Tulis nomor order / bukti bayar di bawah, lalu tunggu balasan admin.<br>Setelah disetujui kamu otomatis masuk.') + '</div>';
         if (scroll || near) M.scrollTop = M.scrollHeight;
         if (st.edit) { const t = $c('#cxet'); if (t && document.activeElement !== t && !t.dataset.f) { t.dataset.f = 1; t.focus(); } }
       }
       function drawFoot() {
         const keepTx = $c('#cxtx') ? $c('#cxtx').value : '';
-        if (!adm && closed()) { FT.innerHTML = '<div class="cxn">🔒 Permintaan ini ditutup oleh admin. Hubungi admin lewat jalur lain bila perlu.</div>'; return; }
+        if (!adm && !o.member && closed()) { FT.innerHTML = '<div class="cxn">🔒 Permintaan ini ditutup oleh admin. Hubungi admin lewat jalur lain bila perlu.</div>'; return; }
         FT.innerHTML = (st.att ? '<div class="cxp"><span>📎 ' + E2(st.att.name) + ' · ' + fmtSize(st.att.size) + '</span><button id="cxrm" aria-label="Batal lampiran">✕</button></div>' : '') +
           '<div class="in"><button class="bt g" id="cxat" aria-label="Lampirkan file" title="Kirim file">📎</button><input type="file" id="cxfi" hidden><textarea id="cxtx" rows="1" maxlength="500" placeholder="' + (adm ? 'Tulis balasan…' : 'Tulis pesan ke admin…') + '"></textarea><button class="bt" id="cxsd" aria-label="Kirim" title="Kirim">➤</button></div>';
         $c('#cxtx').value = keepTx;
@@ -2334,7 +2493,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
           await F.addDoc(F.collection(db, 'requests', email, 'msgs'), msg);
           const lm = text || ('📎 ' + att.name);
           if (adm) await F.setDoc(F.doc(db, 'requests', email), { lastMsg: lm, lastFrom: 'admin', unreadUser: true, ts: Date.now() }, { merge: true });
-          else await F.setDoc(F.doc(db, 'requests', email), { email, name: o.name || '', status: closed() ? 'closed' : 'pending', lastMsg: lm, lastFrom: 'user', unreadAdmin: true, ts: Date.now() }, { merge: true });
+          else await F.setDoc(F.doc(db, 'requests', email), { email, name: o.name || '', status: o.member ? 'approved' : (closed() ? 'closed' : 'pending'), lastMsg: lm, lastFrom: 'user', unreadAdmin: true, ts: Date.now() }, { merge: true });
           st.att = null; tx.value = ''; drawFoot();
         } catch (e) { alert('Pesan belum terkirim (' + (e.code || e.message) + '). Coba lagi.'); }
         st.busy = false;
