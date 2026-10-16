@@ -1,0 +1,37 @@
+{
+  "id": "./index.html",
+  "name": "FocusNest",
+  "short_name": "FocusNest",
+  "description": "Plan · Focus · Grow · Achieve — atur goals, tugas, dan waktumu supaya hidup lebih terarah dan produktif.",
+  "lang": "id",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "theme_color": "#5A7FF0",
+  "background_color": "#EEF4FF",
+  "categories": ["productivity", "education", "lifestyle"],
+  "icons": [
+    { "src": "icon-aesthetic-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-aesthetic-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-aesthetic-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Focus Room",
+      "short_name": "Fokus",
+      "description": "Mulai sesi fokus",
+      "url": "./index.html#focus",
+      "icons": [{ "src": "icon-aesthetic-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Goals",
+      "short_name": "Goals",
+      "description": "Lihat dan atur goals",
+      "url": "./index.html#goals",
+      "icons": [{ "src": "icon-aesthetic-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
