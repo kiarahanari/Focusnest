@@ -1,6 +1,6 @@
 /**
  * Entry point Cloudflare Workers.
- * - /api/scalev-webhook  -> kode webhook (functions/api/scalev-webhook.js)
+ * - /api/scalev-webhook  -> kode webhook (function/api/scalev-webhook.js)
  * - selain itu           -> tampilkan web app (index.html dll) seperti biasa
  */
 import { onRequestPost, onRequestGet } from './functions/api/scalev-webhook.js';
