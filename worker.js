@@ -3,7 +3,7 @@
  * - /api/scalev-webhook  -> kode webhook (function/api/scalev-webhook.js)
  * - selain itu           -> tampilkan web app (index.html dll) seperti biasa
  */
-import { onRequestPost, onRequestGet } from './functions/api/scalev-webhook.js';
+import { onRequestPost, onRequestGet } from './function/api/scalev-webhook.js';
 
 export default {
   async fetch(request, env, ctx) {
