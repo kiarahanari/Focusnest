@@ -1,0 +1,8 @@
+worker.js
+wrangler.jsonc
+functions
+scalev-webhook.js
+fn-reminder.js
+netlify.toml
+README.md
+.assetsignore
