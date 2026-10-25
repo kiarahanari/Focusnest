@@ -1,7 +1,7 @@
 /**
  * FocusNest — webhook Scalev -> Firestore members/{email}   (versi Cloudflare Pages Functions)
  *
- * Taruh file ini di: <root project>/functions/api/scalev-webhook.js
+ * Taruh file ini di: <root project>/function/api/scalev-webhook.js
  * Endpoint jadi:      https://domainkamu.com/api/scalev-webhook
  *
  * Environment variables (Cloudflare Pages > Settings > Variables and Secrets, tipe Secret):
