@@ -483,7 +483,7 @@ function hydrate(r){const d=DEF();S=r&&typeof r==='object'?{...d,...r,set:{...d.
 let _r=null;try{_r=JSON.parse(localStorage.getItem('focusnest')||'null')}catch(e){}
 hydrate(_r);
 /* Simpan: cache lokal (cepat/offline) + antrekan sinkron ke Firestore (lihat blok module Firebase di bagian bawah) */
-const sv=()=>{S.ts=Date.now();try{localStorage.setItem('focusnest',JSON.stringify(S))}catch(e){}try{window.FN&&window.FN.queue&&window.FN.queue()}catch(e){}};
+const sv=()=>{S.ts=Date.now();try{localStorage.setItem('focusnest',JSON.stringify(S))}catch(e){if(!window.__lsw){window.__lsw=1;try{toast('⚠️ Penyimpanan di perangkat penuh/diblokir — andalkan sinkron cloud')}catch(x){}}}try{window.FN&&window.FN.queue&&window.FN.queue()}catch(e){}};
 const $=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9);
 const iso=d=>{d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},TD=()=>iso(new Date());
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -918,7 +918,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&gdo){gdo=false;rend
 const V={dash:vDash,tasks:vTasks,goals:vGoals,cal:vCal,year:vYear,focus:vFocus,music:vMusic,pet:vPet,mood:vMood,prog:vProg,set:vSet};
 function render(){document.documentElement.dataset.t=S.set.theme;
   $('#side').innerHTML='<div class="lg"><span class="lgi">🏠</span><span class="lgt">FocusNest</span></div>'+P.map(([k,i,l])=>`<button data-a="pg" data-k="${k}" ${pg===k?'aria-current="page"':''}><span>${i}</span>${l}</button>`).join('');
-  petTick();$('#side').insertAdjacentHTML('beforeend',sidePts());const ap=$('#app');ap.classList.toggle('anim',animF);animF=false;if(pg==='year'){pg='cal';window.__kv&&(window.__kv.v='year')}ap.innerHTML=V[pg]();if(pg==='tasks')rList();clock();drawer();guideDraw();tipDraw();mpPaint()}
+  petTick();$('#side').insertAdjacentHTML('beforeend',sidePts());const ap=$('#app');ap.classList.toggle('anim',animF);animF=false;if(pg==='year'){pg='cal';window.__kv&&(window.__kv.v='year')}try{ap.innerHTML=V[pg]()}catch(err){console.error('[FocusNest] gagal render '+pg,err);ap.innerHTML='<div class="c"><h2>⚠️ Halaman ini gagal ditampilkan</h2><p class="mu">Datamu aman dan tidak hilang. Coba pindah halaman lalu kembali, atau muat ulang.</p></div>'}if(pg==='tasks')try{rList()}catch(err){console.error(err)}clock();drawer();guideDraw();tipDraw();mpPaint()}
 function clock(){const e=$('#clk');if(e)e.textContent=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}).replace(/\./g,':')}
 setInterval(clock,1000);
 const gv=id=>{const e=$('#'+id);return e?e.value.trim():''};
@@ -944,6 +944,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
   else if(a==='th'){S.set.theme=S.set.theme==='dark'?'light':'dark'}
   else if(a==='nt2'){askNotif();return}
   else if(a==='ex'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));l.download='focusnest-'+TD()+'.json';l.click();return}
+  else if(a==='syn'){window.FN&&window.FN.syncNow&&window.FN.syncNow();return}
   else if(a==='lo'){window.FN&&window.FN.logout&&window.FN.logout();return}
   else if(a==='rs'){if(confirm('Hapus SEMUA data? Tindakan ini tidak bisa dibatalkan.')&&confirm('Yakin ingin hapus data semua? Data di perangkat dan di cloud akan terhapus permanen.')){localStorage.removeItem('focusnest');Promise.resolve(window.FN&&window.FN.reset&&window.FN.reset()).catch(()=>{}).then(()=>location.reload())}return}
   else if(a==='yd'){cs=D.d;dro=D.d;window.__dadd=false;render();const x=$('#drc');x&&x.focus();return}
@@ -1233,7 +1234,7 @@ window.FN={get:()=>S,
   prefill(n){if(n&&!S.set.name){S.set.name=n;sv();render()}},
   refresh:()=>render(),
   toast:m=>toast(m)};
-const acctCard=()=>window.FN&&window.FN.email?`<div class="c"><h2>Akun</h2><p class="mu" style="margin:0 0 8px">Masuk sebagai <b>${esc(window.FN.email)}</b> · data tersinkron ke cloud ☁️</p><div class="tabs"><button class="b s" data-a="lo">Keluar</button></div></div>`:'';
+const acctCard=()=>window.FN&&window.FN.email?`<div class="c"><h2>Akun</h2><p class="mu" style="margin:0 0 8px">Masuk sebagai <b>${esc(window.FN.email)}</b> · ${window.FN.syncMsg?window.FN.syncMsg():'data tersinkron ke cloud ☁️'}</p><div class="tabs"><button class="b s" data-a="syn">☁️ Simpan ke cloud sekarang</button><button class="b s" data-a="lo">Keluar</button></div></div>`:'';
 render();
 </script>
 <script>
@@ -1342,6 +1343,7 @@ const expN=g=>{if(!g.due)return 0;let n=S.tasks.filter(t=>t.gid===g.id&&!t.rid).
  S.rt.filter(r=>r.goal===g.id&&r.on!==false).forEach(r=>{for(let i=0;i<=days;i++)if(occ(r,addD(st,i)))n++});return n};
 window.expN=expN;window.gCut=g=>g.fin?(g.finD||TD()):TD();
 window.gCnt=g=>{const c=gCut(g),ts=S.tasks.filter(t=>t.gid===g.id),dn=ts.filter(t=>t.st==='selesai').length,un=ts.filter(t=>t.st!=='selesai'&&(t.due||TD())<=c).length;return{dn,un,tot:dn+un}};
+window.gFr=window.gFr||(g=>'');   /* placeholder awal; versi lengkap didefinisikan lebih bawah */
 window.gPct=function(g){const k=gCnt(g);if(k.tot)return Math.round(k.dn/k.tot*100);if(g.fin)return 100;return g.ms&&g.ms.length?Math.round(g.ms.filter(m=>m.d).length/g.ms.length*100):0};
 const smart=(g,pl)=>[['S','Spesifik',(g.t||'').length>=10,'Tulis goal lebih spesifik (apa, untuk apa)'],['M','Terukur',!!(g.measure||g.tgt>0),'Isi ukuran berhasil, mis. skor/jumlah'],['A','Bisa dicapai',pl.length>0,'Tambah rencana jadwal agar realistis'],['R','Relevan',!!g.why,'Tulis kenapa goal ini penting'],['T','Berbatas waktu',!!g.due||pl.length>0,'Beri tenggat atau jadwal rutin']];
 const rd=r=>r.rep==='day'?'Setiap hari':r.rep==='month'?'Tiap tgl '+r.md:r.rep==='year'?'Tiap '+fmtD(r.date,{day:'numeric',month:'long'}):r.rep==='once'?fmtD(r.date,{day:'numeric',month:'short',year:'numeric'}):(r.days||[]).length===7?'Setiap hari':[...(r.days||[])].sort((a,b)=>((a+6)%7)-((b+6)%7)).map(d=>DN[d]).join(', ');
@@ -1852,7 +1854,7 @@ function dtBlanks(C,lv){const hard=lv>=3,n=C===3?(hard?3:2):(hard?4:3),cols=sh([
 function dtGen(lv,fm){const C=fm===12?4:3,g=dtGrid(lv,C),bl=dtBlanks(C,lv);
  return{rows:g.a.map((a,i)=>({a,bl:bl[i],v:a.map(()=>'')})),lv,cols:C,rule:g.rule,won:0,show:0}}
 function dtDraw(chk){const q=X.t;let g='';q.rows.forEach((r,i)=>r.a.forEach((n,j)=>{g+=r.bl.has(j)?`<input class="dc ${chk?(r.v[j]!==''&&+r.v[j]===n?'ok':'no'):''}" inputmode="numeric" data-g="v" data-r="${i}" data-c="${j}" value="${r.v[j]}" aria-label="Baris ${i+1} kolom ${j+1}">`:`<b class="dc">${n}</b>`}));
- ov(top('📊 Deret Tabel · '+LV[q.lv-1]+' · '+q.rows.length*q.cols+' kotak')+`<p class="mu" style="margin:6px 0 0">Tiap baris dan tiap kolom punya pola yang konsisten (tambah, kurang, kali, bagi, atau kuadrat). Temukan polanya lalu isi kotak kosong.</p><div class="dtg" style="grid-template-columns:repeat(${q.cols},1fr)">${g}</div>${q.show?`<div class="dtn">💡 ${q.rule}</div>`:''}<div class="tabs"><button class="b sm" data-g="chk">✓ Periksa</button><button class="b s sm" data-g="new">🔄 Baru</button></div><p class="mu" id="gxm" style="margin:0">Poin: ${DT_PTS[q.lv-1]} (tanpa batas harian).</p>`)}
+ ov(top('📊 Deret Tabel · '+LV[q.lv-1]+' · '+q.rows.length*q.cols+' kotak')+`<p class="mu" style="margin:6px 0 0">Tiap baris dan tiap kolom punya pola yang konsisten (tambah, kurang, kali, bagi, atau kuadrat). Temukan polanya lalu isi kotak kosong.</p><div class="dtg" style="grid-template-columns:repeat(${q.cols},1fr)">${g}</div>${q.show?`<div class="dtn">💡 <b>Pola soal ini</b><br>${String(q.rule).split(' · ').map(x=>'• '+x).join('<br>')}</div>`:''}<div class="tabs"><button class="b sm" data-g="chk">✓ Periksa</button><button class="b s sm" data-g="pat">${q.show?'🙈 Sembunyikan pola':'👁 Lihat pola'}</button><button class="b s sm" data-g="new">🔄 Baru</button></div><p class="mu" id="gxm" style="margin:0">Poin: ${DT_PTS[q.lv-1]} (tanpa batas harian).</p>`)}
 function gxOpen(k){X={k,lv:1,fm:9,scr:'menu'};gxMenu()}
 function gxMenu(){const sd=X.k==='sd',n=sd?'🔲 Sudoku':'📊 Deret Tabel';ov(top(n)+`<p class="mu">${sd?'Isi kotak 9×9 dengan angka 1–9 tanpa kembar. Mudah = 18 kotak kosong, Sedang = 24, Sulit = 36. Ada tombol 💡 Bantuan untuk melihat angka yang benar.':'Tiap baris dan kolom mengikuti pola yang konsisten. Isi angka yang kosong.'}</p><p><b>Pilih level</b></p>${lvB()}${sd?'':'<p><b>Bentuk tabel</b></p>'+fmB()}<p class="mu">Poin: ${(sd?SD_PTS:DT_PTS).join(' / ')} sesuai level · tanpa batas poin harian.</p><button class="b" data-g="go">▶️ Mulai</button>`)}
 const oo=window.openGame;window.openGame=function(k){if(k==='sd'||k==='dt')return gxOpen(k);return oo(k)};
@@ -1862,6 +1864,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('#gx [data-g]');i
  if(a==='fm'){X.fm=v;gxMenu();return}
  if(a==='go'||a==='new'){if(X.k==='sd'){X.s=sdGen(X.lv);sdDraw()}else{X.t=dtGen(X.lv,X.fm);dtDraw()}return}
  if(a==='lvm'){gxMenu();return}
+ if(a==='pat'&&X.k==='dt'&&X.t){X.t.show=!X.t.show;dtDraw(false);return}
  if(a==='hint'&&X.k==='sd'){const q=X.s,m=document.getElementById('gxm');if(q.sel<0){m.textContent='Pilih dulu kotak yang ingin kamu ketahui jawabannya.';return}if(q.fx[q.sel]){m.textContent='Kotak itu sudah berisi angka dari soal. Pilih kotak yang kosong.';return}
   const i=q.sel,ans=q.sol[i],r=Math.floor(i/9)+1,c=i%9+1,ok=q.cur[i]===ans;if(!ok){q.cur[i]=ans;q.hh[i]=1;q.hints++}
   sdDraw();const m2=document.getElementById('gxm');m2.textContent=ok?'✅ Angka di baris '+r+', kolom '+c+' sudah benar ('+ans+').':'💡 Angka yang benar di baris '+r+', kolom '+c+' adalah '+ans+'. Sudah kuisikan untukmu.';return}
@@ -1874,7 +1877,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('#gx [data-g]');i
    else{q.won=1;const p=win('Sudoku '+SD_LV[q.lv-1],SD_PTS[q.lv-1]);m.textContent='🎉 Benar semua! '+('+'+p+' poin')}}
   else{const q=X.t,ok=q.rows.every(r=>[...r.bl].every(j=>+r.v[j]===r.a[j]&&r.v[j]!=='')),first=ok&&!q.won;let p=0;
    if(first){q.won=1;p=win('Deret Tabel '+LV[q.lv-1],DT_PTS[q.lv-1])}
-   q.show=ok;dtDraw(true);const m=document.getElementById('gxm');
+   q.show=q.show||ok;dtDraw(true);const m=document.getElementById('gxm');
    m.textContent=ok?(first?'🎉 Semua benar! '+('+'+p+' poin'):'🎉 Sudah benar! Tekan Baru untuk soal lain.'):'Kotak hijau benar, merah perlu dicek.'}}
 });
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.g==='v'&&X.t&&X.t.rows[+t.dataset.r]){X.t.rows[+t.dataset.r].v[+t.dataset.c]=t.value}});
@@ -2230,7 +2233,7 @@ function showBlock(title, body, buttons, icon, sub) {
   b.querySelectorAll('button').forEach(el => el.addEventListener('click', () => buttons[+el.dataset.i].fn()));
 }
 /* data dianggap "ada isinya" bila ada salah satu dari ini → tidak boleh tertimpa data kosong */
-const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.focus || []).length || (s.notes || []).length || (s.rt || []).length || (s.fc || []).length || (s.pts || 0) > 0 || s.pet);
+const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.plan || []).length || (s.focus || []).length || (s.notes || []).length || (s.rt || []).length || (s.al || []).length || (s.fc || []).length || Object.keys(s.mood || {}).length || Object.keys(s.dn || {}).length || (s.pts || 0) > 0 || (s.xp || 0) > 0 || s.pet || (s.set && s.set.name));
 
 (async () => {
   let resolved = false;
@@ -2303,9 +2306,10 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       if (json.length > 800000) FN.toast('⚠️ Data hampir penuh (' + Math.round(json.length / 1024) + ' KB). Hapus catatan/tugas lama yang selesai.');
       inflight++;
       last = F.setDoc(ref, { userId: ref.id, state: json, clientTs: S.ts || Date.now(), updatedAt: F.serverTimestamp() })
-        .then(() => { failed = false; })
-        .catch(e => { failed = true; console.error('[FocusNest] Gagal simpan ke Firestore:', e);
-          if (!warned) { warned = true; FN.toast('Gagal sinkron ke cloud ☁️ (data tetap aman di perangkat)'); } })
+        .then(() => { failed = false; warned = false; FN.lastSync = Date.now(); FN.syncErr = ''; })
+        .catch(e => { failed = true; console.error('[FocusNest] Gagal simpan ke Firestore:', e); FN.syncErr = (e && (e.code || e.message)) || 'error';
+          if (!warned) { warned = true; FN.toast('Gagal sinkron ke cloud ☁️ (data tetap aman di perangkat, dicoba lagi otomatis)'); }
+          setTimeout(() => { if (failed && !dead && ref) push(); }, 30000); })
         .finally(() => { inflight--; });
       return last;
     }
@@ -2332,9 +2336,9 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       const local = FN.get();
       let useRemote = false;
       if (remote && remote.state) {
-        if (!hasData(local)) useRemote = true;                      // perangkat kosong → selalu pakai cloud
-        else if (!owner) useRemote = preferCloud();                 // data tamu vs data cloud
-        else useRemote = (remote.clientTs || 0) > (local.ts || 0);  // akun yang sama: yang terbaru menang
+        if (owner === user.uid) useRemote = (remote.clientTs || 0) > (local.ts || 0);   // akun yang sama: yang terbaru menang
+        else if (!hasData(local)) useRemote = true;                 // perangkat kosong → selalu pakai cloud
+        else useRemote = preferCloud();                             // data tamu vs data cloud
       }
       if (useRemote) {
         try { FN.apply(JSON.parse(remote.state)); }
@@ -2359,7 +2363,18 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.f
       FN.email = user.email || user.displayName || 'akunmu';
       FN.support = () => { const em0 = (user.email || '').toLowerCase(); if (!em0 || document.getElementById('cx')) return; openChat({ email: em0, admin: false, member: true, name: user.displayName || '' }); };
       try { let un0 = 0; F.onSnapshot(F.doc(db, 'requests', (user.email || '').toLowerCase()), sn => { const d = sn.exists() ? sn.data() : {}, u = d.unreadUser === true, n = u ? Math.max(1, d.unreadUserN || 1) : 0; FN.unreadChat = u; setBadge(n); if (n && n > un0 && chatOpenFor === null) { FN.toast('💬 ' + n + ' pesan baru dari admin'); sysNotify('💬 Admin FocusNest', String(d.lastMsg || 'Pesan baru').slice(0, 120), 'chat-admin', { chat: 'admin' }); } un0 = n; }, () => {}); } catch (e) {}
-      FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 15000); };
+      FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 6000); };   // jeda sinkron cloud: 6 detik setelah perubahan terakhir (ubah angka ini bila kuota write perlu dihemat)
+      FN.syncMsg = () => {
+        if (failed || FN.syncErr) return '⚠️ BELUM tersimpan ke cloud (' + FN.syncErr + ') — data masih aman di perangkat ini; tekan "Simpan ke cloud sekarang"';
+        if (FN.lastSync) return '☁️ tersimpan ke cloud pukul ' + new Date(FN.lastSync).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        return '☁️ cloud tersambung (belum ada perubahan yang dikirim sesi ini)';
+      };
+      FN.syncNow = async () => {
+        FN.toast('Menyimpan ke cloud…');
+        try { await push(); await last; } catch (e) {}
+        FN.toast(failed ? '⚠️ Gagal simpan ke cloud: ' + (FN.syncErr || 'periksa koneksi / Firestore Rules') : '✅ Tersimpan di cloud');
+        try { FN.refresh(); } catch (e) {}
+      };
       FN.reset = async () => { dead = true; clearTimeout(timer); await F.deleteDoc(ref); };
       FN.logout = async () => {
         clearTimeout(timer);
