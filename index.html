@@ -1234,7 +1234,7 @@ window.FN={get:()=>S,
   prefill(n){if(n&&!S.set.name){S.set.name=n;sv();render()}},
   refresh:()=>render(),
   toast:m=>toast(m)};
-const acctCard=()=>window.FN&&window.FN.email?`<div class="c"><h2>Akun</h2><p class="mu" style="margin:0 0 8px">Masuk sebagai <b>${esc(window.FN.email)}</b> · ${window.FN.syncMsg?window.FN.syncMsg():'data tersinkron ke cloud ☁️'}</p><div class="tabs"><button class="b s" data-a="syn">☁️ Simpan ke cloud sekarang</button><button class="b s" data-a="lo">Keluar</button></div></div>`:'';
+const acctCard=()=>window.FN&&window.FN.email?`<div class="c"><h2>Akun</h2><p class="mu" style="margin:0 0 8px">Masuk sebagai <b>${esc(window.FN.email)}</b> · ${window.FN.syncMsg?window.FN.syncMsg():'data tersinkron ke cloud ☁️'}<br><small class="mu">ID akun: ${esc(String(window.FN.uid||'').slice(0,8))} (harus sama di HP & laptop)</small></p><div class="tabs"><button class="b s" data-a="syn">☁️ Simpan ke cloud sekarang</button><button class="b s" data-a="lo">Keluar</button></div></div>`:'';
 render();
 </script>
 <script>
@@ -2297,7 +2297,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.p
     catch (e) { db = F.getFirestore(app); }
 
     /* ================= SINKRON DATA (aman: tidak pernah menimpa cloud dengan data kosong) ================= */
-    let ref = null, ready = false, dead = false, started = false, timer = null, inflight = 0, failed = false, warned = false, last = Promise.resolve();
+    let base = 0, deferT = null, ref = null, ready = false, dead = false, started = false, timer = null, inflight = 0, failed = false, warned = false, last = Promise.resolve();
 
     function push() {
       if (dead || !ref) return Promise.resolve();
@@ -2305,7 +2305,8 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.p
       const S = FN.get(), json = JSON.stringify(S); U.size = json.length;
       if (json.length > 800000) FN.toast('⚠️ Data hampir penuh (' + Math.round(json.length / 1024) + ' KB). Hapus catatan/tugas lama yang selesai.');
       inflight++;
-      last = F.setDoc(ref, { userId: ref.id, state: json, clientTs: S.ts || Date.now(), updatedAt: F.serverTimestamp() })
+      const ct = S.ts || Date.now(); base = ct;
+      last = F.setDoc(ref, { userId: ref.id, state: json, clientTs: ct, updatedAt: F.serverTimestamp() })
         .then(() => { failed = false; warned = false; FN.lastSync = Date.now(); FN.syncErr = ''; })
         .catch(e => { failed = true; console.error('[FocusNest] Gagal simpan ke Firestore:', e); FN.syncErr = (e && (e.code || e.message)) || 'error';
           if (!warned) { warned = true; FN.toast('Gagal sinkron ke cloud ☁️ (data tetap aman di perangkat, dicoba lagi otomatis)'); }
@@ -2341,12 +2342,31 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.p
         else useRemote = preferCloud();                             // data tamu vs data cloud
       }
       if (useRemote) {
-        try { FN.apply(JSON.parse(remote.state)); }
+        try { FN.apply(JSON.parse(remote.state)); base = remote.clientTs || 0; }
         catch (e) { console.error('[FocusNest] Data cloud tidak terbaca:', e); started = false; ref = null; return false; }
       } else push();                                                // akun baru / data perangkat lebih baru
 
       try { localStorage.setItem('focusnest_uid', user.uid); } catch (e) {}
       ready = true;
+      /* ---- SINKRON LANGSUNG antar perangkat (HP ⇄ laptop) ---- */
+      const applyRemote = d => {
+        if (!d || !d.state || dead) return;
+        const rts = d.clientTs || 0;
+        if (rts === base) return;                                   // sama dengan versi kita / gema tulisan sendiri
+        if ((timer || inflight > 0) && rts <= (FN.get().ts || 0)) return;   // ada perubahan lokal yang lebih baru & belum terkirim → biarkan terkirim
+        const ae = document.activeElement;
+        if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.closest && ae.closest('#app,#gx')) {   // jangan ganggu saat sedang mengetik
+          clearTimeout(deferT); deferT = setTimeout(() => applyRemote(d), 2500); return;
+        }
+        let st; try { st = JSON.parse(d.state); } catch (e) { return; }
+        FN.apply(st); base = rts;
+        FN.lastSync = Date.now(); FN.syncErr = '';
+        FN.toast('🔄 Data diperbarui dari perangkat lain');
+      };
+      FN.pull = async () => { try { const sn = await F.getDoc(ref); if (sn.exists()) applyRemote(sn.data()); } catch (e) {} };
+      try { F.onSnapshot(ref, sn => { if (!sn.exists() || (sn.metadata && sn.metadata.hasPendingWrites)) return; applyRemote(sn.data()); }, e => console.error('[FocusNest] listener data:', e)); } catch (e) { console.error(e); }
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') FN.pull(); });
+      window.addEventListener('online', () => { FN.pull(); if (failed) push(); });
       if (unExp) unExp();
       let warned2 = false;
       const sched = d => {
@@ -2360,7 +2380,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.p
         if (!isLive(d)) { push().finally(() => location.reload()); return; }   // dinonaktifkan / langganan habis → data disimpan lalu masuk gerbang
         sched(d);
       }, () => {});
-      FN.email = user.email || user.displayName || 'akunmu';
+      FN.email = user.email || user.displayName || 'akunmu'; FN.uid = user.uid;
       FN.support = () => { const em0 = (user.email || '').toLowerCase(); if (!em0 || document.getElementById('cx')) return; openChat({ email: em0, admin: false, member: true, name: user.displayName || '' }); };
       try { let un0 = 0; F.onSnapshot(F.doc(db, 'requests', (user.email || '').toLowerCase()), sn => { const d = sn.exists() ? sn.data() : {}, u = d.unreadUser === true, n = u ? Math.max(1, d.unreadUserN || 1) : 0; FN.unreadChat = u; setBadge(n); if (n && n > un0 && chatOpenFor === null) { FN.toast('💬 ' + n + ' pesan baru dari admin'); sysNotify('💬 Admin FocusNest', String(d.lastMsg || 'Pesan baru').slice(0, 120), 'chat-admin', { chat: 'admin' }); } un0 = n; }, () => {}); } catch (e) {}
       FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 6000); };   // jeda sinkron cloud: 6 detik setelah perubahan terakhir (ubah angka ini bila kuota write perlu dihemat)
