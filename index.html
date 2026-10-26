@@ -891,13 +891,13 @@ function remind(){const st=S.set;if(st.rmOn===false)return;const now=Date.now(),
 /* ===== v2: alarm, pet, progres mood ===== */
 const TONES={bell:['Lonceng',[880,1175,1568],'sine'],digi:['Digital',[1000,1000,1400],'square'],soft:['Lembut',[523,659,784],'triangle'],chime:['Chime',[784,988,1319],'sine']};
 function rmBeep(){try{const c=actx(),t=c.currentTime,T=TONES[S.set.atone]||TONES.bell,v=S.set.avol==null?.6:+S.set.avol;[0,.3,.6].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type=T[2];o.frequency.value=T[1][i];o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.6*v,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+.26);o.start(t+d);o.stop(t+d+.28)})}catch(e){}}
-function fnDev(){const d=localStorage.getItem('fn_dev')||'all',m=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);return!((d==='desktop'&&m)||(d==='mobile'&&!m))}
+function fnDev(){const d=(S.set.dev||localStorage.getItem('fn_dev')||'all'),m=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);return!((d==='desktop'&&m)||(d==='mobile'&&!m))}
 function fnNotify(o){const op={body:o.body,tag:o.key||'focusnest',vibrate:[200,100,200],requireInteraction:true,renotify:true},plain=()=>{try{const n=new Notification(o.title,op);n.onclose=()=>{window.rmStop&&rmStop()}}catch(e){}};if(!navigator.serviceWorker){plain();return}navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(o.title,op).then(()=>rmWatchN(r,op.tag)):plain()).catch(plain)}
 function rmWatchN(r,tag){let n=0;const iv=setInterval(()=>{r.getNotifications({tag}).then(l=>{if(!l.length||++n>300){clearInterval(iv);if(!l.length&&window.rmStop)rmStop()}}).catch(()=>clearInterval(iv))},1000)}
 /* PWA: service worker kini didaftarkan di blok PWA (service-worker.js) dekat akhir file */
 function petLine(o){const p=S.pet;if(!p||!o.tid)return'';const t=S.tasks.find(x=>x.id===o.tid);if(!t)return'';const n=(S.set.name||'').split(' ')[0]||'sahabat',g=S.goals.find(x=>x.id===t.gid),gn=g&&(g.t||g.n||g.name||g.title),k=(o.key||'')[0],gt=gn?' demi goal “'+gn+'”':'';
  return p.name+': '+(k==='a'?'Sebentar lagi “'+t.t+'”, '+n+'! Tarik napas, kamu pasti bisa 💪':k==='e'?'Tinggal sedikit lagi, '+n+'! Selesaikan “'+t.t+'”'+gt+' ya, kamu hebat ✨':'Ayo mulai “'+t.t+'”, '+n+gt+'! Aku menemanimu 🥰')}
-function alCtl(){const s=S.set,dv=localStorage.getItem('fn_dev')||'all';return `<h3 style="margin:12px 0 6px">🔔 Nada & volume alarm</h3><div class="f"><label>Nada dering<select data-fn="tone">${Object.entries(TONES).map(([k,v])=>`<option value="${k}" ${(s.atone||'bell')===k?'selected':''}>${v[0]}</option>`).join('')}</select></label><label>Volume<input type="range" min="0" max="1" step="0.1" value="${s.avol==null?.6:s.avol}" data-fn="vol"></label><label>Aktif di perangkat ini<select data-fn="dev">${[['all','HP & Desktop'],['desktop','Hanya Desktop'],['mobile','Hanya HP']].map(([k,l])=>`<option value="${k}" ${dv===k?'selected':''}>${l}</option>`).join('')}</select></label><button class="b s" data-fn="prev">▶ Dengar</button></div>`}
+function alCtl(){const s=S.set,dv=(S.set.dev||localStorage.getItem('fn_dev')||'all');return `<h3 style="margin:12px 0 6px">🔔 Nada & volume alarm</h3><div class="f"><label>Nada dering<select data-fn="tone">${Object.entries(TONES).map(([k,v])=>`<option value="${k}" ${(s.atone||'bell')===k?'selected':''}>${v[0]}</option>`).join('')}</select></label><label>Volume<input type="range" min="0" max="1" step="0.1" value="${s.avol==null?.6:s.avol}" data-fn="vol"></label><label>Alarm aktif di<select data-fn="dev">${[['all','HP & Desktop'],['desktop','Hanya Desktop'],['mobile','Hanya HP']].map(([k,l])=>`<option value="${k}" ${dv===k?'selected':''}>${l}</option>`).join('')}</select></label><button class="b s" data-fn="prev">▶ Dengar</button></div>`}
 const FOODS=[['🍎','Apel',4,15,2,3],['🍚','Nasi',8,30,3,2],['🍗','Ayam',14,45,6,3],['🥦','Sayur sehat',6,20,0,12],['🍰','Kue',12,10,22,-2],['💧','Air putih',2,8,0,4],['🧃','Jus buah',6,12,6,5]];
 function openFood(){const p=S.pet;if(!p)return;petTick();let o=document.getElementById('fd');if(o)o.remove();o=document.createElement('div');o.id='fd';o.setAttribute('style','position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px');
  o.innerHTML='<div class="c" style="max-width:420px;width:100%;max-height:85vh;overflow:auto"><h2>🍽️ Beli makanan untuk '+esc(p.name)+'</h2><p class="mu">Poinmu: ⭐ '+S.pts+'</p>'+FOODS.map((f,i)=>'<button class="b s" data-fi="'+i+'" style="display:block;width:100%;margin:6px 0;text-align:left">'+f[0]+' '+f[1]+' — '+f[2]+'⭐ <span class="mu">(kenyang +'+f[3]+(f[4]?', senang +'+f[4]:'')+(f[5]>0?', sehat +'+f[5]:'')+')</span></button>').join('')+'<button class="b n" data-fi="x" style="margin-top:8px">Tutup</button></div>';
@@ -909,7 +909,7 @@ function moodProg(){const N={d:1,w:7,m:30,y:365}[MPR],now=new Date(),ds=[];for(l
  const nt=es.filter(x=>x[1].n).slice(-10).reverse();
  return `<div class="c"><h2>📈 Progres mood</h2><div class="tabs">${[['d','Harian'],['w','Mingguan'],['m','Bulanan'],['y','Tahunan']].map(([k,l])=>`<button class="b ${MPR===k?'':'s'} sm" data-fn="mpr" data-v="${k}">${l}</button>`).join('')}</div><p class="mu">Rata-rata mood <b>${av('m')}/5</b> · energi <b>${av('e')}/5</b> · ${es.length} hari tercatat</p><div class="bars" style="overflow-x:auto">${bars.map(([l,v])=>`<div><span>${EM[Math.round(v)-1]||''}</span><i style="height:${v*18}px"></i>${l}</div>`).join('')||'<p class="mu">Belum ada data.</p>'}</div>${nt.length?'<h3>📝 Catatan suasana</h3>'+nt.map(([d,x])=>`<p class="mu" style="margin:4px 0"><b>${d}</b> ${EM[x.m-1]||''} ${esc(x.n)}</p>`).join(''):''}</div>`}
 document.addEventListener('click',e=>{const t=e.target.closest('[data-fn]');if(!t)return;if(t.dataset.fn==='mpr'){MPR=t.dataset.v;render()}else if(t.dataset.fn==='prev')rmBeep()});
-document.addEventListener('change',e=>{const t=e.target.closest('[data-fn]');if(!t)return;const k=t.dataset.fn;if(k==='tone'){S.set.atone=t.value;sv();rmBeep()}else if(k==='vol'){S.set.avol=+t.value;sv();rmBeep()}else if(k==='dev'){localStorage.setItem('fn_dev',t.value);toast('Tersimpan untuk perangkat ini ✅')}});
+document.addEventListener('change',e=>{const t=e.target.closest('[data-fn]');if(!t)return;const k=t.dataset.fn;if(k==='tone'){S.set.atone=t.value;sv();rmBeep()}else if(k==='vol'){S.set.avol=+t.value;sv();rmBeep()}else if(k==='dev'){S.set.dev=t.value;try{localStorage.setItem('fn_dev',t.value)}catch(x){}sv();toast('Tersimpan & tersinkron ke semua perangkat ✅')}});
 setInterval(remind,10000);setTimeout(remind,2500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){remind();rmTitle()}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&gdo){gdo=false;render();return}
@@ -1234,7 +1234,7 @@ window.FN={get:()=>S,
   prefill(n){if(n&&!S.set.name){S.set.name=n;sv();render()}},
   refresh:()=>render(),
   toast:m=>toast(m)};
-const acctCard=()=>window.FN&&window.FN.email?`<div class="c"><h2>Akun</h2><p class="mu" style="margin:0 0 8px">Masuk sebagai <b>${esc(window.FN.email)}</b> · ${window.FN.syncMsg?window.FN.syncMsg():'data tersinkron ke cloud ☁️'}<br><small class="mu">ID akun: ${esc(String(window.FN.uid||'').slice(0,8))} (harus sama di HP & laptop)</small></p><div class="tabs"><button class="b s" data-a="syn">☁️ Simpan ke cloud sekarang</button><button class="b s" data-a="lo">Keluar</button></div></div>`:'';
+const acctCard=()=>window.FN&&window.FN.email?`<div class="c"><h2>Akun</h2><p class="mu" style="margin:0 0 8px">Masuk sebagai <b>${esc(window.FN.email)}</b> · ${window.FN.syncMsg?window.FN.syncMsg():'data tersinkron ke cloud ☁️'}<br><small class="mu">ID akun: ${esc(String(window.FN.uid||'').slice(0,8))} (harus sama di HP & laptop)${window.FN_VER?' · versi '+esc(window.FN_VER):''}</small></p><div class="tabs"><button class="b s" data-a="syn">☁️ Simpan ke cloud sekarang</button><button class="b s" data-a="lo">Keluar</button></div></div>`:'';
 render();
 </script>
 <script>
@@ -1519,9 +1519,9 @@ const _ps=petStage;petStage=function(p){return _ps(p).replace('title="Main">🎾
 const RMH=[];window.rmStop=()=>{while(RMH.length){const h=RMH.pop();clearTimeout(h);clearInterval(h)}};
 rmBeep=function(){try{const t=window.ZT&&ZT[S.set.rmTone]&&S.set.rmTone!=='sync'?S.set.rmTone:'bell',n=Math.max(1,gs('rmRep',2)),d=Math.max(1,gs('rmDur',3)),g=Math.max(0,gs('rmGap',2));
  rmStop();for(let k=0;k<n;k++)RMH.push(setTimeout(()=>{const r=window.zPlay&&zPlay(t,d);if(r){RMH.push(r.iv,r.to,setTimeout(()=>{clearInterval(r.iv);clearTimeout(r.to)},d*1000))}},k*(d+g)*1000))}catch(e){}};
-alCtl=function(){const s=S.set,dv=localStorage.getItem('fn_dev')||'all',Z=Object.entries(window.ZT||{}).filter(x=>x[0]!=='sync'),
+alCtl=function(){const s=S.set,dv=(S.set.dev||localStorage.getItem('fn_dev')||'all'),Z=Object.entries(window.ZT||{}).filter(x=>x[0]!=='sync'),
  nu=(k,l,v,mn,mx,u)=>`<label>${l}<input type="number" min="${mn}" max="${mx}" value="${v}" data-v8s="${k}"><small class="mu">${u}</small></label>`;
- return `<h3 style="margin:12px 0 6px">🔔 Nada pengingat & alarm</h3><p class="mu" style="margin:0 0 8px">Satu pengaturan nada untuk notifikasi tugas dan alarm. Atur nada, berapa kali berbunyi, dan berapa detik tiap bunyi.</p><div class="f"><label>Nada<select data-v8s="rmTone">${Z.map(([k,v])=>`<option value="${k}" ${(s.rmTone||'bell')===k?'selected':''}>${v[0]}</option>`).join('')}</select></label>${nu('rmRep','Diulang (kali)',gs('rmRep',2),1,20,'kali')}${nu('rmDur','Lama tiap bunyi',gs('rmDur',3),1,600,'detik')}${nu('rmGap','Jeda antar ulangan',gs('rmGap',2),0,60,'detik')}</div><div class="f" style="margin-top:8px"><label>Volume<input type="range" min="0" max="1" step="0.1" value="${s.avol==null?.6:s.avol}" data-v8s="avol"></label><label>Aktif di perangkat ini<select data-fn="dev">${[['all','HP & Desktop'],['desktop','Hanya Desktop'],['mobile','Hanya HP']].map(([k,l])=>`<option value="${k}" ${dv===k?'selected':''}>${l}</option>`).join('')}</select></label><button class="b s n" data-fn="prev">▶ Dengar</button></div>`};
+ return `<h3 style="margin:12px 0 6px">🔔 Nada pengingat & alarm</h3><p class="mu" style="margin:0 0 8px">Satu pengaturan nada untuk notifikasi tugas dan alarm. Atur nada, berapa kali berbunyi, dan berapa detik tiap bunyi.</p><div class="f"><label>Nada<select data-v8s="rmTone">${Z.map(([k,v])=>`<option value="${k}" ${(s.rmTone||'bell')===k?'selected':''}>${v[0]}</option>`).join('')}</select></label>${nu('rmRep','Diulang (kali)',gs('rmRep',2),1,20,'kali')}${nu('rmDur','Lama tiap bunyi',gs('rmDur',3),1,600,'detik')}${nu('rmGap','Jeda antar ulangan',gs('rmGap',2),0,60,'detik')}</div><div class="f" style="margin-top:8px"><label>Volume<input type="range" min="0" max="1" step="0.1" value="${s.avol==null?.6:s.avol}" data-v8s="avol"></label><label>Alarm aktif di<select data-fn="dev">${[['all','HP & Desktop'],['desktop','Hanya Desktop'],['mobile','Hanya HP']].map(([k,l])=>`<option value="${k}" ${dv===k?'selected':''}>${l}</option>`).join('')}</select></label><button class="b s n" data-fn="prev">▶ Dengar</button></div>`};
 const _rc=rmCard;rmCard=function(){let a=V.alarm?V.alarm():'';a=a.replace(/<h1>[\s\S]*?<\/h1>/,'').replace(/^<div class="c"[^>]*><p class="mu">[\s\S]*?<\/div>(?=<div class="c"><h2>➕)/,'');
  return _rc().replace('⏰ Pengingat</h2>','⏰ Pengingat & Alarm</h2>')+`<div class="c"><h2>⏰ Alarm</h2><p class="mu">Alarm dengan nama, jam, dan hari sendiri. Pilih “Ikuti nada pengingat” agar nadanya sama dengan pengingat tugas.</p>${a}</div>`};
 document.addEventListener('change',e=>{const t=e.target,k=t.dataset&&t.dataset.v8s;if(!k)return;S.set[k]=t.type==='range'||t.type==='number'?+t.value:t.value;sv();if(k==='rmTone'||k==='avol')rmBeep()});
@@ -2383,7 +2383,7 @@ const hasData = s => !!((s.tasks || []).length || (s.goals || []).length || (s.p
       FN.email = user.email || user.displayName || 'akunmu'; FN.uid = user.uid;
       FN.support = () => { const em0 = (user.email || '').toLowerCase(); if (!em0 || document.getElementById('cx')) return; openChat({ email: em0, admin: false, member: true, name: user.displayName || '' }); };
       try { let un0 = 0; F.onSnapshot(F.doc(db, 'requests', (user.email || '').toLowerCase()), sn => { const d = sn.exists() ? sn.data() : {}, u = d.unreadUser === true, n = u ? Math.max(1, d.unreadUserN || 1) : 0; FN.unreadChat = u; setBadge(n); if (n && n > un0 && chatOpenFor === null) { FN.toast('💬 ' + n + ' pesan baru dari admin'); sysNotify('💬 Admin FocusNest', String(d.lastMsg || 'Pesan baru').slice(0, 120), 'chat-admin', { chat: 'admin' }); } un0 = n; }, () => {}); } catch (e) {}
-      FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 3000); };   // jeda sinkron cloud: 6 detik setelah perubahan terakhir (ubah angka ini bila kuota write perlu dihemat)
+      FN.queue = () => { if (!ready || dead) return; clearTimeout(timer); timer = setTimeout(push, 1500); };   // jeda sinkron cloud: 1,5 detik setelah perubahan terakhir (naikkan angka ini bila kuota write perlu dihemat)
       FN.syncMsg = () => {
         if (failed || FN.syncErr) return '⚠️ BELUM tersimpan ke cloud (' + FN.syncErr + ') — data masih aman di perangkat ini; tekan "Simpan ke cloud sekarang"';
         if (FN.lastSync) return '☁️ tersimpan ke cloud pukul ' + new Date(FN.lastSync).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
@@ -3372,17 +3372,11 @@ window.pdfDoc=(h,n,tk,dn,fm2,kind)=>{const T=TD(),pc=tk.length?Math.round(dn.len
         document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')chk()});
       }).catch(function(){});
       navigator.serviceWorker.addEventListener('controllerchange',function(){
-        if(hadCtl)showUpdate();hadCtl=true;
+        if(hadCtl&&window.fnCheckVer)window.fnCheckVer();hadCtl=true;
       });
     });
   }
-  function showUpdate(){
-    if(upd)return;
-    upd=document.createElement('div');upd.id='pwa-upd';upd.setAttribute('role','status');
-    upd.innerHTML='<span>Versi baru tersedia ✨</span><button type="button">Muat ulang</button>';
-    upd.querySelector('button').onclick=function(){location.reload()};
-    document.body.appendChild(upd);
-  }
+  function showUpdate(){if(window.fnCheckVer)window.fnCheckVer()}
 
   /* ---- 2) Tombol & kartu Install App ---- */
   function build(){
@@ -3516,37 +3510,74 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-fnbg]');if
 #fn-rf.spin span{display:inline-block;animation:fnspin .8s linear infinite}
 @keyframes fnspin{to{transform:rotate(360deg)}}
 </style>
+<style>
+#fn-upd{position:fixed;z-index:95;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));width:min(340px,calc(100vw - 24px));background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 12px 12px;box-shadow:0 8px 24px rgba(15,20,40,.35);font-size:.86rem;font-family:inherit}
+#fn-upd .uh{display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:grab;touch-action:none;user-select:none}
+#fn-upd .uh:active{cursor:grabbing}
+#fn-upd .ux{border:0;background:transparent;color:inherit;font-size:1rem;line-height:1;cursor:pointer;padding:6px 8px;border-radius:8px;opacity:.8}
+#fn-upd .ux:hover{opacity:1;background:#ffffff22}
+#fn-upd ul{margin:6px 0 4px 18px;padding:0}#fn-upd li{margin:2px 0}
+#fn-upd .un{margin:4px 0 8px;font-size:.76rem;opacity:.75}
+#fn-upd .ug{border:0;border-radius:10px;padding:7px 12px;min-height:36px;font:inherit;font-weight:700;cursor:pointer;background:var(--ac);color:#fff;width:100%}
+#fn-upd .ug:disabled{opacity:.7}
+@media(min-width:821px){#fn-upd{bottom:16px}}
+</style>
+<script type="application/json" id="fn-whatsnew">{"v":"2026.10.27.1","notes":["Pemberitahuan versi baru kini hanya muncul saat ada pembaruan fitur, dan bisa ditutup (✕) atau digeser.","Pengaturan (tema, nada & volume alarm, perangkat alarm, dll.) tersinkron lebih cepat ke semua perangkat dengan email yang sama."]}</script>
 <script>
 /* ===== Segarkan + status online/offline + cek versi baru (HP & laptop) ===== */
 (function(){
   var btn=document.createElement('button');btn.id='fn-rf';btn.type='button';
   btn.setAttribute('aria-label','Segarkan dan sinkronkan data');btn.innerHTML='<span>🔄</span><i></i>';document.body.appendChild(btn);
-  var busy=false,base=null,lastChk=0;
+  var busy=false,lastChk=0;
   var say=function(m){try{toast(m)}catch(e){}},F=function(){return window.FN||{}};
   function dot(){var f=F(),on=navigator.onLine;
     btn.className=(busy?'spin ':'')+(!on?'off':(f.syncErr?'wrn':''));
     btn.title=!on?'Offline — tersimpan di perangkat, otomatis terkirim saat online':f.syncErr?'Belum tersimpan ke cloud — ketuk untuk coba lagi':'Online — ketuk untuk segarkan'+(f.lastSync?' (tersinkron '+new Date(f.lastSync).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+')':'')}
-  async function sig(){try{var r=await fetch(location.pathname,{cache:'no-store'});if(!r.ok)return null;
-    var h=await crypto.subtle.digest('SHA-1',await r.arrayBuffer());return Array.from(new Uint8Array(h)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}catch(e){return null}}
-  function banner(){if(document.getElementById('pwa-upd'))return;var d=document.createElement('div');d.id='pwa-upd';d.setAttribute('role','status');
-    d.innerHTML='<span>Versi baru tersedia ✨</span><button type="button">Muat ulang</button>';
-    d.querySelector('button').onclick=async function(){try{var f=F();if(f.syncNow)await f.syncNow()}catch(e){}location.reload()};document.body.appendChild(d)}
-  async function checkVer(){if(!navigator.onLine)return;lastChk=Date.now();
+  var running=null;try{running=JSON.parse(document.getElementById('fn-whatsnew').textContent)}catch(e){}
+  window.FN_VER=running&&running.v||'';
+  var LS=function(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}};
+  function clamp(x,y,w,h){return[Math.min(Math.max(4,x),Math.max(4,innerWidth-w-4)),Math.min(Math.max(4,y),Math.max(4,innerHeight-h-4))]}
+  function place(el){var p=null;try{p=JSON.parse(LS('fn_updpos')||'null')}catch(e){}if(!p)return;
+    var r=el.getBoundingClientRect(),c=clamp(p.x*innerWidth,p.y*innerHeight,r.width,r.height);
+    el.style.left=c[0]+'px';el.style.top=c[1]+'px';el.style.right='auto';el.style.bottom='auto';el.style.transform='none'}
+  function banner(info){var old=document.getElementById('fn-upd');if(old)old.remove();
+    var d=document.createElement('div');d.id='fn-upd';d.setAttribute('role','status');
+    var esc2=function(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+    d.innerHTML='<div class="uh" title="Geser untuk memindahkan"><b>✨ Versi terbaru tersedia</b><button type="button" class="ux" aria-label="Tutup">✕</button></div>'
+      +(info.notes&&info.notes.length?'<ul>'+info.notes.slice(0,6).map(function(n){return'<li>'+esc2(n)+'</li>'}).join('')+'</ul>':'')
+      +'<p class="un">Datamu aman &amp; tidak berubah — tersimpan sesuai akun emailmu.</p><button type="button" class="ug">Muat ulang</button>';
+    document.body.appendChild(d);place(d);
+    d.querySelector('.ux').onclick=function(e){e.stopPropagation();LS('fn_upddis',info.v);d.remove()};
+    d.querySelector('.ug').onclick=async function(){this.disabled=true;this.textContent='Menyimpan…';try{var f=F();if(f.syncNow)await f.syncNow()}catch(e){}location.reload()};
+    var h=d.querySelector('.uh'),sx=0,sy=0,ox=0,oy=0,mv=false;
+    h.addEventListener('pointerdown',function(e){if(e.target.closest('.ux'))return;var r=d.getBoundingClientRect();sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;mv=true;try{h.setPointerCapture(e.pointerId)}catch(x){}});
+    h.addEventListener('pointermove',function(e){if(!mv)return;var r=d.getBoundingClientRect(),c=clamp(ox+e.clientX-sx,oy+e.clientY-sy,r.width,r.height);
+      d.style.left=c[0]+'px';d.style.top=c[1]+'px';d.style.right='auto';d.style.bottom='auto';d.style.transform='none'});
+    var end=function(){if(!mv)return;mv=false;var r=d.getBoundingClientRect();LS('fn_updpos',JSON.stringify({x:r.left/innerWidth,y:r.top/innerHeight}))};
+    h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end)}
+  /* Banner HANYA muncul bila admin/builder menaikkan nomor versi di blok #fn-whatsnew (ada pembaruan fitur). Perubahan kecil tanpa naik versi tidak memunculkan apa pun. */
+  async function remoteInfo(){try{var r=await fetch(location.pathname,{cache:'no-store'});if(!r.ok)return null;
+    var doc=new DOMParser().parseFromString(await r.text(),'text/html'),el=doc.getElementById('fn-whatsnew');return el?JSON.parse(el.textContent):null}catch(e){return null}}
+  async function checkVer(force){if(!navigator.onLine)return;lastChk=Date.now();
     try{var reg=await navigator.serviceWorker.getRegistration();reg&&await reg.update()}catch(e){}
-    var s=await sig();if(s&&base&&s!==base)banner()}
+    var info=await remoteInfo();if(!info||!info.v||!window.FN_VER||info.v===window.FN_VER){var o=document.getElementById('fn-upd');if(o&&info&&info.v===window.FN_VER)o.remove();return}
+    if(!force&&LS('fn_upddis')===info.v)return;
+    var cur=document.getElementById('fn-upd');if(cur&&cur.dataset.v===info.v)return;
+    banner(info);var n=document.getElementById('fn-upd');if(n)n.dataset.v=info.v}
+  window.fnCheckVer=checkVer;
   async function refresh(){if(busy)return;busy=true;dot();
     try{
       if(!navigator.onLine){say('📴 Offline — perubahan tersimpan di perangkat dan otomatis terkirim saat online');return}
       var f=F();if(f.syncNow)await f.syncNow();if(f.pull)await f.pull();
-      await checkVer();
-      if(!document.getElementById('pwa-upd'))say('✅ Sudah yang terbaru');
+      await checkVer(true);
+      if(!document.getElementById('fn-upd'))say('✅ Sudah yang terbaru');
     }finally{busy=false;dot()}}
   btn.onclick=refresh;
   window.addEventListener('online',function(){say('🌐 Kembali online — menyinkronkan…');dot();checkVer()});
   window.addEventListener('offline',function(){say('📴 Offline — tetap bisa dipakai, data tersimpan di perangkat');dot()});
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&Date.now()-lastChk>60000)checkVer();dot()});
   setInterval(function(){if(document.visibilityState==='visible'&&Date.now()-lastChk>10*60000)checkVer()},60000);
-  setInterval(dot,4000);setTimeout(async function(){base=await sig();dot()},4000);
+  setInterval(dot,4000);setTimeout(function(){dot();checkVer()},4000);
 })();
 </script>
 </body>
