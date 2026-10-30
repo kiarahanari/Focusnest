@@ -3789,6 +3789,7 @@ try{const q=new URLSearchParams(location.search);if(q.get('ring')){const t=q.get
 
 /* ---------- Mulai cepat: paket goal + jadwal ---------- */
 const ALL7=[0,1,2,3,4,5,6];
+const addDay=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)};
 const TP=[
  {e:'📚',n:'Belajar konsisten',cat:'Akademik',g:'Belajar rutin 30 hari',why:'Membangun kebiasaan belajar yang stabil',r:[['Belajar fokus','19:00',45,[1,2,3,4,5]],['Review mingguan','16:00',30,[0]]]},
  {e:'💪',n:'Hidup sehat',cat:'Kesehatan',g:'Olahraga rutin 30 hari',why:'Badan bugar dan energi stabil',r:[['Olahraga ringan','06:00',30,[1,3,5]],['Tidur tepat waktu','22:30',5,ALL7]]},
@@ -3798,15 +3799,15 @@ function cat(c){try{if(CAT.includes(c))return c;return CAT[0]||c}catch(e){return
 function add(i){const T=TP[i];if(!T)return;S.rt=S.rt||[];const act=S.goals.filter(g=>!g.fin).length;
  if(act>=3&&!confirm('Kamu sudah punya '+act+' goal aktif. Disarankan maksimal 3 supaya tetap fokus. Tetap tambahkan?'))return;
  const c=cat(T.cat),id=uid();
- S.goals.push({id,t:T.g,type:'short',cat:c,why:T.why,measure:'Jalankan jadwal minimal 80% selama 30 hari',due:AD(TD(),30),tgt:0,unit:'',log:[],s0:TD(),ms:[]});
+ S.goals.push({id,t:T.g,type:'short',cat:c,why:T.why,measure:'Jalankan jadwal minimal 80% selama 30 hari',due:addDay(TD(),30),tgt:0,unit:'',log:[],s0:TD(),ms:[]});
  T.r.forEach(([t,tm,min,days])=>S.rt.push({id:uid(),kind:'plan',goal:id,on:true,start:TD(),gen:{},cat:c,t,rep:'week',days:days.slice(),md:1,date:'',time:tm,min,end:'',v:1}));
  try{ensureRt2()}catch(e){}sv();render();toast('Paket “'+T.n+'” siap 🎯 Sesuaikan jam & hari di kartu goal-nya')}
-function card(){const act=S.goals.filter(g=>!g.fin).length,T0=TD(),ld=ALL7.map(n=>{const d=AD(T0,n);return S.tasks.filter(t=>(t.due||T0)===d&&t.st!=='selesai').reduce((a,t)=>a+(+t.est||0),0)}),mx=Math.max(...ld),w=[];
+function card(){const act=S.goals.filter(g=>!g.fin).length,T0=TD(),ld=ALL7.map(n=>{const d=addDay(T0,n);return S.tasks.filter(t=>(t.due||T0)===d&&t.st!=='selesai').reduce((a,t)=>a+(+t.est||0),0)}),mx=Math.max(...ld),w=[];
  if(act>3)w.push('⚠️ Ada '+act+' goal aktif. Idealnya maksimal 3 — selesaikan atau tunda yang belum mendesak.');
  if(mx>360)w.push('⚠️ Hari tersibuk minggu ini ±'+(Math.round(mx/6)/10)+' jam tugas (batas sehat ±6 jam). Pindahkan sebagian ke hari lain.');
  return '<div class="c"><h2>🚀 Mulai cepat</h2><p class="mu">Bingung mulai dari mana? Pilih satu paket: goal 30 hari + jadwal tugas langsung dibuat otomatis. Semua bisa kamu ubah kapan saja.</p>'+w.map(x=>'<p class="mu" style="color:var(--rd)">'+x+'</p>').join('')+'<div class="tabs">'+TP.map((t,i)=>'<button class="b s sm" data-ftp="'+i+'">'+t.e+' '+t.n+'</button>').join('')+'</div></div>'}
-const og=V.goals;V.goals=()=>og().replace('</h1>','</h1>'+card());
-document.addEventListener('click',e=>{const b=e.target.closest('[data-ftp]');if(b)add(+b.dataset.ftp)});
+const og=V.goals;V.goals=function(){const h=og.apply(this,arguments);let c='';try{c=card()}catch(e){console.warn('[FocusNest] kartu Mulai cepat dilewati',e)}return c?h.replace('</h1>','</h1>'+c):h};
+document.addEventListener('click',e=>{try{const b=e.target.closest('[data-ftp]');if(b)add(+b.dataset.ftp)}catch(x){console.warn(x);try{toast('Paket gagal dibuat 😢')}catch(y){}}});
 })();
 </script>
 </body>
