@@ -1,39 +1,23 @@
-/* FocusNest — service worker push pengingat (FCM).
-   Taruh di folder yang SAMA dengan index.html (root situs). Tidak mengganggu service-worker.js yang sudah ada
-   karena memakai scope terpisah (firebase-cloud-messaging-push-scope). */
-importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
-
-firebase.initializeApp({
-  apiKey: "AIzaSyCZfHDmg9acVtC6n6YjCyc1xATwkqdwPAA",
-  authDomain: "focusnest-81ce2.firebaseapp.com",
-  projectId: "focusnest-81ce2",
-  storageBucket: "focusnest-81ce2.firebasestorage.app",
-  messagingSenderId: "1034039846676",
-  appId: "1:1034039846676:web:889990fee370f2cfaac401"
+/* FocusNest — firebase-messaging-sw.js (v19)
+   Menampilkan push pengingat saat app DITUTUP (dengan bunyi sistem + getar panjang),
+   dan membunyikan alarm berulang begitu app dibuka / notifikasi diketuk. */
+self.addEventListener('install',()=>self.skipWaiting());
+self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('push',e=>{
+  let p={};try{p=e.data?e.data.json():{}}catch(x){try{p={data:{body:e.data.text()}}}catch(y){}}
+  const n=p.notification||{},d=p.data||{},title=n.title||d.title||'⏰ FocusNest',body=n.body||d.body||'',tag=d.tag||n.tag||'focusnest';
+  e.waitUntil((async()=>{
+    const cl=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    cl.forEach(c=>{try{c.postMessage({type:'fn-ring',title,body})}catch(x){}});
+    await self.registration.showNotification(title,{body,tag,renotify:true,requireInteraction:true,silent:false,vibrate:[500,200,500,200,500,200,800],data:{title,body}});
+  })());
 });
-const messaging = firebase.messaging();
-
-/* Pesan data-only: dipanggil saat tidak ada jendela FocusNest yang sedang terlihat.
-   (Kalau app sedang terbuka & terlihat, pengingat di dalam app yang tampil — jadi tidak dobel.) */
-messaging.onBackgroundMessage(payload => {
-  const d = (payload && payload.data) || {};
-  const title = d.title || '⏰ FocusNest';
-  return self.registration.showNotification(title, {
-    body: d.body || '',
-    tag: d.tag || 'focusnest',          // tag sama dengan pengingat di dalam app → saling menggantikan, bukan dobel
-    renotify: true,
-    requireInteraction: true,
-    vibrate: [200, 100, 200],
-    data: { url: d.url || './' }
-  });
-});
-
-self.addEventListener('notificationclick', e => {
+self.addEventListener('notificationclick',e=>{
   e.notification.close();
-  const target = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope.replace(/firebase-cloud-messaging-push-scope\/?$/, '')).href;
-  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
-    for (const c of list) { if ('focus' in c) return c.focus(); }
-    return clients.openWindow(target);
-  }));
+  const dt=e.notification.data||{},base=new URL('./',self.location).href;
+  e.waitUntil((async()=>{
+    const cl=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    for(const c of cl){if(c.url.startsWith(base)){try{c.postMessage({type:'fn-ring',title:dt.title,body:dt.body});return await c.focus()}catch(x){}}}
+    return self.clients.openWindow(base+'?ring=1&title='+encodeURIComponent(dt.title||'')+'&body='+encodeURIComponent(dt.body||''));
+  })());
 });

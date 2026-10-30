@@ -990,7 +990,7 @@ function remind(){const st=S.set;if(st.rmOn===false)return;const now=Date.now(),
 const TONES={bell:['Lonceng',[880,1175,1568],'sine'],digi:['Digital',[1000,1000,1400],'square'],soft:['Lembut',[523,659,784],'triangle'],chime:['Chime',[784,988,1319],'sine']};
 function rmBeep(){try{const c=actx(),t=c.currentTime,T=TONES[S.set.atone]||TONES.bell,v=S.set.avol==null?.6:+S.set.avol;[0,.3,.6].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type=T[2];o.frequency.value=T[1][i];o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.6*v,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+.26);o.start(t+d);o.stop(t+d+.28)})}catch(e){}}
 function fnDev(){const d=(S.set.dev||localStorage.getItem('fn_dev')||'all'),m=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);return!((d==='desktop'&&m)||(d==='mobile'&&!m))}
-function fnNotify(o){const op={body:o.body,tag:o.key||'focusnest',vibrate:[200,100,200],requireInteraction:true,renotify:true},plain=()=>{try{const n=new Notification(o.title,op);n.onclose=()=>{window.rmStop&&rmStop()}}catch(e){}};if(!navigator.serviceWorker){plain();return}navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(o.title,op).then(()=>rmWatchN(r,op.tag)):plain()).catch(plain)}
+function fnNotify(o){const op={body:o.body,tag:o.key||'focusnest',vibrate:[500,200,500,200,500,200,800],silent:false,requireInteraction:true,renotify:true},plain=()=>{try{const n=new Notification(o.title,op);n.onclose=()=>{window.rmStop&&rmStop()}}catch(e){}};if(!navigator.serviceWorker){plain();return}navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(o.title,op).then(()=>rmWatchN(r,op.tag)):plain()).catch(plain)}
 function rmWatchN(r,tag){let n=0;const iv=setInterval(()=>{r.getNotifications({tag}).then(l=>{if(!l.length||++n>300){clearInterval(iv);if(!l.length&&window.rmStop)rmStop()}}).catch(()=>clearInterval(iv))},1000)}
 /* PWA: service worker kini didaftarkan di blok PWA (service-worker.js) dekat akhir file */
 function petLine(o){const p=S.pet;if(!p||!o.tid)return'';const t=S.tasks.find(x=>x.id===o.tid);if(!t)return'';const n=(S.set.name||'').split(' ')[0]||'sahabat',g=S.goals.find(x=>x.id===t.gid),gn=g&&(g.t||g.n||g.name||g.title),k=(o.key||'')[0],gt=gn?' demi goal “'+gn+'”':'';
@@ -3591,7 +3591,7 @@ async function sync(force){try{if(!('serviceWorker' in navigator))return;const i
  const reg=await navigator.serviceWorker.getRegistration();if(!reg)return;const w=reg.active||reg.waiting;w&&w.postMessage({type:'fn-sched',items});
  if(!('Notification' in window)||Notification.permission!=='granted')return;
  if(window.TimestampTrigger&&reg.showNotification){const old=await reg.getNotifications({includeTriggered:false}).catch(()=>[]);old.forEach(n=>{if(n.data&&n.data.fnt)n.close()});
-  for(const i of items)await reg.showNotification(i.title,{tag:i.tag,body:i.body,data:{fnt:1},showTrigger:new TimestampTrigger(i.at),requireInteraction:true,vibrate:[200,100,200]}).catch(()=>{})}
+  for(const i of items)await reg.showNotification(i.title,{tag:i.tag,body:i.body,data:{fnt:1},showTrigger:new TimestampTrigger(i.at),requireInteraction:true,silent:false,vibrate:[500,200,500,200,500,200,800]}).catch(()=>{})}
  if(reg.periodicSync)reg.periodicSync.register('fn-remind',{minInterval:15*60*1000}).catch(()=>{});
  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}}
 setInterval(()=>sync(),30000);setTimeout(()=>sync(true),4000);
@@ -3621,7 +3621,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-fnbg]');if
 #fn-upd .ug:disabled{opacity:.7}
 @media(min-width:821px){#fn-upd{bottom:16px}}
 </style>
-<script type="application/json" id="fn-whatsnew">{"v":"2026.10.27.1","notes":["Pemberitahuan versi baru kini hanya muncul saat ada pembaruan fitur, dan bisa ditutup (✕) atau digeser.","Pengaturan (tema, nada & volume alarm, perangkat alarm, dll.) tersinkron lebih cepat ke semua perangkat dengan email yang sama."]}</script>
+<script type="application/json" id="fn-whatsnew">{"v":"2026.10.30.1","notes":["Alarm kini berdering terus (bukan sekali bunyi) untuk pengingat tugas, dan otomatis berbunyi saat notifikasi diketuk.","Baru: kartu “Mulai cepat” di Goals (paket goal + jadwal siap pakai) dan peringatan beban terlalu padat.","Pemberitahuan versi baru kini hanya muncul saat ada pembaruan fitur, dan bisa ditutup (✕) atau digeser.","Pengaturan (tema, nada & volume alarm, perangkat alarm, dll.) tersinkron lebih cepat ke semua perangkat dengan email yang sama."]}</script>
 <script>
 /* ===== Segarkan + status online/offline + cek versi baru (HP & laptop) ===== */
 (function(){
@@ -3754,6 +3754,59 @@ const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k)
   }, 5000);
   document.addEventListener('visibilitychange', () => { if (document.hidden && token) sync(true); });
   window.addEventListener('pagehide', () => { if (token) sync(true); });
+})();
+</script>
+
+<style>
+#fnring{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+#fnring .fnrc{max-width:340px;width:100%;text-align:center;margin:0}
+#fnring .fnbell{font-size:56px;display:inline-block;animation:fnsh .5s infinite alternate}
+@keyframes fnsh{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+</style>
+<script>
+/* ===== v19: alarm berdering untuk pengingat tugas + paket "Mulai cepat" untuk pemula ===== */
+(()=>{
+const $i=id=>document.getElementById(id),E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let R=null;
+function stop(){if(R){if(R.p){clearInterval(R.p.iv);clearTimeout(R.p.to)}clearInterval(R.vb);clearTimeout(R.to)}R=null;try{navigator.vibrate&&navigator.vibrate(0)}catch(e){}const o=$i('fnring');if(o)o.remove()}
+function ring(o,dur){stop();dur=dur||45;let p=null;
+ try{actx();p=window.zPlay&&window.zPlay('sync',dur)}catch(e){}
+ if(!p){try{rmBeep()}catch(e){}}
+ const vb=setInterval(()=>{try{navigator.vibrate&&navigator.vibrate([400,200,400])}catch(e){}},1500);
+ R={p,vb,to:setTimeout(stop,dur*1000)};
+ const d=document.createElement('div');d.id='fnring';d.setAttribute('role','alertdialog');
+ d.innerHTML='<div class="c fnrc"><div class="fnbell">⏰</div><h2>'+E(o.title)+'</h2><p class="mu">'+E(o.body||'')+'</p><div class="tabs" style="justify-content:center">'+(o.tid?'<button class="b s" data-a="rmsnz" data-i="'+E(o.tid)+'">Tunda '+(+S.set.rmSnz||5)+' mnt</button>':'')+'<button class="b" data-fnr="off">Matikan</button></div></div>';
+ document.body.appendChild(d)}
+window.fnRing=ring;window.fnRingStop=stop;
+/* semua pengingat tugas kini berdering, bukan sekali bunyi */
+const f0=window.rmFire;
+if(typeof f0==='function')window.rmFire=function(o){const r=f0.apply(this,arguments);try{if(o&&o.key!=='t'&&S.set.rmSnd!==false&&fnDev())ring({title:o.title,body:o.body,tid:o.tid})}catch(e){}return r};
+document.addEventListener('click',e=>{if(e.target.closest('#fnring [data-fnr],#fnring [data-a]'))stop()});
+document.addEventListener('pointerdown',()=>{try{actx()}catch(e){}},{once:true});
+/* dari service worker (push masuk / notifikasi diketuk) */
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};if(d.type==='fn-ring')ring({title:d.title||'⏰ Pengingat',body:d.body||''})});
+try{const q=new URLSearchParams(location.search);if(q.get('ring')){const t=q.get('title')||'⏰ Pengingat',b=q.get('body')||'';history.replaceState(null,'',location.pathname+location.hash);setTimeout(()=>ring({title:t,body:b}),1200)}}catch(e){}
+
+/* ---------- Mulai cepat: paket goal + jadwal ---------- */
+const ALL7=[0,1,2,3,4,5,6];
+const TP=[
+ {e:'📚',n:'Belajar konsisten',cat:'Akademik',g:'Belajar rutin 30 hari',why:'Membangun kebiasaan belajar yang stabil',r:[['Belajar fokus','19:00',45,[1,2,3,4,5]],['Review mingguan','16:00',30,[0]]]},
+ {e:'💪',n:'Hidup sehat',cat:'Kesehatan',g:'Olahraga rutin 30 hari',why:'Badan bugar dan energi stabil',r:[['Olahraga ringan','06:00',30,[1,3,5]],['Tidur tepat waktu','22:30',5,ALL7]]},
+ {e:'💰',n:'Atur keuangan',cat:'Keuangan',g:'Rapikan keuangan 30 hari',why:'Tahu ke mana uang pergi',r:[['Catat pengeluaran hari ini','21:00',5,ALL7],['Review keuangan mingguan','10:00',20,[0]]]},
+ {e:'💼',n:'Skill & karir',cat:'Karir',g:'Kuasai skill baru 30 hari',why:'Naik level di karir',r:[['Latihan skill','20:00',45,[2,4,6]],['Kerjakan proyek kecil','09:00',90,[0]]]}];
+function cat(c){try{if(CAT.includes(c))return c;return CAT[0]||c}catch(e){return c}}
+function add(i){const T=TP[i];if(!T)return;S.rt=S.rt||[];const act=S.goals.filter(g=>!g.fin).length;
+ if(act>=3&&!confirm('Kamu sudah punya '+act+' goal aktif. Disarankan maksimal 3 supaya tetap fokus. Tetap tambahkan?'))return;
+ const c=cat(T.cat),id=uid();
+ S.goals.push({id,t:T.g,type:'short',cat:c,why:T.why,measure:'Jalankan jadwal minimal 80% selama 30 hari',due:AD(TD(),30),tgt:0,unit:'',log:[],s0:TD(),ms:[]});
+ T.r.forEach(([t,tm,min,days])=>S.rt.push({id:uid(),kind:'plan',goal:id,on:true,start:TD(),gen:{},cat:c,t,rep:'week',days:days.slice(),md:1,date:'',time:tm,min,end:'',v:1}));
+ try{ensureRt2()}catch(e){}sv();render();toast('Paket “'+T.n+'” siap 🎯 Sesuaikan jam & hari di kartu goal-nya')}
+function card(){const act=S.goals.filter(g=>!g.fin).length,T0=TD(),ld=ALL7.map(n=>{const d=AD(T0,n);return S.tasks.filter(t=>(t.due||T0)===d&&t.st!=='selesai').reduce((a,t)=>a+(+t.est||0),0)}),mx=Math.max(...ld),w=[];
+ if(act>3)w.push('⚠️ Ada '+act+' goal aktif. Idealnya maksimal 3 — selesaikan atau tunda yang belum mendesak.');
+ if(mx>360)w.push('⚠️ Hari tersibuk minggu ini ±'+(Math.round(mx/6)/10)+' jam tugas (batas sehat ±6 jam). Pindahkan sebagian ke hari lain.');
+ return '<div class="c"><h2>🚀 Mulai cepat</h2><p class="mu">Bingung mulai dari mana? Pilih satu paket: goal 30 hari + jadwal tugas langsung dibuat otomatis. Semua bisa kamu ubah kapan saja.</p>'+w.map(x=>'<p class="mu" style="color:var(--rd)">'+x+'</p>').join('')+'<div class="tabs">'+TP.map((t,i)=>'<button class="b s sm" data-ftp="'+i+'">'+t.e+' '+t.n+'</button>').join('')+'</div></div>'}
+const og=V.goals;V.goals=()=>og().replace('</h1>','</h1>'+card());
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ftp]');if(b)add(+b.dataset.ftp)});
 })();
 </script>
 </body>
