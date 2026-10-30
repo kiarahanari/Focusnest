@@ -962,13 +962,13 @@ function vDash(){const t=tdTasks().sort(byTime),d=t.filter(x=>x.st==='selesai').
 function notifSt(){if(!('Notification' in window))return['❌','Browser ini tidak mendukung notifikasi sistem — pengingat tetap muncul di dalam aplikasi.'];const p=Notification.permission;
   return p==='granted'?['✅','Notifikasi browser aktif.']:p==='denied'?['⛔','Notifikasi diblokir browser. Izinkan lewat ikon 🔒 di address bar → Notifikasi → Izinkan, lalu muat ulang.']:['🔔','Notifikasi browser belum diizinkan. Klik tombol “Izinkan notifikasi”.']}
 function rmCard(){const s=S.set,on=s.rmOn!==false,[ic,tx]=notifSt();
-  return `<div class="c"><h2>⏰ Pengingat</h2><p class="mu">Tugas yang punya <b>jam</b> akan diingatkan otomatis. Pengingat berjalan selama FocusNest terbuka di tab browser (boleh di latar belakang).</p>
+  return `<div class="c"><h2>⏰ Pengingat</h2><p class="mu">Tugas yang punya <b>jam</b> akan diingatkan otomatis. Pengingat juga dikirim lewat push ke HP/laptop, jadi tetap muncul walau FocusNest sedang ditutup (setelah izin notifikasi diaktifkan).</p>
   <div class="tabs"><button class="b ${on?'':'s'}" data-a="rmon">${on?'Pengingat: AKTIF ✅':'Pengingat: MATI — klik untuk aktifkan'}</button><button class="b s" data-a="nt2">${ic} Izinkan notifikasi</button><button class="b s" data-a="rmtest">🔊 Tes pengingat</button></div>
   <p class="mu" style="margin:0 0 8px">${ic} ${tx}</p>
   <div class="f"><label>Ingatkan sebelum jadwal<select data-a="rmset" data-k="rmLead" aria-label="Waktu pengingat">${[[0,'Tepat waktu saja'],[5,'5 menit sebelumnya'],[10,'10 menit sebelumnya'],[15,'15 menit sebelumnya'],[30,'30 menit sebelumnya'],[60,'1 jam sebelumnya']].map(([v,l])=>`<option value="${v}" ${(+s.rmLead||0)===v?'selected':''}>${l}</option>`).join('')}${rmLeadX(s.rmLead)}<option value="__c">✏️ Atur sendiri…</option></select></label>
   <label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmSnd" ${s.rmSnd!==false?'checked':''}> 🔊 Bunyi</label><label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmVib" ${s.rmVib!==false?'checked':''}> 📳 Getar (HP)</label><label>Tunda (menit)<input type="number" min="1" max="120" data-a="rmset" data-k="rmSnz" value="${+s.rmSnz||5}" style="width:90px" aria-label="Lama tunda pengingat"></label></div>
   ${alCtl()}<h3 style="margin:12px 0 6px">Pengingat harian</h3><div class="f"><label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmAmOn" ${s.rmAmOn?'checked':''}> ☀️ Rencanakan hari</label><input type="time" data-a="rmset" data-k="rmAm" value="${s.rmAm||'07:30'}" aria-label="Jam pengingat pagi" style="flex:0 1 120px"><label class="cli" style="flex:0 0 auto"><input type="checkbox" data-a="rmset" data-k="rmPmOn" ${s.rmPmOn?'checked':''}> 🌙 Refleksi malam</label><input type="time" data-a="rmset" data-k="rmPm" value="${s.rmPm||'20:30'}" aria-label="Jam pengingat malam" style="flex:0 1 120px"></div>
-  <p class="mu" style="margin:8px 0 0">Tiap tugas bisa punya pengingat sendiri lewat kolom 🔔 saat menambah tugas atau di ✏️ Edit. Waktu pengingat bisa kamu atur sendiri (pilih “✏️ Atur sendiri…”: menit/jam/hari sebelum jadwal) dan lama tunda diatur di atas.</p><h3 style="margin:12px 0 6px">📲 Saat app ditutup</h3><p class="mu" style="margin:0 0 8px">Install FocusNest ke layar utama (Chrome/Edge: ⋮ → Install app), izinkan notifikasi, lalu tambahkan <code>importScripts('fn-reminder.js');</code> di baris pertama <code>service-worker.js</code> dan taruh <code>fn-reminder.js</code> di folder yang sama. Pengingat dikirim ke sistem agar muncul &amp; berbunyi dengan nada notifikasi perangkat. Ketepatan saat app benar-benar tertutup bergantung browser/HP.</p><div class="tabs"><button class="b s" data-fnbg="test">🧪 Tes saat app ditutup (1 menit)</button></div></div>`}
+  <p class="mu" style="margin:8px 0 0">Tiap tugas bisa punya pengingat sendiri lewat kolom 🔔 saat menambah tugas atau di ✏️ Edit. Waktu pengingat bisa kamu atur sendiri (pilih “✏️ Atur sendiri…”: menit/jam/hari sebelum jadwal) dan lama tunda diatur di atas.</p><h3 style="margin:12px 0 6px">📲 Saat app ditutup</h3><p class="mu" style="margin:0 0 8px">Install FocusNest ke layar utama (Chrome/Edge: ⋮ → Install app; iPhone: Bagikan → Tambah ke Layar Utama), lalu izinkan notifikasi. Jadwal 7 hari ke depan dikirim ke server, jadi pengingat tetap muncul &amp; berbunyi walau app ditutup. Buka FocusNest sesekali agar jadwal terbaru ikut tersinkron.</p><div class="tabs"><button class="b s" data-fnbg="test">🧪 Tes saat app ditutup (1 menit)</button></div></div>`}
 function rmBeep(){try{const c=actx(),t=c.currentTime;[0,.28,.56].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i===2?1175:880;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.22,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+.24);o.start(t+d);o.stop(t+d+.26)})}catch(e){}}
 function rmTitle(){if(!document.querySelector('.rmi'))document.title=TTL}
 function rmFire(o){if(!fnDev())return;try{const L=petLine(o);if(L)o.body=L+' · '+o.body}catch(e){}if(S.set.rmSnd!==false)rmBeep();if(S.set.rmVib!==false)try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
@@ -3576,15 +3576,16 @@ document.addEventListener('change',e=>{const t=e.target;if(!t||t.tagName!=='SELE
 
 /* jadwal pengingat 48 jam ke depan → dikirim ke service worker */
 window.__fnTest=window.__fnTest||[];
-function plan(){const out=[],now=Date.now(),end=now+48*36e5,st=S.set||{};if(st.rmOn===false)return out;
+function plan(H){H=H||48;const DN=Math.ceil(H/24)+1,out=[],now=Date.now(),end=now+H*36e5,st=S.set||{};if(st.rmOn===false)return out;
  (S.tasks||[]).forEach(t=>{if(!t.time||t.st==='selesai'||t.st==='tunda'||t.rm==='off')return;const ms=new Date((t.due||TD())+'T'+t.time).getTime();if(isNaN(ms))return;
   const lead=t.rm!==undefined&&t.rm!==''?+t.rm:(+st.rmLead||0);
   if(lead>0&&ms-lead*6e4>now&&ms-lead*6e4<end)out.push({tag:'a'+t.id,at:ms-lead*6e4,title:'⏳ '+fL(lead)+' lagi: '+t.t,body:'Mulai pukul '+t.time+'. Siapkan dirimu!'});
   if(ms>now&&ms<end)out.push({tag:'b'+t.id,at:ms,title:'⏰ Waktunya: '+t.t,body:'Jadwal '+t.time})});
- (S.al||[]).forEach(a=>{if(a.on===false)return;const hm=(a.time||'07:00').split(':').map(Number);for(let d=0;d<3;d++){const x=new Date();x.setDate(x.getDate()+d);if(!(a.days||[0,1,2,3,4,5,6]).includes(x.getDay()))continue;for(let k=0;k<(+a.times||1);k++){const at=new Date(x.getFullYear(),x.getMonth(),x.getDate(),hm[0],hm[1]+k*(+a.every||5)).getTime();if(at>now&&at<end)out.push({tag:'al'+a.id+'_'+k,at,title:'⏰ '+(a.t||'Alarm'),body:'Alarm '+a.time})}}});
- [['rmAmOn','rmAm','07:30','☀️ Rencanakan harimu','Yuk susun prioritas hari ini!'],['rmPmOn','rmPm','20:30','🌙 Waktunya refleksi','Catat mood & refleksi singkatmu.']].forEach(([on,k,df,ti,bd])=>{if(!st[on])return;const hm=(st[k]||df).split(':').map(Number);for(let d=0;d<3;d++){const x=new Date();const at=new Date(x.getFullYear(),x.getMonth(),x.getDate()+d,hm[0],hm[1]||0).getTime();if(at>now&&at<end)out.push({tag:k+d,at,title:ti,body:bd})}});
+ (S.al||[]).forEach(a=>{if(a.on===false)return;const hm=(a.time||'07:00').split(':').map(Number);for(let d=0;d<DN;d++){const x=new Date();x.setDate(x.getDate()+d);if(!(a.days||[0,1,2,3,4,5,6]).includes(x.getDay()))continue;for(let k=0;k<(+a.times||1);k++){const at=new Date(x.getFullYear(),x.getMonth(),x.getDate(),hm[0],hm[1]+k*(+a.every||5)).getTime();if(at>now&&at<end)out.push({tag:'al'+a.id+'_'+k,at,title:'⏰ '+(a.t||'Alarm'),body:'Alarm '+a.time})}}});
+ [['rmAmOn','rmAm','07:30','☀️ Rencanakan harimu','Yuk susun prioritas hari ini!'],['rmPmOn','rmPm','20:30','🌙 Waktunya refleksi','Catat mood & refleksi singkatmu.']].forEach(([on,k,df,ti,bd])=>{if(!st[on])return;const hm=(st[k]||df).split(':').map(Number);for(let d=0;d<DN;d++){const x=new Date();const at=new Date(x.getFullYear(),x.getMonth(),x.getDate()+d,hm[0],hm[1]||0).getTime();if(at>now&&at<end)out.push({tag:k+d,at,title:ti,body:bd})}});
  window.__fnTest=window.__fnTest.filter(i=>i.at>now);out.push(...window.__fnTest);
- return out.sort((a,b)=>a.at-b.at).slice(0,60)}
+ return out.sort((a,b)=>a.at-b.at).slice(0,H>48?150:60)}
+window.__fnPlan=plan;
 let sig='';
 async function sync(force){try{if(!('serviceWorker' in navigator))return;const items=plan(),s=JSON.stringify(items.map(i=>[i.tag,i.at,i.title]));if(!force&&s===sig)return;sig=s;
  const reg=await navigator.serviceWorker.getRegistration();if(!reg)return;const w=reg.active||reg.waiting;w&&w.postMessage({type:'fn-sched',items});
@@ -3676,6 +3677,83 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-fnbg]');if
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&Date.now()-lastChk>60000)checkVer();dot()});
   setInterval(function(){if(document.visibilityState==='visible'&&Date.now()-lastChk>10*60000)checkVer()},60000);
   setInterval(dot,4000);setTimeout(function(){dot();checkVer()},4000);
+})();
+</script>
+<script type="module">
+/* ===== v18: PUSH PENGINGAT (FCM) — notifikasi tugas tetap muncul & berbunyi walau app/web DITUTUP =====
+   Cara kerja: app menulis jadwal pengingat 7 hari ke depan ke pushQueue/{uid} (1 dokumen per akun, hanya ditulis
+   saat jadwal berubah). Cloud Function terjadwal (functions/index.js) mengecek tiap menit lalu mengirim push FCM
+   ke semua perangkat akun. Service worker firebase-messaging-sw.js yang menampilkannya. Lihat SETUP.md. */
+const VAPID_KEY = 'BNUiRzb6ucO7Xy6UOk71a77idnZL50_Fp4WdZTC2sj_og34Fgb7YDuutwm9-dalqU8pFD5KsPF08GJLb1TL0wAs';   // Firebase Console → Project settings → Cloud Messaging → Web Push certificates → Generate key pair → salin "Key pair"
+const V = '10.14.1', G = 'https://www.gstatic.com/firebasejs/' + V + '/';
+const SW_URL = 'firebase-messaging-sw.js', SW_SCOPE = 'firebase-cloud-messaging-push-scope';
+const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } };
+
+(async () => {
+  if (!VAPID_KEY || VAPID_KEY.indexOf('ISI_') === 0) { console.info('[FocusNest] Push pengingat belum aktif: isi VAPID_KEY (lihat SETUP.md).'); return; }
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return;
+  if (!(location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) return;
+  let A, M, F;
+  try { [A, M, F] = await Promise.all([import(G + 'firebase-app.js'), import(G + 'firebase-messaging.js'), import(G + 'firebase-firestore.js')]); } catch (e) { console.warn('[FocusNest] Push: SDK gagal dimuat', e); return; }
+  try { if (!(await M.isSupported())) return; } catch (e) { return; }
+
+  let ref = null, token = '', messaging = null, lastSig = '', lastWrite = 0, starting = false, db = null, uid = '';
+  const whenActive = reg => new Promise(res => {
+    const w = reg.active || reg.waiting || reg.installing; if (!w) return res();
+    if (w.state === 'activated') return res();
+    w.addEventListener('statechange', () => { if (w.state === 'activated') res(); });
+    setTimeout(res, 8000);
+  });
+  const devOk = () => { try { return typeof fnDev === 'function' ? !!fnDev() : true; } catch (e) { return true; } };
+
+  async function start() {
+    if (starting || token) return; starting = true;
+    try {
+      const FNo = window.FN || {}; if (!FNo.uid || !A.getApps().length) return;
+      uid = FNo.uid; const app = A.getApp(); db = F.getFirestore(app); ref = F.doc(db, 'pushQueue', uid);
+      const reg = await navigator.serviceWorker.register(SW_URL, { scope: SW_SCOPE, updateViaCache: 'none' });
+      await whenActive(reg);
+      messaging = M.getMessaging(app);
+      token = await M.getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+      if (!token) return;
+      await F.setDoc(ref, { uid, tokens: { [token]: { ok: devOk(), ua: /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop', at: Date.now() } } }, { merge: true });
+      /* saat keluar akun: lepas token perangkat ini supaya tidak menerima pengingat akun lama */
+      const lo = FNo.logout;
+      if (typeof lo === 'function' && !lo.__fnPush) {
+        const w = async function () {
+          try { await Promise.race([F.updateDoc(ref, { ['tokens.' + token]: F.deleteField() }), new Promise(r => setTimeout(r, 2500))]); } catch (e) {}
+          try { await M.deleteToken(messaging); } catch (e) {}
+          token = ''; lastSig = '';
+          return lo.apply(this, arguments);
+        };
+        w.__fnPush = 1; FNo.logout = w;
+      }
+      lastSig = ''; await sync(true);
+    } catch (e) { token = ''; console.warn('[FocusNest] Push gagal diaktifkan:', e && (e.code || e.message || e)); }
+    finally { starting = false; }
+  }
+
+  async function sync(force) {
+    if (!ref || !token || typeof window.__fnPlan !== 'function') return;
+    if (!force && Date.now() - lastWrite < 10000) return;
+    let items = [];
+    try { items = window.__fnPlan(168).map(i => ({ tag: String(i.tag), at: Math.round(i.at), title: String(i.title).slice(0, 120), body: String(i.body || '').slice(0, 200) })); } catch (e) { return; }
+    const sig = JSON.stringify(items) + '|' + devOk();
+    if (sig === lastSig) return;
+    lastSig = sig; lastWrite = Date.now();
+    try {
+      await F.setDoc(ref, { uid, items, next: items.length ? items[0].at : null, tokens: { [token]: { ok: devOk(), at: Date.now() } }, updatedAt: Date.now() }, { merge: true });
+    } catch (e) { lastSig = ''; console.warn('[FocusNest] Push: gagal menyimpan jadwal (cek Firestore Rules pushQueue)', e && (e.code || e.message)); }
+  }
+
+  setInterval(() => {
+    try {
+      if (Notification.permission !== 'granted' || !(window.FN && window.FN.uid)) return;
+      if (!token) start(); else sync(false);
+    } catch (e) {}
+  }, 5000);
+  document.addEventListener('visibilitychange', () => { if (document.hidden && token) sync(true); });
+  window.addEventListener('pagehide', () => { if (token) sync(true); });
 })();
 </script>
 </body>
