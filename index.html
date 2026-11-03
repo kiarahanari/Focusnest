@@ -990,7 +990,8 @@ function remind(){const st=S.set;if(st.rmOn===false)return;const now=Date.now(),
 const TONES={bell:['Lonceng',[880,1175,1568],'sine'],digi:['Digital',[1000,1000,1400],'square'],soft:['Lembut',[523,659,784],'triangle'],chime:['Chime',[784,988,1319],'sine']};
 function rmBeep(){try{const c=actx(),t=c.currentTime,T=TONES[S.set.atone]||TONES.bell,v=S.set.avol==null?.6:+S.set.avol;[0,.3,.6].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type=T[2];o.frequency.value=T[1][i];o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.6*v,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+.26);o.start(t+d);o.stop(t+d+.28)})}catch(e){}}
 function fnDev(){const d=(S.set.dev||localStorage.getItem('fn_dev')||'all'),m=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);return!((d==='desktop'&&m)||(d==='mobile'&&!m))}
-function fnNotify(o){const op={body:o.body,tag:o.key||'focusnest',vibrate:[500,200,500,200,500,200,800],silent:false,requireInteraction:true,renotify:true},plain=()=>{try{const n=new Notification(o.title,op);n.onclose=()=>{window.rmStop&&rmStop()}}catch(e){}};if(!navigator.serviceWorker){plain();return}navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(o.title,op).then(()=>rmWatchN(r,op.tag)):plain()).catch(plain)}
+function fnNotify(o){if(document.visibilityState==='visible'&&document.hasFocus()&&o.key!=='test'&&o.key!=='t')return; /* app sedang dilihat → cukup pengingat di dalam app, jangan dobel dengan notifikasi sistem */
+const op={body:o.body,tag:o.key||'focusnest',vibrate:[500,200,500,200,500,200,800],silent:false,requireInteraction:true,renotify:true},plain=()=>{try{const n=new Notification(o.title,op);n.onclose=()=>{window.rmStop&&rmStop()}}catch(e){}};if(!navigator.serviceWorker){plain();return}navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(o.title,op).then(()=>rmWatchN(r,op.tag)):plain()).catch(plain)}
 function rmWatchN(r,tag){let n=0;const iv=setInterval(()=>{r.getNotifications({tag}).then(l=>{if(!l.length||++n>300){clearInterval(iv);if(!l.length&&window.rmStop)rmStop()}}).catch(()=>clearInterval(iv))},1000)}
 /* PWA: service worker kini didaftarkan di blok PWA (service-worker.js) dekat akhir file */
 function petLine(o){const p=S.pet;if(!p||!o.tid)return'';const t=S.tasks.find(x=>x.id===o.tid);if(!t)return'';const n=(S.set.name||'').split(' ')[0]||'sahabat',g=S.goals.find(x=>x.id===t.gid),gn=g&&(g.t||g.n||g.name||g.title),k=(o.key||'')[0],gt=gn?' demi goal “'+gn+'”':'';
@@ -1357,7 +1358,7 @@ return`<h1>Rencana 🎯</h1><div class="c" style="margin-top:12px"><h2>🧭 Cara
 const ZT=window.ZT={sync:['🔗 Ikuti nada pengingat','sine',[880,1175,1568],.3],bell:['🔔 Lonceng','sine',[880,1175,1568],.3],digi:['📟 Digital','square',[1000,0,1000,0,1400,0],.15],siren:['🚨 Sirine','sawtooth','s'],harp:['🎼 Harpa','triangle',[523,659,784,1047,784,659],.25],radar:['📡 Radar','sine',[1200,0,0,0],.2],bird:['🐦 Kicau','sine','b'],arcade:['🎮 Arkade','square',[659,784,988,1319,988,784],.12],gong:['🛎️ Gong','sine',[196,0,0,0,0],.5],soft:['🌙 Lembut','triangle',[523,659,784,659],.45],morn:['🌅 Pagi ceria','triangle',[784,988,1175,1568,1175,988],.2],pulse:['💓 Detak','square',[440,0,440,0,0,0],.22],wave:['🌊 Gelombang','sine',[330,392,494,587,494,392],.35]};
 let ZR=null;function zStop(){if(ZR){clearInterval(ZR.iv);clearTimeout(ZR.to)}ZR=null;const o=document.getElementById('zring');if(o)o.remove()}
 function zPlay(id,dur){try{const T=ZT[id==='sync'?(S.set.rmTone||'bell'):id]||ZT.bell,c=actx(),vol=S.set.avol==null?.6:+S.set.avol;let i=0;const note=(f,d,w)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime;o.type=w||T[1];o.connect(g);g.connect(c.destination);if(Array.isArray(f)){o.frequency.setValueAtTime(f[0],t);o.frequency.linearRampToValueAtTime(f[1],t+d)}else o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5*vol,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.start(t);o.stop(t+d+.02)};const step=Array.isArray(T[2])?T[3]:T[2]==='s'?.8:.5;const f=()=>{if(T[2]==='s')note([600,1100],.78);else if(T[2]==='b'){const b=2000+Math.random()*1500;note([b,b*1.4],.12);setTimeout(()=>note([b*1.2,b*1.6],.1),160)}else{const n=T[2][i++%T[2].length];if(n)note(n,step*.9)}};f();const iv=setInterval(f,step*1000);return{iv,to:setTimeout(()=>zStop(),dur*1000)}}catch(e){return null}}
-function zRing(a,k){zStop();const p=zPlay(a.tone,+a.dur||15)||{};ZR=p;try{navigator.vibrate&&navigator.vibrate([300,150,300,150,300])}catch(e){}
+function zRing(a,k){zStop();try{window.fnRingStop&&fnRingStop()}catch(e){}const p=zPlay(a.tone,+a.dur||15)||{};ZR=p;try{navigator.vibrate&&navigator.vibrate([300,150,300,150,300])}catch(e){}
 const ttl='⏰ '+(a.t||'Alarm'),body='Pengingat '+(k+1)+'/'+a.times+' · '+a.time;try{if('Notification'in window&&Notification.permission==='granted')fnNotify({title:ttl,body,key:'al'+a.id})}catch(e){}
 const o=document.createElement('div');o.id='zring';o.innerHTML=`<div class="c" style="max-width:340px;text-align:center;position:relative"><button class="rmx" data-z="rstop" aria-label="Tutup alarm" title="Tutup">✕</button><div style="font-size:54px">⏰</div><h2>${E(a.t||'Alarm')}</h2><p class="mu">${body}</p><div class="tabs" style="justify-content:center"><button class="b" data-z="rstop">Matikan</button><button class="b s" data-z="rall" data-i="${a.id}">Hentikan semua ulangan</button></div></div>`;document.body.appendChild(o)}
 const FK='fn_alf';function fired(){try{return JSON.parse(localStorage.getItem(FK)||'{}')}catch(e){return{}}}
@@ -3626,7 +3627,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-fnbg]');if
 #fn-upd .ug:disabled{opacity:.7}
 @media(min-width:821px){#fn-upd{bottom:16px}}
 </style>
-<script type="application/json" id="fn-whatsnew">{"v":"2026.11.03.1","notes":["Perbaikan: pengingat & alarm yang sudah lewat tidak lagi bunyi/muncul tiba-tiba saat app dibuka; alarm kini lebih andal saat app di latar belakang.","Alarm kini berdering terus (bukan sekali bunyi) untuk pengingat tugas, dan otomatis berbunyi saat notifikasi diketuk.","Baru: kartu “Mulai cepat” di Goals (paket goal + jadwal siap pakai) dan peringatan beban terlalu padat.","Pemberitahuan versi baru kini hanya muncul saat ada pembaruan fitur, dan bisa ditutup (✕) atau digeser.","Pengaturan (tema, nada & volume alarm, perangkat alarm, dll.) tersinkron lebih cepat ke semua perangkat dengan email yang sama."]}</script>
+<script type="application/json" id="fn-whatsnew">{"v":"2026.11.03.2","notes":["Pengingat kini tampil sekali saja (tidak dobel antara kotak pengingat dan notifikasi sistem saat app sedang dibuka).","Perbaikan: pengingat & alarm yang sudah lewat tidak lagi bunyi/muncul tiba-tiba saat app dibuka; alarm kini lebih andal saat app di latar belakang.","Alarm kini berdering terus (bukan sekali bunyi) untuk pengingat tugas, dan otomatis berbunyi saat notifikasi diketuk.","Baru: kartu “Mulai cepat” di Goals (paket goal + jadwal siap pakai) dan peringatan beban terlalu padat.","Pemberitahuan versi baru kini hanya muncul saat ada pembaruan fitur, dan bisa ditutup (✕) atau digeser.","Pengaturan (tema, nada & volume alarm, perangkat alarm, dll.) tersinkron lebih cepat ke semua perangkat dengan email yang sama."]}</script>
 <script>
 /* ===== Segarkan + status online/offline + cek versi baru (HP & laptop) ===== */
 (function(){
@@ -3773,7 +3774,7 @@ const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k)
 (()=>{
 const $i=id=>document.getElementById(id),E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let R=null;
-function stop(){if(R){if(R.p){clearInterval(R.p.iv);clearTimeout(R.p.to)}clearInterval(R.vb);clearTimeout(R.to)}R=null;try{navigator.vibrate&&navigator.vibrate(0)}catch(e){}const o=$i('fnring');if(o)o.remove()}
+function stop(){if(R){if(R.p){clearInterval(R.p.iv);clearTimeout(R.p.to)}clearInterval(R.vb);clearTimeout(R.to)}R=null;try{navigator.vibrate&&navigator.vibrate(0)}catch(e){}const o=$i('fnring');if(o)o.remove();try{rmTitle()}catch(e){}}
 function ring(o,dur){stop();dur=dur||45;let p=null;
  try{actx();p=window.zPlay&&window.zPlay('sync',dur)}catch(e){}
  if(!p){try{rmBeep()}catch(e){}}
@@ -3785,12 +3786,12 @@ function ring(o,dur){stop();dur=dur||45;let p=null;
 window.fnRing=ring;window.fnRingStop=stop;
 /* semua pengingat tugas kini berdering, bukan sekali bunyi */
 const f0=window.rmFire;
-if(typeof f0==='function')window.rmFire=function(o){const r=f0.apply(this,arguments);try{if(o&&o.key!=='t'&&S.set.rmSnd!==false&&fnDev())ring({title:o.title,body:o.body,tid:o.tid})}catch(e){}return r};
+if(typeof f0==='function')window.rmFire=function(o){const r=f0.apply(this,arguments);try{if(o&&o.key!=='t'&&S.set.rmSnd!==false&&fnDev()){try{window.rmStop&&rmStop()}catch(e){}const l=document.querySelectorAll('#rmb .rmi');if(l.length)l[l.length-1].remove();ring({title:o.title,body:o.body,tid:o.tid})}}catch(e){}return r};
 document.addEventListener('click',e=>{if(e.target.closest('#fnring [data-fnr],#fnring [data-a]'))stop()});
 document.addEventListener('pointerdown',()=>{try{actx()}catch(e){}},{once:true});
 /* dari service worker (push masuk / notifikasi diketuk) */
 const FRESH=3*6e4,fresh=at=>{at=+at;return !at||isNaN(at)||Date.now()-at<=FRESH}; /* notifikasi lama yang diketuk belakangan tidak boleh membunyikan alarm */
-if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};if(d.type==='fn-ring'&&fresh(d.at))ring({title:d.title||'⏰ Pengingat',body:d.body||''})});
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};if(d.type==='fn-ring'&&fresh(d.at)&&!$i('zring')&&!$i('fnring'))ring({title:d.title||'⏰ Pengingat',body:d.body||''})});
 try{const q=new URLSearchParams(location.search);if(q.get('ring')){const t=q.get('title')||'⏰ Pengingat',b=q.get('body')||'';history.replaceState(null,'',location.pathname+location.hash);if(fresh(q.get('at')))setTimeout(()=>ring({title:t,body:b}),1200)}}catch(e){}
 
 /* ---------- Mulai cepat: paket goal + jadwal ---------- */
