@@ -1,4 +1,4 @@
-/* FocusNest — firebase-messaging-sw.js (v21: anti-basi, gabungan 2 file jadi 1)
+/* FocusNest — firebase-messaging-sw.js (v22: notifikasi sekali, anti-basi, gabungan 2 file jadi 1)
    Taruh di folder yang SAMA dengan index.html (root situs), nama file tetap firebase-messaging-sw.js.
    Hapus file firebase-messaging-sw_1.js — tidak dipakai lagi.
 
@@ -13,9 +13,9 @@
    dan penerimaan push cukup lewat event 'push' bawaan browser. Jadi tidak ada config/API key di sini,
    dan tidak akan muncul notifikasi dobel. */
 
-const SW_VER = 'v21';
+const SW_VER = 'v22';
 const STALE_MS = 3 * 60 * 1000;                    // push yang terlambat > 3 menit dianggap BASI: tidak ditampilkan & tidak berbunyi
-const RING = { repeat: 6, gapSec: 10 };            // 6 kali bunyi, jeda 10 detik (± 1 menit). Bisa ditimpa lewat data.rep / data.gap dari server.
+const RING = { repeat: 1, gapSec: 10 };       // v22: notifikasi biasa SEKALI (tanpa diulang-ulang seperti alarm)            // 6 kali bunyi, jeda 10 detik (± 1 menit). Bisa ditimpa lewat data.rep / data.gap dari server.
 const VIBRATE = [500, 200, 500, 200, 500, 200, 800];
 const BASE = new URL('./', self.location).href;    // alamat root FocusNest
 
