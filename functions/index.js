@@ -5,7 +5,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore();
 
-const STALE_MS = 2 * 3600 * 1000;       // pengingat yang terlambat > 2 jam dibuang (tidak berguna lagi)
+const STALE_MS = 5 * 60 * 1000;         // pengingat yang terlambat > 5 menit dibuang (tidak dibunyikan basi)
 const BAD = new Set(['messaging/registration-token-not-registered', 'messaging/invalid-registration-token', 'messaging/invalid-argument']);
 
 async function isMember(uid) {
@@ -38,9 +38,9 @@ exports.sendDueReminders = onSchedule(
           for (const it of due) {
             const res = await admin.messaging().sendEachForMulticast({
               tokens,
-              data: { title: String(it.title), body: String(it.body || ''), tag: String(it.tag), url: './' },
-              webpush: { headers: { Urgency: 'high', TTL: '3600' } },
-              android: { priority: 'high' }
+              data: { title: String(it.title), body: String(it.body || ''), tag: String(it.tag), url: './', at: String(it.at) },   // 'at' dipakai service worker untuk membuang push basi
+              webpush: { headers: { Urgency: 'high', TTL: '120' } },     // FCM membuang pesan yang tidak terkirim dalam 2 menit (tidak diantar berjam-jam kemudian)
+              android: { priority: 'high', ttl: 120000 }
             });
             res.responses.forEach((r, k) => { if (!r.success && r.error && BAD.has(r.error.code)) dead.push(tokens[k]); });
             sent[it.tag + '@' + it.at] = now;
@@ -60,4 +60,3 @@ exports.sendDueReminders = onSchedule(
     }
   }
 );
-
